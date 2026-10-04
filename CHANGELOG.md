@@ -1,4 +1,4 @@
-##  (2026-08-25)
+##  (2026-10-04)
 
 
 ### Features
@@ -101,10 +101,12 @@
 * **Course:** apply deck review to NLP 23 distributed training ([3a98c85](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/3a98c8505833a87fe8d88487732139c1e84e2d21)), closes [#1](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/issues/1)
 * **Course:** apply verification fixes to the seven gap-buildout decks ([95c4a3c](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/95c4a3c12c18483fc8c6c5cb7ab2d6b168c95930))
 * **Course:** Fixed incorrect references ([b998f4a](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b998f4af3e9bc68ff6d1ee939d921aceea23718f))
+* **Course:** remove Day N references from the RL decks ([b3d854f](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b3d854fe91d3a7643ae4b96f6ca15b3168b0bad6))
 * **Lab:** Added NLP Labs ([d336758](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/d336758ba28f6eed622ef44f00e3ea76f5f165d1))
 * **Lab:** Removed all outputs ([9bf70fd](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/9bf70fdbee8306f156114ae783179fc080d51676))
 * **Lab:** Removed all outputs from solutions ([36cb579](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/36cb5799aa50675a0781dff236e9446fa4ce718c))
 * Modify and correct labs as per recommendations. ([57c1e99](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/57c1e99ab8d66a361408f50f5fc3784926cdcd10))
+* **nlp:** prompt securely for Gemini API key ([eb811af](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/eb811afe658fe985b900faecf23aa2411ea5da79))
 * **path:** AutoEncoders images fix ([31594f2](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/31594f2028908046772418e91cb38e1e79a2d932))
 * **path:** fixed a path for one of the images in the cifar lab ([c876999](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/c876999da623b8e7d6bf12b3c8e88d62cbeeaef7))
 * **rl:** loop rollout GIFs so they replay without re-running ([cf8cd51](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/cf8cd51c73e7ac792fa58815d7a9ddb9889c5e76))
