@@ -1,17 +1,17 @@
 \section{Recap}
 \begin{frame}{}
-    \LARGE Policy Optimization: \textbf{Recap (Day 3)}
+    \LARGE Policy Optimization: \textbf{Recap (REINFORCE)}
 \end{frame}
 
-\begin{frame}{Recap: What Day 3 Established}
+\begin{frame}{Recap: Vanilla Policy Gradient \& REINFORCE}
 \begin{itemize}
-    \item \textbf{The objective is unchanged from Day 3} --- maximize the expected discounted return:
+    \item \textbf{The objective is unchanged from REINFORCE} --- maximize the expected discounted return:
     $$\mathcal{J}(\theta) = \mathbb{E} \left [ \sum_{t \geq 0} \gamma^t r_t \mid \pi_\theta \right ], \qquad \theta^{\star} = \arg\max_\theta \mathcal{J}(\theta)$$
-    \item Day 3 derived its gradient and, after variance reduction, ended at the estimator:
+    \item We derived its gradient and, after variance reduction, ended at the estimator:
     $$\nabla_\theta \mathcal{J}(\theta) \approx \sum_{t \geq 0} A^{\pi}(s_t, a_t)\, \nabla_\theta \log \pi_\theta(a_t|s_t)$$
     \item $A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)$ is the \textbf{advantage function} --- the best baseline
     \item Using $A^{\pi}$ instead of raw returns reduces variance without introducing bias
-    \item \textbf{Unresolved question (Day 3's closing slide):} how do we actually estimate $A^{\pi}$?
+    \item \textbf{The open question we ended on:} how do we actually estimate $A^{\pi}$?
 \end{itemize}
 \end{frame}
 

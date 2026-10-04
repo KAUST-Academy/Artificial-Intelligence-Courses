@@ -3,7 +3,7 @@
 % Shared colour palette for this lecture's hand-built diagrams.
 % (No theme colour macros exist in the preamble; we use plain xcolor names
 %  plus this small deck-local palette throughout the new TikZ. Names match
-%  Day 9 for visual continuity across the two closing decks.)
+%  the RL in the Real World deck for visual continuity across the two closing decks.)
 \definecolor{sysblue}{RGB}{189,215,238}   % model / policy boxes
 \definecolor{mlgreen}{RGB}{169,208,142}   % positive / shared structure
 \definecolor{boxgreen}{RGB}{197,224,180}
@@ -21,12 +21,12 @@
   \addtocounter{footnote}{-1}%
   \endgroup}
 
-% ---------------------------------------------------------------- Recap from Day 9
-\begin{frame}{Where We Left Off: Day 9}
+% ---------------------------------------------------------------- Recap of RL in the Real World
+\begin{frame}{Where We Left Off: RL in the Real World}
 \begin{itemize}\itemsep0.5em
-    \item Yesterday put RL in the \textbf{real world}: \textbf{RLHF} (learn the reward
+    \item Last time we put RL in the \textbf{real world}: \textbf{RLHF} (learn the reward
           when you can't write it down), \textbf{multi-agent RL}, and \textbf{robotics}.
-    \item Day 9 closed on a warning we pay off today:
+    \item It closed on a warning we pay off today:
           \begin{itemize}
               \item \textbf{multi-\emph{agent}} RL $=$ many agents sharing \emph{one}
                     environment (non-stationarity);
@@ -38,7 +38,7 @@
 \end{itemize}
 \vfill
 \begin{center}
-\itshape Every method in Days 1--9 optimised \emph{one} fixed MDP. Today: what happens when
+\itshape Every method so far optimised \emph{one} fixed MDP. Today: what happens when
 we let go of that assumption?
 \end{center}
 \end{frame}
@@ -67,7 +67,7 @@ tasks, and across time.
 
 % ---------------------------------------------------------------- Learning outcomes
 \begin{frame}{Learning Outcomes}
-This is an \textbf{overview} day. By the end you should be able to:
+This is an \textbf{overview} lecture. By the end you should be able to:
 \begin{itemize}\itemsep0.3em
     \item \textbf{define and place} meta-RL, multi-task RL, and hierarchical RL --- and say
           precisely how they differ;
@@ -77,7 +77,7 @@ This is an \textbf{overview} day. By the end you should be able to:
           negative transfer, discovering abstractions);
     \item name \textbf{representative methods} (RL$^2$ / Decision Transformer, PCGrad, the
           options framework) and articulate the main \textbf{open problems}, linking back to
-          Days 1--9.
+          the rest of the course.
 \end{itemize}
 \vspace{0.4em}
 \begin{center}\footnotesize\itshape
@@ -86,7 +86,7 @@ Goal: to \emph{recognise and situate} these frontiers, not to implement each fro
 \end{frame}
 
 % ---------------------------------------------------------------- Course arc
-\begin{frame}{The Whole Journey: Ten Days}
+\begin{frame}{The Whole Journey}
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
@@ -95,20 +95,20 @@ Goal: to \emph{recognise and situate} these frontiers, not to implement each fro
     stage/.style={draw, rounded corners, minimum height=1.05cm, align=center,
                   inner xsep=5pt, text width=2.1cm},
     ar/.style={-{Stealth[length=2mm]}, line width=1pt, black!55}]
-  \node[stage, fill=sysblue]  (d1) {\textbf{1--2}\\ foundations\\ value / DQN};
-  \node[stage, fill=sysblue, right=6mm of d1] (d3) {\textbf{3--4}\\ policy gradient\\ A2C / PPO};
-  \node[stage, fill=boxgreen, right=6mm of d3] (d5) {\textbf{5--6}\\ continuous\\ DDPG / SAC};
-  \node[stage, fill=boxgreen, right=6mm of d5] (d7) {\textbf{7}\\ exploration\\ \& reward / IRL};
-  \node[stage, fill=boxtan, right=6mm of d7] (d8) {\textbf{8}\\ model-based\\ \& offline};
-  \node[stage, fill=boxtan, right=6mm of d8] (d9) {\textbf{9}\\ real world\\ RLHF / robots};
-  \node[stage, fill=accentred, text=white, right=6mm of d9] (d10) {\textbf{10}\\ \textbf{frontiers}\\ today};
+  \node[stage, fill=sysblue]  (d1) {foundations\\ value / DQN};
+  \node[stage, fill=sysblue, right=6mm of d1] (d3) {policy gradient\\ A2C / PPO};
+  \node[stage, fill=boxgreen, right=6mm of d3] (d5) {continuous\\ DDPG / SAC};
+  \node[stage, fill=boxgreen, right=6mm of d5] (d7) {exploration\\ \& reward / IRL};
+  \node[stage, fill=boxtan, right=6mm of d7] (d8) {model-based\\ \& offline};
+  \node[stage, fill=boxtan, right=6mm of d8] (d9) {real world\\ RLHF / robots};
+  \node[stage, fill=accentred, text=white, right=6mm of d9] (d10) {\textbf{frontiers}\\ today};
   \draw[ar] (d1)--(d3); \draw[ar] (d3)--(d5); \draw[ar] (d5)--(d7);
   \draw[ar] (d7)--(d8); \draw[ar] (d8)--(d9); \draw[ar] (d9)--(d10);
 \end{tikzpicture}}
 \vfill
 \begin{center}\footnotesize
-From \emph{how to optimise one MDP} (Days 1--6) $\rightarrow$ \emph{where the reward and
-data come from} (Days 7--8) $\rightarrow$ \emph{the real world} (Day 9) $\rightarrow$
+From \emph{how to optimise one MDP} $\rightarrow$ \emph{where the reward and
+data come from} $\rightarrow$ \emph{the real world} $\rightarrow$
 \emph{past a single MDP entirely} (today).
 \end{center}
 \end{frame}

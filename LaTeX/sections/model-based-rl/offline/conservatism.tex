@@ -15,14 +15,14 @@
     \node[right=3pt, font=\scriptsize] at (4,2.6) {$\hat Q + u$};
     \node[left=3pt, font=\scriptsize] at (4,0.4) {$\hat Q - u$};
     \node[align=center, ogreen!60!black, font=\scriptsize\bfseries] (on) at (1.1,2.6)
-      {Online (Day 7)\\optimism $\to$ explore};
+      {Online (UCB)\\optimism $\to$ explore};
     \draw[->, ogreen!70!black, thick] (on.east) -- (3.8,2.6);
     \node[align=center, ored, font=\scriptsize\bfseries] (off) at (7.1,0.4)
       {Offline (today)\\pessimism $\to$ stay supported};
     \draw[->, ored, thick] (off.west) -- (4.2,0.4);
 \end{tikzpicture}
 \begin{itemize}
-    \item Day 7's rule: \emph{in the face of uncertainty, be optimistic}: UCB
+    \item The exploration rule: \emph{in the face of uncertainty, be optimistic}: UCB
           acts on $\hat Q + u$, because uncertainty was an \textbf{opportunity}
     \item Offline, uncertainty can never be resolved: it is a \textbf{hazard}
     \item Same machinery, opposite sign: act on $\hat Q - u$, \emph{pessimism}

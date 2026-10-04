@@ -16,7 +16,7 @@ $$\mathcal{L}(\theta,\phi) = \underbrace{\mathcal{L}^{\mathrm{CLIP}}(\theta)}_{\
     \item \textbf{1. $\mathcal{L}^{\mathrm{CLIP}}$} --- the clipped surrogate we just built. \emph{Maximized}, so it enters with $+$.
     \item \textbf{2. $\mathcal{L}^{V} = \mathbb{E}_t[\delta_t^2]$} --- the critic's squared TD error. We \emph{minimize} it, hence the minus sign: subtracting it from a quantity we maximize is the same as minimizing it. $c_1 \approx 0.5$ balances the two scales.
     \pause
-    \item \textbf{3. $\mathcal{H}(\pi_\theta)$} --- the \textbf{entropy} of the action distribution: high when the policy is still undecided, near zero when it always picks one action. Adding it \emph{rewards} indecision, which stops the policy from collapsing onto one action before it has explored. $c_2$ is small ($\approx 0.01$); the term reappears as a first-class citizen in SAC (Day 6).
+    \item \textbf{3. $\mathcal{H}(\pi_\theta)$} --- the \textbf{entropy} of the action distribution: high when the policy is still undecided, near zero when it always picks one action. Adding it \emph{rewards} indecision, which stops the policy from collapsing onto one action before it has explored. $c_2$ is small ($\approx 0.01$); the term reappears as a first-class citizen in SAC.
     \item In code this is three lines summed and passed to one \texttt{loss.backward()} --- no separate actor and critic updates.
 \end{itemize}
 \end{frame}

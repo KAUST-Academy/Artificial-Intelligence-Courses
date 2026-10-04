@@ -50,7 +50,7 @@ went badly     & $-1.0$ & $0.50$ & $0.40$ & $0.8$ & $-0.8$ \\
     \pause
     \item \textbf{Why the ratio is the right multiplier:} the batch was collected by the \emph{old} policy, so each action appears about as often as \emph{it} would have chosen it. If the new policy would pick that action twice as often, the sample should count twice. That re-counting is all the ratio does.
     \pause
-    \item At $\theta = \theta_\text{old}$ every $r_t = 1$, so $\mathcal{L}$ starts at $\approx 0$ and its gradient is exactly the Day 3 policy gradient. \textbf{This is the objective PPO maximizes.}
+    \item At $\theta = \theta_\text{old}$ every $r_t = 1$, so $\mathcal{L}$ starts at $\approx 0$ and its gradient is exactly the vanilla policy gradient. \textbf{This is the objective PPO maximizes.}
 \end{itemize}
 \end{frame}
 

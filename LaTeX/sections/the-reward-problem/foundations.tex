@@ -1,5 +1,5 @@
 \section{The Reward Problem}
-% The day's spine
+% The lecture's spine
 \begin{frame}{The Reward Problem Has Three Faces}
 \begin{itemize}
     \setlength{\itemsep}{0.7em}
@@ -8,10 +8,10 @@
     \item \textbf{The reward we wrote is wrong.}\\
           \emph{Reward shaping \& specification gaming} (today).
     \item \textbf{We can't write a reward at all.}\\
-          \emph{Inverse RL \& preference-based reward learning} (today --- and the direct ancestor of RLHF on Day 9).
+          \emph{Inverse RL \& preference-based reward learning} (today --- and the direct ancestor of RLHF).
 \end{itemize}
 \vspace{0.6em}
-\centering\small\textcolor{gray}{One day, three faces of the same problem.}
+\centering\small\textcolor{gray}{One lecture, three faces of the same problem.}
 \end{frame}
 
 % --- Exploration vs Exploitation, split into 2 ---
@@ -107,7 +107,7 @@
     \[
         Q(a) = \mathbb{E}[r \mid a]
     \]
-    \item \emph{This is Day 1's $Q^\pi(s,a) = \mathbb{E}[\sum_t \gamma^t r_t]$ with the sum collapsed} --- one state, one step, so the return is just $r$
+    \item \emph{This is the familiar $Q^\pi(s,a) = \mathbb{E}[\sum_t \gamma^t r_t]$ with the sum collapsed} --- one state, one step, so the return is just $r$
     \item The Optimal Value $V^*$ is the best of these:
     \[
         V^* = Q(a^*) = \max_{a \in \mathcal{A}} Q(a)
@@ -134,7 +134,7 @@
     \item \emph{Catch:} $\Delta_a = \max_{a'} \mathbb{E}_{\mathcal{R}^{a'}}[r] - \mathbb{E}_{\mathcal{R}^{a}}[r]$ --- every term is a mean of an \emph{unknown} distribution, so the gaps are fixed numbers baked into the problem before we act
     \item That makes this a tool for \emph{analysing} algorithms, not for building them --- ``pull the smallest-gap arm'' is not something you can run
 \end{itemize}
-\centering\small\textcolor{gray}{($\Delta_a$ is Day 1's advantage, sign-flipped and measured against the \emph{best} action.)}
+\centering\small\textcolor{gray}{($\Delta_a$ is the advantage function, sign-flipped and measured against the \emph{best} action.)}
 \end{frame}
 
 \begin{frame}{Linear or Sublinear Total Regret?}

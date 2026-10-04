@@ -104,7 +104,7 @@ The actor is a plain function $s \mapsto \mu_\theta(s)$. Being deterministic it 
 
 \vspace{0.5em}
 \begin{flushleft}\footnotesize
-Transitions go into the replay buffer $\mathcal{D}$ rather than being used once and discarded --- the DQN trick from Day 2, and the reason DDPG needs far less environment interaction than PPO on the same task.
+Transitions go into the replay buffer $\mathcal{D}$ rather than being used once and discarded --- the trick DQN introduced, and the reason DDPG needs far less environment interaction than PPO on the same task.
 \end{flushleft}
 \end{frame}
 
@@ -185,7 +185,7 @@ Initialise target weights $\phi^{-} \leftarrow \phi$ and $\theta^{-} \leftarrow 
 % ---------------------------------------------------------------------------
 \begin{frame}{Method --- ``Soft'' Target Network Update}
 \vspace{0.5em}
-Day 2's DQN copies the online weights into the target network \emph{periodically} --- a hard update every $C$ steps. DDPG instead lets the targets \emph{slowly track} the online networks at every step:
+DQN copies the online weights into the target network \emph{periodically} --- a hard update every $C$ steps. DDPG instead lets the targets \emph{slowly track} the online networks at every step:
 \[
 \phi^{-} \leftarrow \tau\, \phi + (1-\tau)\, \phi^{-}
 \qquad\qquad
@@ -217,12 +217,12 @@ Day 2's DQN copies the online weights into the target network \emph{periodically
 % ---------------------------------------------------------------------------
 \begin{frame}{Method --- Exploration with a Deterministic Actor}
 \vspace{0.4em}
-A deterministic actor has \emph{no} exploration of its own: the same state always yields the same action, forever. On Day 3--4 the policy was stochastic, so exploration came for free. Here we must add it by hand:
+A deterministic actor has \emph{no} exploration of its own: the same state always yields the same action, forever. In REINFORCE and PPO the policy was stochastic, so exploration came for free. Here we must add it by hand:
 \[
 a_t = \mu_\theta(s_t) + \mathcal{N}_t, \qquad \mathcal{N}_t \sim \mathcal{N}(0, \sigma^2)
 \]
 \begin{itemize}
-    \item Zero-mean \textbf{Gaussian} noise added to the action, with $\sigma$ annealed over training --- the continuous-action analogue of annealing $\varepsilon$ in $\varepsilon$-greedy (Day 1).
+    \item Zero-mean \textbf{Gaussian} noise added to the action, with $\sigma$ annealed over training --- the continuous-action analogue of annealing $\varepsilon$ in $\varepsilon$-greedy Q-learning.
     \pause
     \item \textbf{This is exploration only in the behaviour policy.} The stored actions include the noise; the actor being trained does not. Being off-policy is what allows that split.
     \item \textbf{It is also DDPG's weakest point.} The noise is undirected --- it is a random jiggle, not a search. In sparse-reward tasks the agent may never stumble on a reward at all.
@@ -236,7 +236,7 @@ a_t = \mu_\theta(s_t) + \mathcal{N}_t, \qquad \mathcal{N}_t \sim \mathcal{N}(0, 
 \vspace{8.6em}
 \footnotesize
 \textbf{\textcolor{red}{Value network update}}\\[0.4em]
-{\scriptsize Squared TD error --- the same critic loss as Day 2 and Day 4.}
+{\scriptsize Squared TD error --- the same critic loss as DQN and A2C/PPO.}
 \end{column}
 \begin{column}{0.79\textwidth}
 \ddpgalgo{3}
@@ -261,8 +261,8 @@ a_t = \mu_\theta(s_t) + \mathcal{N}_t, \qquad \mathcal{N}_t \sim \mathcal{N}(0, 
 \end{frame}
 
 % ---------------------------------------------------------------------------
-% Replaces the two DQN-pseudocode screenshots. Students saw DQN in full on
-% Day 2; reprinting the paper's algorithm made this look like a new topic. The
+% Replaces the two DQN-pseudocode screenshots. Students saw DQN in full in
+% the Value-Based Methods deck; reprinting the paper's algorithm made this look like a new topic. The
 % only thing that actually needed saying is the one-line difference in the
 % target, which is what this slide shows.
 \begin{frame}{One Line Separates DDPG from DQN}
@@ -275,7 +275,7 @@ Both algorithms are the same off-policy loop: act, store in $\mathcal{D}$, sampl
 \hline
  & \textbf{TD target} & \textbf{Next action from} \\
 \hline
-\textbf{DQN} (Day 2) & $y = r + \gamma\, \displaystyle\max_{a'} \hat{Q}(s',a';\theta^{-})$ & a \emph{search} over $\mathcal{A}$ \\
+\textbf{DQN} & $y = r + \gamma\, \displaystyle\max_{a'} \hat{Q}(s',a';\theta^{-})$ & a \emph{search} over $\mathcal{A}$ \\
 \textbf{DDPG} (today) & $y = r + \gamma\, Q_{\phi^{-}}\!\big(s',\, \rbox{\mu_{\theta^{-}}(s')}\big)$ & a \emph{forward pass} \\
 \hline
 \end{tabular}
@@ -283,6 +283,6 @@ Both algorithms are the same off-policy loop: act, store in $\mathcal{D}$, sampl
 \vspace{0.8em}
 \begin{itemize}
     \item \textcolor{red}{\textbf{The target actor is the $\arg\max$.}} That single substitution is what carries DQN into continuous action spaces --- and it is why we needed the deterministic policy gradient: something has to \emph{train} $\mu_\theta$ to be that $\arg\max$.
-    \item Everything else --- replay buffer, target networks, squared TD error --- is unchanged from Day 2.
+    \item Everything else --- replay buffer, target networks, squared TD error --- is unchanged from DQN.
 \end{itemize}
 \end{frame}

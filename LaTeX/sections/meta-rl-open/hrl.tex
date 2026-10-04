@@ -12,7 +12,7 @@
 \begin{itemize}\footnotesize\itemsep0.5em
     \item Flat RL chooses a \textbf{primitive action every step}. Over a long,
           sparse-reward task that is a needle in an astronomically large haystack.
-    \item Think \textbf{Montezuma's Revenge} (Day 7): thousands of steps before any
+    \item Think \textbf{Montezuma's Revenge} (hard exploration): thousands of steps before any
           reward --- random exploration essentially never stumbles on it.
     \item Humans don't plan at the muscle-twitch level. We reason over \empr{skills}
           (``get the key'', ``open the door'').
@@ -132,7 +132,7 @@ Manager sets the \emph{goal}; worker earns reward for \emph{reaching} it.
 \begin{columns}[c]
 \begin{column}{0.55\textwidth}
 \begin{itemize}\footnotesize\itemsep0.5em
-    \item Why teach hierarchy \emph{after} Day 9? Because the hottest instance is an
+    \item Why teach hierarchy \emph{after} RLHF? Because the hottest instance is an
           \textbf{LLM planning over learned skills}.
     \item \textbf{SayCan:} the LLM proposes a plausible high-level step (``pick up the
           sponge''); a learned \emph{value/affordance} function grounds it in what the

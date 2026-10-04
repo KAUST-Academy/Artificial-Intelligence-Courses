@@ -11,7 +11,7 @@
     where $r(s_t,a_t) = \mathbb{E}[r_t \mid s_t, a_t]$ is the expected reward function. In practice we use the observed $r_t$ and a learned $V_\phi$, so $\delta_t$ is an approximation of $A^{\pi}$.
     \pause
     \item So we can use $\delta_t$ as a \textbf{low-variance, online} estimate of $A^{\pi}$ --- no full trajectory needed
-    \item This is what Day 3 deferred: we now have a way to estimate $A^{\pi}$ at every timestep
+    \item This is what REINFORCE left open: we now have a way to estimate $A^{\pi}$ at every timestep
     \vspace{0.5em}
     \item \textbf{One number, two jobs:} $\delta_t$ trains the critic (via $\mathcal{L}(\phi) = \mathbb{E}_t[\delta_t^2]$) \emph{and} weights the actor's gradient. That is the whole actor-critic loop.
 \end{itemize}

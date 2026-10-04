@@ -1,5 +1,5 @@
 % ---------------------------------------------------------------------------
-% Day 6 review: this frame used to show the SAC v2 loop with BOTH the
+% SAC deck review: this frame used to show the SAC v2 loop with BOTH the
 % automatic-temperature line and the clipped double-Q highlighted, before
 % either had been motivated. It now shows the base algorithm with a FIXED
 % alpha; the single extra v2 line is introduced in auto_temp_derivation.tex,
@@ -7,9 +7,9 @@
 % ---------------------------------------------------------------------------
 \begin{frame}{SAC: Algorithm}
 \begin{center}
-{\scriptsize\textbf{\textcolor{red}{Red}} $=$ the \textbf{two} things that differ from TD3 (Day 5): the actor is \emph{stochastic}, so actions are \textbf{sampled} from it, and the TD target carries the \emph{entropy term}.\\
+{\scriptsize\textbf{\textcolor{red}{Red}} $=$ the \textbf{two} things that differ from TD3: the actor is \emph{stochastic}, so actions are \textbf{sampled} from it, and the TD target carries the \emph{entropy term}.\\
 Shorthand: $Q^{\min}_{\phi^{-}}$ means $\min_{i=1,2} Q_{\phi^{-}_i}$.\quad $\alpha$ is a \textbf{fixed hyperparameter} here.\quad
-$\lambda_Q,\lambda_\pi$ are \textbf{learning rates} (Adam step sizes) for critic and actor; $\tau$ is the target-network mixing rate from Day 5.}
+$\lambda_Q,\lambda_\pi$ are \textbf{learning rates} (Adam step sizes) for critic and actor; $\tau$ is the target-network mixing rate from DDPG.}
 \end{center}
 \begin{center}
 \resizebox{\textwidth}{!}{%
@@ -38,5 +38,5 @@ Initialize actor $\theta$, critics $\phi_1,\phi_2$;\ \ targets $\phi^{-}_i\!\lef
 }
 \end{center}
 \vspace{-0.2em}
-{\scriptsize Black $=$ Day 5 unchanged: replay buffer, twin critics, clipped double-$Q$ target, Polyak target critics. \textbf{But the actor is not TD3's} --- it outputs a distribution $(\mu_\theta,\sigma_\theta)$, never a bare action, which is why SAC needs \emph{no target actor} and \emph{no smoothing noise}: TD3 needed both only because its actor was deterministic.}
+{\scriptsize Black $=$ unchanged from TD3: replay buffer, twin critics, clipped double-$Q$ target, Polyak target critics. \textbf{But the actor is not TD3's} --- it outputs a distribution $(\mu_\theta,\sigma_\theta)$, never a bare action, which is why SAC needs \emph{no target actor} and \emph{no smoothing noise}: TD3 needed both only because its actor was deterministic.}
 \end{frame}

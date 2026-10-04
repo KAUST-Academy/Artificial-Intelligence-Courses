@@ -1,11 +1,11 @@
 \section{Recap}
 \begin{frame}{}
-    \LARGE Soft Actor-Critic: \textbf{Recap (Day 5)}
+    \LARGE Soft Actor-Critic: \textbf{Recap (DDPG \& TD3)}
 \end{frame}
 
-\begin{frame}{Recap: Where Day 5 Left Us}
+\begin{frame}{Recap: Where DDPG \& TD3 Left Us}
 \begin{itemize}
-    \item Day 5 gave us \textbf{off-policy continuous control}: DDPG \rref{4} / TD3 \rref{5} --- a replay buffer, target networks, and a deterministic actor $\mu_\theta(s)$
+    \item DDPG \rref{4} / TD3 \rref{5} gave us \textbf{off-policy continuous control}: a replay buffer, target networks, and a deterministic actor $\mu_\theta(s)$
     \pause
     \item But DDPG is \textbf{fragile}:
     \begin{itemize}
@@ -21,14 +21,14 @@
     \item \textbf{Today --- Soft Actor-Critic (SAC)} \rref{1}: fix all three with a \emph{stochastic} actor and an \emph{entropy bonus} in the objective
     $$J(\pi) = \sum_t \mathbb{E}_{(s_t,a_t)\sim\rho_\pi}\big[\, r(s_t,a_t) + \alpha\,\mathcal{H}(\pi(\cdot\mid s_t)) \,\big]$$
     \item Entropy drives \emph{directed} exploration --- no hand-tuned noise schedule; robust to seeds; captures multimodal optima
-    \item \textbf{Everything from Day 5 carries over:} replay buffer, target networks, and TD3's clipped double-Q critic
+    \item \textbf{Everything from DDPG/TD3 carries over:} replay buffer, target networks, and TD3's clipped double-Q critic
     \item We close with \textbf{automatic temperature tuning} (SAC v2) --- removing the last brittle hyperparameter
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Scope \& Notation}
 \vspace{-0.3em}
-{\footnotesize \textcolor{red}{Scope note:} ``Continuous Control II'' is the \emph{max-entropy} branch. PPO (Day 4) already handles continuous actions on-policy; DDPG/TD3 (Day 5) are the off-policy \emph{deterministic} branch; SAC is the off-policy \emph{stochastic, entropy-regularised} branch.}
+{\footnotesize \textcolor{red}{Scope note:} ``Continuous Control II'' is the \emph{max-entropy} branch. PPO already handles continuous actions on-policy; DDPG/TD3 are the off-policy \emph{deterministic} branch; SAC is the off-policy \emph{stochastic, entropy-regularised} branch.}
 \vspace{-0.2em}
 \begin{center}
 \small
@@ -37,13 +37,13 @@
 \hline
 \textbf{Symbol} & \textbf{Meaning} & \textbf{Where you saw it} \\
 \hline
-$\theta$                        & \textbf{actor} parameters                         & Days 3--5 \\
-$\phi$                          & \textbf{critic} parameters                        & Days 4--5 \\
-$\pi_\theta(a\mid s)$           & \emph{stochastic} actor \;\textcolor{red}{(back today)} & Days 3--4 \\
-$\mu_\theta(s),\ \sigma_\theta(s)$ & mean and spread of that actor                  & Day 3 (Day 5 kept only $\mu_\theta$) \\
-$Q_\phi(s,a)$                   & \emph{soft} action-value critic                   & Day 5 (now with an entropy term) \\
-$\phi^{-}$                      & target critic parameters                          & Day 2 (DQN), Day 5 \\
-$\mathcal{D}$                   & replay buffer                                     & Day 2 (DQN), Day 5 \\
+$\theta$                        & \textbf{actor} parameters                         & REINFORCE, A2C/PPO, DDPG \\
+$\phi$                          & \textbf{critic} parameters                        & A2C/PPO, DDPG \\
+$\pi_\theta(a\mid s)$           & \emph{stochastic} actor \;\textcolor{red}{(back today)} & REINFORCE, A2C/PPO \\
+$\mu_\theta(s),\ \sigma_\theta(s)$ & mean and spread of that actor                  & REINFORCE (DDPG kept only $\mu_\theta$) \\
+$Q_\phi(s,a)$                   & \emph{soft} action-value critic                   & DDPG (now with an entropy term) \\
+$\phi^{-}$                      & target critic parameters                          & DQN, DDPG \\
+$\mathcal{D}$                   & replay buffer                                     & DQN, DDPG \\
 $\alpha$                        & entropy \emph{temperature} \;\textcolor{red}{(new)} & --- \\
 $\mathcal{H}(\pi(\cdot\mid s))$ & entropy of the actor at state $s$ \;\textcolor{red}{(new)} & --- \\
 $\bar{\mathcal{H}}$             & \emph{target} entropy \;\textcolor{red}{(new, SAC v2)} & --- \\
@@ -51,5 +51,5 @@ $\bar{\mathcal{H}}$             & \emph{target} entropy \;\textcolor{red}{(new, 
 \end{tabular}
 \end{center}
 \vspace{0.3em}
-{\scriptsize \textbf{Day 5 said the noise would come back --- here it is.} Day 5 wrote the actor as a Gaussian $\pi_\theta(a|s)=\mathcal{N}(\mu_\theta(s),\sigma_\theta(s)^2)$, then \emph{deleted} $\sigma_\theta$ to get the deterministic $\mu_\theta$. SAC puts $\sigma_\theta$ back and \emph{learns} it. \;\textcolor{red}{Heads-up:} the SAC paper swaps the letters ($\phi$ actor, $\theta$ critic); we keep the course convention --- only the letters differ, every equation is identical.}
+{\scriptsize \textbf{We said the noise would come back --- here it is.} For DDPG we wrote the actor as a Gaussian $\pi_\theta(a|s)=\mathcal{N}(\mu_\theta(s),\sigma_\theta(s)^2)$, then \emph{deleted} $\sigma_\theta$ to get the deterministic $\mu_\theta$. SAC puts $\sigma_\theta$ back and \emph{learns} it. \;\textcolor{red}{Heads-up:} the SAC paper swaps the letters ($\phi$ actor, $\theta$ critic); we keep the course convention --- only the letters differ, every equation is identical.}
 \end{frame}

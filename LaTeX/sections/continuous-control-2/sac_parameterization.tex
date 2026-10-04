@@ -25,5 +25,5 @@ $J_\pi(\theta),\ \hat{\nabla}_\theta J_\pi(\theta)$
 \end{tabular}
 \end{center}
 \vspace{0.4em}
-{\footnotesize \textcolor{red}{This is where we finally pick $\Pi$:} the actor's family is the \textbf{Gaussians} --- one mean and one spread per action dimension. That is the concrete choice policy improvement was left waiting on. Otherwise these are the same two networks as DDPG (Day 5): the critic now carries the entropy term, and the actor outputs a \emph{distribution} $(\mu_\theta,\sigma_\theta)$ instead of a single action $\mu_\theta$.}
+{\footnotesize \textcolor{red}{This is where we finally pick $\Pi$:} the actor's family is the \textbf{Gaussians} --- one mean and one spread per action dimension. That is the concrete choice policy improvement was left waiting on. Otherwise these are the same two networks as DDPG: the critic now carries the entropy term, and the actor outputs a \emph{distribution} $(\mu_\theta,\sigma_\theta)$ instead of a single action $\mu_\theta$.}
 \end{frame}

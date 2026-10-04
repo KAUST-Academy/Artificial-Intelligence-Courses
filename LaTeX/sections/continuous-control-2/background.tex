@@ -1,11 +1,11 @@
 \section{Background}
-\begin{frame}{Recap: Days 2 \& 4--5}
+\begin{frame}{Recap: DQN, Actor-Critic \& DDPG}
 \small
 \begin{itemize}
     \item \textbf{Off-policy is the route to sample efficiency.} On-policy methods (PPO, A2C) discard data after each update; off-policy ones reuse it via a replay buffer $\mathcal{D}$ --- SAC, like DDPG, is built on this.
 \end{itemize}
 \vspace{-0.3em}
-\textbf{Value-based (Day 2):}
+\textbf{Value-based (DQN):}
 \[
 \text{Q-Learning: }\; Q(s,a) \leftarrow Q(s,a) + \alpha\big( r + \gamma \max_{a'} Q(s',a') - Q(s,a) \big)
 \]
@@ -17,7 +17,7 @@
     \item Replay buffer + target network $\phi^-$ stabilise off-policy TD --- but $\max_{a'}$ doesn't scale to continuous actions
 \end{itemize}
 \vspace{-0.3em}
-\textbf{Actor-critic (Days 4--5):}
+\textbf{Actor-critic (A2C/PPO, DDPG):}
 \[
 \nabla_\theta\mathcal{J}(\theta) = \mathbb{E}_{\pi_\theta}\!\left[\, \nabla_\theta\log\pi_\theta(a\mid s)\; \hat{A}(s,a) \,\right] \qquad
 \text{DDPG: }\; \nabla_\theta Q_\phi(s,\mu_\theta(s))

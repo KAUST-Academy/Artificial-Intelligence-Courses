@@ -1,9 +1,9 @@
 \section{Recap}
 \begin{frame}{}
-    \LARGE Continuous Control: \textbf{Recap (Day 4)}
+    \LARGE Continuous Control: \textbf{Recap (Actor-Critic)}
 \end{frame}
 
-\begin{frame}{Recap: What Day 4 Established}
+\begin{frame}{Recap: What Actor-Critic \& PPO Established}
 \begin{itemize}
     \item \textbf{Actor-Critic}: an actor $\pi_\theta(a|s)$ updated by the policy gradient, plus a critic $V_\phi(s)$ trained by TD learning to supply a low-variance advantage estimate $\hat{A}_t$:
     $$\nabla_\theta \mathcal{J}(\theta) = \mathbb{E}_t\!\left[ \nabla_\theta \log \pi_\theta(a_t|s_t)\, \hat{A}_t \right]$$
@@ -19,9 +19,9 @@
     \item \textbf{DPG} \rref{1}: a policy-gradient update rule for a \emph{deterministic} actor $\mu_\theta(s)$ over continuous action spaces
     \item \textbf{DDPG} \rref{2}: DPG made deep, by importing the DQN \rref{3} tricks you already know --- replay buffer and target networks
     \item The critic becomes an \emph{action}-value $Q_\phi(s,a)$, and the actor's gradient flows \emph{through the critic}: $\nabla_\theta Q_\phi(s, \mu_\theta(s))$
-    \item We close with \textbf{TD3} \rref{4}, the direct fix for DDPG's overestimation and brittleness --- and the bridge to Day 6 (SAC)
+    \item We close with \textbf{TD3} \rref{4}, the direct fix for DDPG's overestimation and brittleness --- and the bridge to SAC
     \vspace{0.4em}
-    \item[] \footnotesize \textcolor{red}{Scope note:} PPO already handles continuous actions \emph{on-policy}. ``Continuous Control I/II'' is specifically the \emph{off-policy} branch: deterministic policies (DDPG/TD3, today) and max-entropy stochastic policies (SAC, Day 6).
+    \item[] \footnotesize \textcolor{red}{Scope note:} PPO already handles continuous actions \emph{on-policy}. ``Continuous Control I/II'' is specifically the \emph{off-policy} branch: deterministic policies (DDPG/TD3, today) and max-entropy stochastic policies (SAC, next time).
 \end{itemize}
 \end{frame}
 
@@ -34,20 +34,20 @@
 \hline
 \textbf{Symbol} & \textbf{Meaning} & \textbf{Where you saw it} \\
 \hline
-$\mathcal{J}(\theta)$        & expected discounted return (the objective)   & Days 3--4 \\
-$\theta$                     & \textbf{actor} parameters                    & Days 3--4 \\
-$\phi$                       & \textbf{critic} parameters                   & Day 4 \\
-$\theta^{-},\ \phi^{-}$      & \emph{target} network parameters             & Day 2 (DQN) \\
-$\mathcal{D}$                & replay buffer                                & Day 2 (DQN) \\
-$\pi_\theta(a|s)$            & \emph{stochastic} actor                      & Days 3--4 \\
-$\mu_\theta(s)$              & \emph{deterministic} actor \; \textcolor{red}{(new today)} & Day 3, as the Gaussian mean \\
-$Q_\phi(s,a)$                & \emph{action}-value critic \; \textcolor{red}{(new today)} & Day 4's critic was $V_\phi(s)$ \\
+$\mathcal{J}(\theta)$        & expected discounted return (the objective)   & REINFORCE, A2C/PPO \\
+$\theta$                     & \textbf{actor} parameters                    & REINFORCE, A2C/PPO \\
+$\phi$                       & \textbf{critic} parameters                   & A2C/PPO \\
+$\theta^{-},\ \phi^{-}$      & \emph{target} network parameters             & DQN \\
+$\mathcal{D}$                & replay buffer                                & DQN \\
+$\pi_\theta(a|s)$            & \emph{stochastic} actor                      & REINFORCE, A2C/PPO \\
+$\mu_\theta(s)$              & \emph{deterministic} actor \; \textcolor{red}{(new today)} & REINFORCE's Gaussian mean \\
+$Q_\phi(s,a)$                & \emph{action}-value critic \; \textcolor{red}{(new today)} & A2C/PPO's critic was $V_\phi(s)$ \\
 \hline
 \end{tabular}
 \end{center}
 \vspace{0.5em}
 {\footnotesize
-\textbf{Why $\mu$ for the actor?} Day 3 already wrote the continuous-action policy as a Gaussian,
+\textbf{Why $\mu$ for the actor?} The policy-gradient lecture already wrote the continuous-action policy as a Gaussian,
 $\pi_\theta(a|s) = \mathcal{N}\!\big(\mu_\theta(s),\, \sigma_\theta(s)^2\big)$.
-Today we keep the mean and throw the noise away: the actor \emph{is} $\mu_\theta(s)$. Same letter, same network --- we have simply deleted $\sigma_\theta$. Keeping $\pi$ and $\mu$ distinct also matters on Day 6, where SAC puts a stochastic actor back.}
+Today we keep the mean and throw the noise away: the actor \emph{is} $\mu_\theta(s)$. Same letter, same network --- we have simply deleted $\sigma_\theta$. Keeping $\pi$ and $\mu$ distinct also matters for SAC, which puts a stochastic actor back.}
 \end{frame}

@@ -36,7 +36,7 @@
 \begin{itemize}
     \item Q-learning works by repeatedly sampling transitions and nudging $Q$ toward the target using gradient descent (or a simple update rule)
     \item The learning rate $\alpha$ controls the size of each nudge
-    \item This same principle --- define a Bellman target, minimize the error --- underlies DQN, Double DQN, and most value-based methods in Days 2 and 5
+    \item This same principle --- define a Bellman target, minimize the error --- underlies DQN, Double DQN, and most value-based methods later in the course
 \end{itemize}
 \end{frame}
 
@@ -56,7 +56,7 @@
         \item With probability $\varepsilon$, choose a random action
     \end{itemize}
     \item $\varepsilon$-greedy policy still widely used today regardless of simplicity
-    \item Key practical consideration: $\varepsilon$ is often annealed over training --- starting high (lots of exploration early on) and decaying toward a small value (mostly exploitation once $Q$ is well-estimated). We will revisit exploration more rigorously on Day 7.
+    \item Key practical consideration: $\varepsilon$ is often annealed over training --- starting high (lots of exploration early on) and decaying toward a small value (mostly exploitation once $Q$ is well-estimated). We will revisit exploration more rigorously later, with multi-armed bandits.
 \end{itemize}
 \end{frame}
 

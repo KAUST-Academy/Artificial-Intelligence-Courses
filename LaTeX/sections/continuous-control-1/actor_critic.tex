@@ -1,18 +1,18 @@
 % Rewritten twice. Originally nine frames re-introducing actor-critic from
 % scratch ("Actor: policy function pi_theta", "Critic: value function Q^w,
-% which provides guidance to improve the actor"), which Day 4 spends a whole
+% which provides guidance to improve the actor"), which the Policy Optimization deck spends a whole
 % section on. Then two frames that were still too wordy. Now: one comparison
 % table, and one short slide answering the only structural question left
 % (why the critic changed from V to Q).
 
-\begin{frame}{This Is Still Day 4's Actor-Critic --- Three Things Change}
+\begin{frame}{This Is Still Actor-Critic --- Three Things Change}
 \vspace{-0.2em}
 \begin{center}
 \small
 \renewcommand{\arraystretch}{1.5}
 \begin{tabular}{p{0.22\textwidth} p{0.31\textwidth} p{0.37\textwidth}}
 \hline
- & \textbf{Day 4 (A2C/PPO)} & \textbf{Today (DDPG)} \\
+ & \textbf{Before (A2C/PPO)} & \textbf{Today (DDPG)} \\
 \hline
 \textbf{Actor} & $\pi_\theta(a|s)$, stochastic & $\mu_\theta(s)$, deterministic \\
 \textbf{Critic} & $V_\phi(s)$ & $Q_\phi(s,a)$ \\
@@ -33,7 +33,7 @@ The new actor update asks the critic: \emph{if I change the action, does the val
 \begin{itemize}
     \setlength{\itemsep}{0.5em}
     \item $V_\phi(s)$ has no action in it. There is nothing to differentiate. It can say ``this state is good'', but not ``turn the wheel left''.
-    \item So Day 4's trick of learning only $V$ does not survive.
+    \item So the A2C/PPO trick of learning only $V$ does not survive.
 \end{itemize}
 \pause
 \vspace{0.9em}
@@ -46,5 +46,5 @@ y \;=\; r + \gamma\, Q_{\phi^{-}}\!\big(s',\, \rbox{\mu_{\theta^{-}}(s')}\big)
 \]
 \vspace{0.2em}
 \centering
-Same squared TD error as Days 2 and 4. Only the way we pick the next action has changed.
+Same squared TD error as DQN and A2C/PPO. Only the way we pick the next action has changed.
 \end{frame}

@@ -31,7 +31,7 @@ REINFORCE $\;\rightarrow\;$ +baseline $\;\rightarrow\;$ +critic (A2C) $\;\righta
 \begin{frame}{Summary (1/2): Getting a Good Advantage Estimate}
 \begin{itemize}
     \item \textbf{TD learning} --- update a prediction using a later, better-informed one. The TD error $\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$ is the same bracket you saw in Q-learning and SARSA; the critic is trained by minimising its \emph{square}
-    \item A \textbf{critic} $V_\phi$ turns Day 3's baseline into something learnable, and $\delta_t$ doubles as an online, low-variance estimate of the advantage --- one number, two jobs
+    \item A \textbf{critic} $V_\phi$ turns REINFORCE's baseline into something learnable, and $\delta_t$ doubles as an online, low-variance estimate of the advantage --- one number, two jobs
     \item \textbf{GAE} replaces the crude 1-step $\delta_t$ with a $\lambda$-weighted average over all lookahead lengths, computed backwards in one pass: $\hat{A}_t = \delta_t + \gamma\lambda \hat{A}_{t+1}$. Read $\lambda$ as ``how much do I trust my critic''
     \item $\hat{A}_t$ is what \emph{every} algorithm from here on multiplies the log-probability gradient by
     \item \textbf{A2C} parallelises data collection with $N$ synchronous actors; A3C uses asynchronous workers (empirically A2C $\geq$ A3C)

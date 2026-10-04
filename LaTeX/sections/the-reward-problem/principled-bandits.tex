@@ -40,7 +40,7 @@
 \]
 \begin{itemize}
     \setlength{\itemsep}{0.5em}
-    \item \textcolor{gray}{The \emph{shape} is what matters: the bonus shrinks like $\mathbf{1/\sqrt{N_t(a)}}$ --- remember it, it reappears all afternoon}
+    \item \textcolor{gray}{The \emph{shape} is what matters: the bonus shrinks like $\mathbf{1/\sqrt{N_t(a)}}$ --- remember it, it reappears throughout this lecture}
     \item It grows slowly with the clock $t$, so an arm left alone long enough is revisited: exploration is \textbf{automatic}, no $\epsilon$ and no schedule
     \item \textbf{Unlike optimistic initialisation}, the bonus is recomputed \emph{every step} --- an arm unlucky early is never written off for good
     \item \textcolor{red}{Regret grows as $\mathcal{O}(\log T)$} (Auer et al., 2002) --- \textbf{sublinear at last}, provably the best possible rate. \href{https://github.com/TikhonJelvis/RL-book/tree/master/rl/chapter14/ucb1.py}{Educational Code}

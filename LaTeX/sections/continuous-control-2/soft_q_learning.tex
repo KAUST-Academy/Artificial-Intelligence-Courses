@@ -10,7 +10,7 @@
     \end{itemize}
 \end{itemize}
 \vspace{0.2em}
-\textbf{\footnotesize Standard Q-learning (Day 2), for contrast --- note the \emph{hard} $\max$:}
+\textbf{\footnotesize Standard Q-learning, for contrast --- note the \emph{hard} $\max$:}
 \[
 Q(s_t, a_t) \leftarrow Q(s_t, a_t) + \alpha_{\text{lr}}\big[\, r_t + \gamma\, \textcolor{red}{\max_{a'}}\, Q(s_{t+1}, a') - Q(s_t, a_t) \,\big]
 \]
@@ -22,6 +22,6 @@ V_{\text{soft}}(\mathbf{s}_t) \leftarrow \textcolor{red}{\alpha \log \int_{\math
 \]
 \vspace{-0.5em}
 \begin{itemize}
-    \item[] {\footnotesize This is the ``value'' row of the dictionary substituted into the Day 2 update, nothing more. The $\int$ instead of $\sum$ is only because the actions are continuous. \emph{(The learning rate $\alpha_{\text{lr}}$ here is unrelated to the temperature $\alpha$ --- clashing but standard notation.)}}
+    \item[] {\footnotesize This is the ``value'' row of the dictionary substituted into the Q-learning update, nothing more. The $\int$ instead of $\sum$ is only because the actions are continuous. \emph{(The learning rate $\alpha_{\text{lr}}$ here is unrelated to the temperature $\alpha$ --- clashing but standard notation.)}}
 \end{itemize}
 \end{frame}

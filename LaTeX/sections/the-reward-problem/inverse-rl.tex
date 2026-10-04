@@ -71,7 +71,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{MaxEnt IRL: The Day-6 Connection}
+\begin{frame}{MaxEnt IRL: The SAC Connection}
 \vspace{0.4em}
 \begin{center}
 \textcolor{red}{\textbf{The same max-entropy principle that justified SAC's $-\log\pi$ bonus.}}
@@ -79,7 +79,7 @@
 \vspace{0.8em}
 \begin{itemize}
     \setlength{\itemsep}{0.7em}
-    \item In SAC (Day 6): adds exploration to the policy
+    \item In SAC: adds exploration to the policy
     \item In MaxEnt IRL: resolves reward ambiguity
     \item \textbf{Same principle, two different jobs.}
     \item \textcolor{gray}{Different mechanics, though: SAC \emph{adds} $\alpha\mathcal{H}(\pi)$ to the objective, so you can point at the term. MaxEnt IRL imposes entropy as the \emph{selection rule}, which is why it disappears into the exponential form}
@@ -122,7 +122,7 @@
     \setlength{\itemsep}{0.6em}
     \item Collect a dataset of human-labeled preferences over trajectory pairs
     \item Train $R_\theta$ by cross-entropy on the Bradley--Terry likelihood
-    \item Run any standard RL algorithm (e.g.\ PPO from Day 4) against $R_\theta$
+    \item Run any standard RL algorithm (e.g.\ PPO) against $R_\theta$
 \end{enumerate}
 \vspace{0.7em}
 \begin{itemize}
@@ -130,7 +130,7 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The Day-9 Bridge}
+\begin{frame}{The Bridge to RLHF}
 \vspace{0.6em}
 \begin{center}
 \textcolor{red}{\textbf{This exact pipeline + a language-model policy $=$ RLHF.}}
@@ -143,7 +143,7 @@
     \item The optimizer (PPO) and the pipeline (SFT $\to$ RM $\to$ PPO) are the same machinery
     \item \textcolor{red}{Read the other way:} training a reward model \emph{is} an inverse-RL problem --- inferring a reward from human data rather than writing one down
     \item \textcolor{gray}{And the loop closes: 2025 work runs adversarial IRL on expert chain-of-thought to recover \emph{process-level} reasoning rewards, instead of imitating the traces}
-    \item Day 9 picks up exactly here.
+    \item The RLHF lecture picks up exactly here.
 \end{itemize}
 \end{frame}
 
@@ -155,10 +155,10 @@
 \hline
 \textbf{If you can\ldots} & \textbf{Then use\ldots} \\
 \hline
-\ldots write the reward & \emph{Forward RL} (Days 1--6) \\
+\ldots write the reward & \emph{Forward RL} (everything so far) \\
 \ldots demonstrate the reward & \emph{Inverse RL} (MaxEnt IRL) \\
 \ldots compare outcomes & \emph{Preference-based reward learning} \\
-                       & (Day 9: RLHF) \\
+                       & (applied to LLMs: RLHF) \\
 \hline
 \end{tabular}
 \end{center}

@@ -1,7 +1,7 @@
 \begin{frame}{SAC: Objectives and Optimization --- Critic}
 \small
 \begin{itemize}
-    \item \textbf{Critic --- soft $Q$-function:} minimise the squared soft Bellman error, exactly as in DQN/DDPG. $\phi^{-}$ is the slow-moving target copy of the critic weights (Day 2)
+    \item \textbf{Critic --- soft $Q$-function:} minimise the squared soft Bellman error, exactly as in DQN/DDPG. $\phi^{-}$ is the slow-moving target copy of the critic weights (as in DQN)
 \end{itemize}
 \[
 J_Q(\phi) = \mathbb{E}_{(\mathbf{s}_t, \mathbf{a}_t) \sim \mathcal{D}}\!\left[\, \tfrac{1}{2}\Big( Q_\phi(\mathbf{s}_t, \mathbf{a}_t) - \big( r(\mathbf{s}_t, \mathbf{a}_t) + \gamma\, \mathbb{E}_{\mathbf{s}_{t+1} \sim p}\!\left[ V_{\phi^{-}}(\mathbf{s}_{t+1}) \right] \big) \Big)^{2} \,\right]
@@ -16,7 +16,7 @@ $}
 \]
 \vspace{-0.3em}
 \begin{itemize}
-    \item[$\Rightarrow$] {\footnotesize \textbf{This is the soft max sitting in the TD target.} Day 2 bootstrapped with $\max_{a'}Q(s',a')$; here the same slot holds $\mathbb{E}_{a'\sim\pi_\theta}[Q_{\phi^{-}} \textcolor{red}{- \alpha\log\pi_\theta}]$, which is the soft max evaluated with the actor. Cover the \textcolor{red}{red} and this is the DDPG critic update from Day 5, unchanged.}
+    \item[$\Rightarrow$] {\footnotesize \textbf{This is the soft max sitting in the TD target.} DQN bootstrapped with $\max_{a'}Q(s',a')$; here the same slot holds $\mathbb{E}_{a'\sim\pi_\theta}[Q_{\phi^{-}} \textcolor{red}{- \alpha\log\pi_\theta}]$, which is the soft max evaluated with the actor. Cover the \textcolor{red}{red} and this is the DDPG critic update, unchanged.}
 \end{itemize}
 \end{frame}
 
@@ -164,7 +164,7 @@ $}
 \]
 \vspace{-0.2em}
 \begin{itemize}
-    \item[$\Rightarrow$] The gradient flows \emph{through the critic into the actor}, exactly like DDPG's $\nabla_\theta Q_\phi(s,\mu_\theta(s))$ from Day 5 --- now for a stochastic actor instead of a deterministic one
+    \item[$\Rightarrow$] The gradient flows \emph{through the critic into the actor}, exactly like DDPG's $\nabla_\theta Q_\phi(s,\mu_\theta(s))$ --- now for a stochastic actor instead of a deterministic one
     \item[] {\footnotesize In code this is one line: sample $\epsilon$, build the action, evaluate $\alpha\log\pi_\theta - Q_\phi$, call \texttt{.backward()}.}
 \end{itemize}
 \end{frame}

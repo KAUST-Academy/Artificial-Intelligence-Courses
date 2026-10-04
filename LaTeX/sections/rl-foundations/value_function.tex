@@ -34,7 +34,7 @@ future returns rather than wait for rollouts
     \item \textbf{Episodic}: interaction breaks into episodes with a clear terminal state (e.g., a chess game ends in win/loss/draw, a robot falls over). Each episode starts fresh from an initial state distribution
     \item \textbf{Continuing}: interaction goes on indefinitely with no natural endpoint (e.g., a stock trading agent, a power grid controller). Discounting is essential here to keep returns finite
     \item Most benchmark environments (CartPole, Atari, MuJoCo) are episodic
-    \item This distinction affects how we compute returns and will matter when we derive policy gradient methods on Day 3
+    \item This distinction affects how we compute returns and will matter when we derive policy gradient methods
 \end{itemize}
 \end{frame}
 
@@ -76,7 +76,7 @@ future returns rather than wait for rollouts
     \item Intuition: if $A^{\pi}(s,a) > 0$, action $a$ is better than what the policy would do on average --- we should do it more
     \item If $A^{\pi}(s,a) < 0$, action $a$ is worse than average --- we should do it less
     \item $A^{\pi}(s,a) = 0$ for all $a$ when the policy is already optimal in that state
-    \item This function will be central to Actor-Critic methods on Day 4 and PPO
+    \item This function will be central to Actor-Critic methods and PPO
 \end{itemize}
 \end{frame}
 

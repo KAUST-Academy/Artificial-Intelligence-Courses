@@ -66,7 +66,7 @@ Gaussian $\mathcal{N}(\mu,\sigma^2)$ & $\tfrac12\log(2\pi e \sigma^2)$  & grows 
         \item \textbf{Robustness.} More than one way to act means an alternative survives when the environment shifts
     \end{itemize}
     \vspace{0.3em}
-    \item \textbf{Sanity check:} set $\alpha \to 0$ and the bonus vanishes --- what is left is exactly the ordinary RL objective from Day 1. MaxEnt RL is a \emph{strict generalisation}
+    \item \textbf{Sanity check:} set $\alpha \to 0$ and the bonus vanishes --- what is left is exactly the ordinary RL objective from RL Foundations. MaxEnt RL is a \emph{strict generalisation}
 \end{itemize}
 \end{frame}
 
@@ -95,7 +95,7 @@ Gaussian $\mathcal{N}(\mu,\sigma^2)$ & $\tfrac12\log(2\pi e \sigma^2)$  & grows 
 
 % ---------------------------------------------------------------------------
 % The "what does soft mean" trio. Replaces the old KL-to-Boltzmann derivation
-% slide (Day 6 review): students have not met partition functions or
+% slide (SAC deck review): students have not met partition functions or
 % unnormalised densities, and that derivation buried the one idea that
 % actually matters -- soft = smooth max. Same conclusion, reached by
 % arithmetic instead.
@@ -176,7 +176,7 @@ $}
 \begin{itemize}
     \item \textbf{You have met this distribution before.} ``$\propto$'' just means \emph{proportional to} --- written out in full, $\pi(a\mid s)=\dfrac{\exp(Q(s,a)/\alpha)}{\sum_{a'}\exp(Q(s,a')/\alpha)}$, which is the \textbf{softmax} from classification with $Q$-values as the scores and $\alpha$ as the temperature. The bottom line is the normaliser that makes it sum to $1$; the log-sum-exp is that same normaliser read as a value
     \begin{itemize}
-        \item $\alpha \to 0$: softmax $\to$ one-hot $\;\Rightarrow\;$ the greedy deterministic policy of Day 2
+        \item $\alpha \to 0$: softmax $\to$ one-hot $\;\Rightarrow\;$ the greedy deterministic policy of Q-learning and DQN
         \item $\alpha$ large: softmax $\to$ uniform $\;\Rightarrow\;$ random flailing
     \end{itemize}
     \item[$\Rightarrow$] \textbf{One idea wearing three hats:} the soft max (a \emph{value}), the softmax policy (a \emph{distribution}) and ``reward $+\,\alpha\mathcal{H}$'' (an \emph{objective}) are the same statement
@@ -189,7 +189,7 @@ $}
 \renewcommand{\arraystretch}{1.7}
 \begin{tabular}{p{0.10\textwidth} p{0.34\textwidth} p{0.46\textwidth}}
 \hline
-& \textbf{Hard (Days 1--5)} & \textbf{Soft (today)} \\
+& \textbf{Hard (so far)} & \textbf{Soft (today)} \\
 \hline
 value & $V(s) = \max_a Q(s,a)$
       & $V_{\text{soft}}(s) = \alpha\log\sum_a \exp\!\big(\tfrac1\alpha Q(s,a)\big)$ \\
@@ -205,9 +205,9 @@ objective & $\sum_t \mathbb{E}\big[\,r_t\,\big]$
 \vspace{0.1em}
 {\footnotesize
 \begin{itemize}
-    \item Every row is the \emph{same single substitution}. Nothing else from Days 1--5 changes: replay buffer, target networks, TD updates and clipped double-$Q$ all carry over untouched
+    \item Every row is the \emph{same single substitution}. Nothing else built so far changes: replay buffer, target networks, TD updates and clipped double-$Q$ all carry over untouched
     \item Set $\alpha \to 0$ and every right-hand entry collapses back to the left --- ``soft'' costs you nothing, it only adds a dial
 \end{itemize}
 \vspace{0.3em}
-\textcolor{red}{\textbf{The TD-target row is the one that changes your code.}} Every value method since Day 2 has bootstrapped with $\max_{a'}Q(s',a')$ inside the TD target. \textbf{In MaxEnt RL that $\max$ is replaced by the soft max --- nothing else about TD learning changes.} And once you have an actor to sample from, the soft max is computed as $\mathbb{E}_{a'\sim\pi}[\,Q(s',a') - \alpha\log\pi(a'\mid s')\,]$, so no exponential ever appears in the code.}
+\textcolor{red}{\textbf{The TD-target row is the one that changes your code.}} Every value method since DQN has bootstrapped with $\max_{a'}Q(s',a')$ inside the TD target. \textbf{In MaxEnt RL that $\max$ is replaced by the soft max --- nothing else about TD learning changes.} And once you have an actor to sample from, the soft max is computed as $\mathbb{E}_{a'\sim\pi}[\,Q(s',a') - \alpha\log\pi(a'\mid s')\,]$, so no exponential ever appears in the code.}
 \end{frame}

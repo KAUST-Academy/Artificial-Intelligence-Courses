@@ -5,7 +5,7 @@
 
 \begin{frame}{The Algorithm Family Tree}
 \begin{center}
-DQN $\;+\;$ DPG $\;\rightarrow\;$ \textbf{DDPG} $\;\rightarrow\;$ +clipped double-Q / delayed updates $\;\rightarrow\;$ \textbf{TD3} $\;\rightarrow\;$ +max-entropy $\;\rightarrow\;$ \textbf{SAC} (Day 6)
+DQN $\;+\;$ DPG $\;\rightarrow\;$ \textbf{DDPG} $\;\rightarrow\;$ +clipped double-Q / delayed updates $\;\rightarrow\;$ \textbf{TD3} $\;\rightarrow\;$ +max-entropy $\;\rightarrow\;$ \textbf{SAC} (next)
 \end{center}
 
 \vspace{0.6em}
@@ -31,7 +31,7 @@ DQN $\;+\;$ DPG $\;\rightarrow\;$ \textbf{DDPG} $\;\rightarrow\;$ +clipped doubl
 \begin{frame}{Summary}
 \begin{itemize}
     \item \textbf{DDPG = DPG + DQN.} Bypass the intractable $\arg\max_a Q$ by training a second network --- the actor $\mu_\theta$ --- to output the maximising action
-    \item \textbf{What changed from Day 4:} actor $\pi_\theta \to \mu_\theta$, critic $V_\phi(s) \to Q_\phi(s,a)$ (you cannot take $\nabla_a$ of a $V$), data on-policy $\to$ replay buffer
+    \item \textbf{What changed from A2C/PPO:} actor $\pi_\theta \to \mu_\theta$, critic $V_\phi(s) \to Q_\phi(s,a)$ (you cannot take $\nabla_a$ of a $V$), data on-policy $\to$ replay buffer
     \item \textbf{The deterministic policy gradient:}
     $\nabla_\theta \mathcal{J} = \mathbb{E}_{s \sim \mathcal{D}}\big[\nabla_\theta \mu_\theta(s)\, \nabla_a Q_\phi(s,a)|_{a=\mu_\theta(s)}\big]$ --- the critic \emph{points} rather than weights
     \item Tricks that made it work:
@@ -49,8 +49,8 @@ DQN $\;+\;$ DPG $\;\rightarrow\;$ \textbf{DDPG} $\;\rightarrow\;$ +clipped doubl
 \begin{itemize}
     \item \textbf{Overestimation bias:} a single critic, maximised by the actor, systematically over-estimates $Q$ (the experiments showed $R_{av} \ll R_{best}$)
     \item \textbf{Hyperparameter brittleness:} sensitive to learning rates, $\tau$, noise scale, and architecture; results vary widely across seeds, and it scales poorly to harder tasks compared with TD3 and SAC
-    \item \textbf{Deterministic exploration:} relies entirely on injected noise --- weak and undirected in sparse-reward tasks ($\rightarrow$ Day 7: exploration)
-    \item \textbf{Two-network instability:} the same coupled feedback loop Day 4 flagged, now worse --- the critic \emph{aims} the actor rather than just weighting it
-    \item \textbf{Offline failure:} DDPG on a \emph{fixed} buffer is essentially offline RL --- it diverges from extrapolation error on out-of-distribution actions ($\rightarrow$ Day 8: motivates BCQ/CQL)
+    \item \textbf{Deterministic exploration:} relies entirely on injected noise --- weak and undirected in sparse-reward tasks ($\rightarrow$ the exploration lecture)
+    \item \textbf{Two-network instability:} the same coupled feedback loop flagged for A2C/PPO, now worse --- the critic \emph{aims} the actor rather than just weighting it
+    \item \textbf{Offline failure:} DDPG on a \emph{fixed} buffer is essentially offline RL --- it diverges from extrapolation error on out-of-distribution actions ($\rightarrow$ offline RL: motivates BCQ/CQL)
 \end{itemize}
 \end{frame}

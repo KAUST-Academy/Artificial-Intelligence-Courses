@@ -11,7 +11,7 @@ The actor's update is only as good as the number $\hat{A}_t$ we multiply it by. 
 \vspace{0.4em}
 \begin{columns}
 \begin{column}{0.48\textwidth}
-\begin{block}{Monte Carlo (Day 3)}
+\begin{block}{Monte Carlo (REINFORCE)}
 $$\hat{A}_t = \underbrace{R_t}_{\text{all real rewards}} - V_\phi(s_t)$$
 \vspace{-0.9em}
 \begin{center}\footnotesize $R_t = \sum_{t' \geq t} \gamma^{t'-t} r_{t'}$ (reward-to-go)\end{center}

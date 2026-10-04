@@ -1,6 +1,6 @@
 \begin{frame}{From Baselines to Critics}
 \begin{itemize}
-    \item Day 3: subtracting a \textbf{state-dependent baseline} $b(s)$ from the reward-to-go reduces variance with zero bias:
+    \item From REINFORCE: subtracting a \textbf{state-dependent baseline} $b(s)$ from the reward-to-go reduces variance with zero bias:
     $$\nabla_\theta \mathcal{J}(\theta) \approx \sum_{t \geq 0} \Bigl( \underbrace{\textstyle\sum_{t' \geq t} \gamma^{t'-t} r_{t'}}_{\text{reward-to-go}} - b(s_t) \Bigr)\, \nabla_\theta \log \pi_\theta(a_t|s_t)$$
     \pause
     \item The reward-to-go is one \emph{sampled} rollout starting from $(s_t, a_t)$. Its \emph{expectation} is, by definition, the Q-value: $Q^{\pi}(s_t,a_t) = \mathbb{E}\!\left[\sum_{t' \geq t} \gamma^{t'-t} r_{t'} \mid s_t, a_t, \pi\right]$
@@ -16,7 +16,7 @@
     \item But we don't know $V^{\pi}$ --- we have to \textbf{learn it}
     \item This turns the baseline into a \textbf{critic}: a second network $V_\phi(s)$ trained alongside the actor $\pi_\theta$
     \vspace{0.5em}
-    \item \textbf{Actor} $\pi_\theta(a|s)$: selects actions, updated by the policy gradient (Day 3)
+    \item \textbf{Actor} $\pi_\theta(a|s)$: selects actions, updated by the policy gradient (as in REINFORCE)
     \item \textbf{Critic} $V_\phi(s)$: evaluates states, updated by \textbf{TD learning} --- the subject of the next slide
     \pause
     \vspace{0.5em}

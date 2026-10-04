@@ -58,7 +58,7 @@
     \item $\hat R_t$ $=$ \textbf{return-to-go}: how much reward you still want from here on.
     \item \textbf{Use it:} at test time \emph{prompt} it with a big desired return $\hat R$
           and the current state; it outputs the action that tends to reach that return.
-    \item Learns from a \textbf{fixed dataset} (offline, Day 8) --- it just imitates,
+    \item Learns from a \textbf{fixed dataset} (offline RL) --- it just imitates,
           \emph{conditioned on the outcome}.
     \item \empy{Intuition:} like an LLM predicting the next \emph{word} --- here it predicts
           the next \emph{action}, told ``how well I want to do''.

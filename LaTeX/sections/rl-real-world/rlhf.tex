@@ -3,7 +3,7 @@
 % ================================================================ 3.1a  The wall
 \begin{frame}{First, a Reward We Cannot Write Down}
 \begin{itemize}\itemsep0.5em
-    \item Every method in Days 1--8 assumed a reward function $r$ we could
+    \item Every method so far assumed a reward function $r$ we could
           \emph{write down}: the game score, $-$distance to a target, $+1$ for a
           win.
     \item Now suppose the goal is \empr{``be a helpful, honest, harmless
@@ -35,7 +35,7 @@ says so.}
 % ================================================================ 3.1b  The idea
 \begin{frame}{The Idea: Don't Write the Reward, Learn It}
 \begin{itemize}\itemsep0.45em
-    \item \empr{Recall Day 7 (inverse RL):} when you cannot write the reward,
+    \item \empr{Recall inverse RL:} when you cannot write the reward,
           \emph{recover it from data.} RLHF is the most consequential example of
           this.
     \item People are bad at giving a \emph{number} (``this answer is a 7.3'') but
@@ -64,7 +64,7 @@ says so.}
 
 % ================================================================ 3.3a  Vocabulary
 \begin{frame}{First, the Vocabulary: an LLM Is a Policy}
-Everything that follows is just the RL language from Day 1, applied to text.
+Everything that follows is just the familiar RL language, applied to text.
 \vfill
 \begin{itemize}\itemsep0.4em\small
     \item \textbf{Prompt $x$}, the input (a question or instruction).
@@ -264,7 +264,7 @@ trained (the Bradley--Terry loss). \textbf{Here is what it physically is.}
 \begin{itemize}\itemsep0.5em
     \item We now have a reward model $r_\phi$ that scores answers. \textbf{The RL
           loop:} the policy generates a response, $r_\phi$ scores it, and we update
-          the policy's weights to earn higher scores, with PPO (Day 4) or GRPO.
+          the policy's weights to earn higher scores, with PPO or GRPO.
     \item The policy starts as $\pi_{\text{ref}}$ (the frozen SFT model) and
           improves from there.
     \item \empr{One catch:} $r_\phi$ is only a \emph{learned proxy} for human taste,
@@ -328,7 +328,7 @@ while the \emph{real} objective collapses, \empr{Goodhart's law}.
 \end{frame}
 
 % ================================================================ 3.5
-% PPO -> GRPO (pays off Day 4) - TikZ side by side
+% PPO -> GRPO (pays off the Policy Optimization deck) - TikZ side by side
 \begin{frame}{The RL Back-End: PPO $\rightarrow$ GRPO}
 \centering
 \resizebox{0.96\linewidth}{!}{%
@@ -343,7 +343,7 @@ while the \emph{real} objective collapses, \empr{Goodhart's law}.
   \draw[ar] (actor) -- node[right, font=\scriptsize]{advantage} (critic);
   \draw[ar] (critic) -- (actor);
   \node[align=center, font=\tiny, accentred] at (1.6, -0.7)
-        {the fragile, expensive\\half (Day 4)};
+        {the fragile, expensive\\half of PPO};
 
   % divider
   \draw[gray, dashed] (4.0, -1.1) -- (4.0, 3.8);
@@ -364,7 +364,7 @@ while the \emph{real} objective collapses, \empr{Goodhart's law}.
 }
 \vfill
 {\footnotesize \empr{The critic estimates a response's expected reward to form the
-advantage: Day 4's brittle, expensive component.} GRPO deletes it: the baseline is
+advantage: PPO's brittle, expensive component.} GRPO deletes it: the baseline is
 just the average reward over a group of samples for the same prompt. PPO was the
 original RLHF back-end; \textbf{GRPO is now common for LLM RL.}}
 \srcnote{\scriptsize Shao et al. \href{https://arxiv.org/abs/2402.03300}{DeepSeekMath} (GRPO), 2024; DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{DeepSeek-R1}, 2025.}
@@ -387,7 +387,7 @@ standard-deviation units: positive $\to$ reinforce it, negative $\to$ suppress i
 
 \framebreak
 
-Same clipped ratio as PPO (Day 4), now driven by $\hat{A}_i$ and leashed to
+Same clipped ratio as PPO, now driven by $\hat{A}_i$ and leashed to
 $\pi_{\text{ref}}$:
 \[
     J_{\mathrm{GRPO}} =
@@ -401,7 +401,7 @@ $\pi_{\text{ref}}$:
 \begin{itemize}\itemsep0.15em\small
     \item Every response in the group shares \textbf{one baseline} (the group mean):
           no learned value network.
-    \item Same machinery as PPO (Day 4): $\rho_i$ is Day 4's probability ratio
+    \item Same machinery as PPO: $\rho_i$ is PPO's probability ratio
           $r_t(\theta)$, and the clip is identical. Only the advantage source changed.
 \end{itemize}
 \srcnote{\scriptsize Shao et al. \href{https://arxiv.org/abs/2402.03300}{DeepSeekMath} (GRPO), 2024. Token-level clipping omitted for clarity.}
@@ -591,7 +591,7 @@ Take $\log$ of Step 2's formula, then solve for $r(y)$ (just algebra):
           $\pi_{\text{ref}}$ \emph{tilted} by $e^{\,r/\beta}$, so \empr{the tilt is
           the reward}: see how much $\pi^\star$ up-weighted a response, take the log,
           multiply by $\beta$. Behaviour reveals the objective: \textbf{inverse RL}
-          from Day 7, in closed form.
+          again, now in closed form.
     \item \textbf{Scale check ($\beta=0.1$):} a response made $e^{10}\!\approx\!
           22{,}000\times$ more likely $\Rightarrow$ reward $+1.0$; one \emph{halved}
           $\Rightarrow$ $-0.07$. Nothing moved $\Rightarrow$ $r$ constant: nothing is
@@ -708,7 +708,7 @@ and we never built a reward model. \empr{That's the whole trick.}}}
 is \emph{offline optimization without distribution coverage} (same family, not
 the same mechanism):
 \begin{itemize}\itemsep0.1em\footnotesize
-    \item \textbf{Day 8 offline RL:} the \emph{value function} extrapolates on
+    \item \textbf{Offline RL:} the \emph{value function} extrapolates on
           out-of-distribution (OOD) \emph{actions}.
     \item \textbf{DPO:} the \emph{policy / implicit reward} is unconstrained on OOD
           \emph{responses}, because it never samples on-policy.
@@ -775,7 +775,7 @@ DPO's simplicity has a cost: you lose the control knobs the RL loop gave you.
 \end{frame}
 
 % ================================================================ 3.8
-% RLVR / RL for reasoning (NEW - the day's climax) - TikZ spectrum
+% RLVR / RL for reasoning (NEW - the lecture's climax) - TikZ spectrum
 \begin{frame}{The Climax: RL with Verifiable Rewards (RLVR)}
 \begin{itemize}\itemsep0.3em\small
     \item When the answer is \textbf{checkable} (math is right/wrong, code

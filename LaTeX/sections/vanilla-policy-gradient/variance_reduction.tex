@@ -72,7 +72,7 @@ Dartboard picture: \textbf{variance} is how scattered the darts land; \textbf{bi
     \pause
     \item What does this remind you of?
     \pause
-    \item \textbf{Recall from Day 1:} We defined the \textbf{Advantage function}:
+    \item \textbf{Recall from RL Foundations:} We defined the \textbf{Advantage function}:
     $$A^{\pi}(s,a) = Q^{\pi}(s,a) - V^{\pi}(s)$$
     \item $A^{\pi}(s_t, a_t) > 0$: action $a_t$ was better than average --- increase its probability.
     \item $A^{\pi}(s_t, a_t) < 0$: action $a_t$ was worse than average --- decrease its probability.
@@ -87,7 +87,7 @@ Dartboard picture: \textbf{variance} is how scattered the darts land; \textbf{bi
     \item It is unbiased, and it provides lower variance than a fixed moving-average baseline.
 \end{itemize}
 \vspace{0.5em}
-\textit{But how do we actually estimate $A^{\pi}$? That --- learning a \textbf{critic} --- is exactly what Day 4 (Actor-Critic) is about.}
+\textit{But how do we actually estimate $A^{\pi}$? That --- learning a \textbf{critic} --- is exactly what Actor-Critic methods are about.}
 \end{frame}
 
 \begin{frame}{The REINFORCE Algorithm}
@@ -108,5 +108,5 @@ Dartboard picture: \textbf{variance} is how scattered the darts land; \textbf{bi
         }
     \end{algorithm}
     \end{center}
-    \footnotetext{Williams (1992), \emph{Simple statistical gradient-following algorithms for connectionist reinforcement learning}, \emph{Machine Learning} 8. An episode of length $T$ has actions $a_0,\dots,a_{T-1}$ ($T$ in total); the terminal state $s_T$ has no action, so the sum stops at $T-1$. The baseline $b(s_t)$ is optional --- $b\equiv 0$ gives vanilla REINFORCE, and a running average of returns is a simple choice. We \emph{ascend} because we maximize expected return $\mathcal{J}(\theta)$, whereas Day 2 minimized an error (descent).}
+    \footnotetext{Williams (1992), \emph{Simple statistical gradient-following algorithms for connectionist reinforcement learning}, \emph{Machine Learning} 8. An episode of length $T$ has actions $a_0,\dots,a_{T-1}$ ($T$ in total); the terminal state $s_T$ has no action, so the sum stops at $T-1$. The baseline $b(s_t)$ is optional --- $b\equiv 0$ gives vanilla REINFORCE, and a running average of returns is a simple choice. We \emph{ascend} because we maximize expected return $\mathcal{J}(\theta)$, whereas DQN minimized an error (descent).}
 \end{frame}

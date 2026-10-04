@@ -6,10 +6,10 @@
 
 \begin{frame}{What is \emph{continuous control}?}
 \vspace{0.6em}
-\textbf{Control:} choosing actions over time to drive a dynamical system toward desired behaviour --- exactly the RL problem on an MDP $(\mathcal{S},\mathcal{A},P,r,\gamma)$ from Day 1.
+\textbf{Control:} choosing actions over time to drive a dynamical system toward desired behaviour --- exactly the RL problem on an MDP $(\mathcal{S},\mathcal{A},P,r,\gamma)$ from RL Foundations.
 \vspace{0.6em}
 \begin{itemize}
-    \item \textbf{Discrete control} (Days 1--2): the action set $\mathcal{A}$ is a \emph{finite list} --- move left/right, an Atari button, one of Go's 4{,}672 legal moves. The policy picks one entry.
+    \item \textbf{Discrete control} (Q-learning, DQN): the action set $\mathcal{A}$ is a \emph{finite list} --- move left/right, an Atari button, one of Go's 4{,}672 legal moves. The policy picks one entry.
     \vspace{0.3em}
     \item \textbf{Continuous control} (today): the action is a \emph{real-valued vector} $a \in \mathbb{R}^{d}$, usually bounded, e.g.\ $\mathcal{A} = [-1,1]^{d}$.
     \begin{itemize}

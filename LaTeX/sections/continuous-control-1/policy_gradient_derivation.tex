@@ -12,7 +12,7 @@
 \end{frame}
 
 % ---------------------------------------------------------------------------
-\begin{frame}{The Day 3--4 Update Rule Stops Working}
+\begin{frame}{The REINFORCE/PPO Update Rule Stops Working}
 \vspace{0.6em}
 This is how we have trained every actor so far:
 \[
@@ -63,7 +63,7 @@ Multiply them. That is the \textbf{deterministic policy gradient}:
 % ---------------------------------------------------------------------------
 \begin{frame}{Old Rule vs.\ New Rule}
 \vspace{0.4em}
-\textbf{Stochastic (Days 3--4):}
+\textbf{Stochastic (REINFORCE, PPO):}
 \[
 \nabla_\theta \mathcal{J}(\pi_\theta) = \mathbb{E}_{s,\; \rbox{a \sim \pi_\theta}}\!\left[\, \nabla_\theta \log \pi_\theta(a \mid s)\; Q_\phi(s, a) \right]
 \]

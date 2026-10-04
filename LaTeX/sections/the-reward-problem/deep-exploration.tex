@@ -14,7 +14,7 @@
         \item $\epsilon$-greedy is provably weak (linear regret)
         \item Uniform random exploration drowns in pixels
     \end{itemize}
-    \item Note: SAC's $-\log\pi$ entropy bonus (Day 6) is \emph{undirected} exploration --- what follows is \emph{directed}
+    \item Note: SAC's $-\log\pi$ entropy bonus is \emph{undirected} exploration --- what follows is \emph{directed}
 \end{itemize}
 \end{frame}
 
@@ -58,7 +58,7 @@
 \begin{itemize}
     \setlength{\itemsep}{0.32em}
     \item \textbf{$K$ parallel Q-heads}: $K$ output layers on one shared trunk, each with its own Q-function
-    \item \textcolor{gray}{``Replay'' is DQN's \textbf{replay buffer} from Day 2 --- the stored $(s,a,r,s')$ transitions so far}
+    \item \textcolor{gray}{``Replay'' is DQN's \textbf{replay buffer} --- the stored $(s,a,r,s')$ transitions so far}
     \item Each transition is assigned to only \emph{some} of the $K$ heads, so every head trains on a different slice of experience
     \item \emph{Each episode}: pick one head at random and act greedily by it throughout
     \item \textbf{Where data is thin the heads disagree; where it is plentiful they converge} --- that spread \emph{is} the posterior estimate
@@ -177,13 +177,13 @@
 \end{frame}
 
 \begin{frame}{Exploration Did Not Go Away --- It Moved to LLMs}
-\textbf{The same dilemma, today's frontier.} When you train a reasoning model with RL (Day 9), it faces exactly the trade-off we opened this morning with.
+\textbf{The same dilemma, today's frontier.} When you train a reasoning model with RL (RLVR), it faces exactly the trade-off we opened this lecture with.
 \vspace{0.4em}
 \begin{itemize}
     \setlength{\itemsep}{0.5em}
     \item \textbf{Entropy collapse:} the policy sharpens onto a few reasoning paths early in training. In-distribution accuracy keeps rising while out-of-distribution performance \emph{degrades} --- pure exploitation, and the model stops discovering
     \item \textbf{How it is measured:} \emph{pass@k} --- can the model solve the problem in $k$ tries? Collapse shows up as pass@1 improving while pass@k falls. Training directly on pass@k restores exploration
-    \item \textbf{Today's fixes are today's bandit ideas:} entropy bonuses aimed at the most uncertain tokens (Day 6's $-\log\pi$), and \textcolor{red}{count-based bonuses of the form $Q + \alpha\sqrt{U}$} --- literally UCB's $1/\sqrt{N}$, applied to reasoning states
+    \item \textbf{Today's fixes are today's bandit ideas:} entropy bonuses aimed at the most uncertain tokens (SAC's $-\log\pi$), and \textcolor{red}{count-based bonuses of the form $Q + \alpha\sqrt{U}$} --- literally UCB's $1/\sqrt{N}$, applied to reasoning states
 \end{itemize}
 \vspace{0.3em}
 \centering\small\textcolor{gray}{The 1985 bandit question --- ``is this worth trying again?'' --- is an open problem in 2026 LLM training.}
@@ -199,7 +199,7 @@
 \hline
 UCB / $1/\sqrt{N}$ bonus & Pseudo-counts (2016), E3B (2022); \textcolor{red}{count bonuses in LLM RL (2025)} \\
 Thompson sampling     & Bootstrapped DQN / PSRL (Osband 2016) \\
-Stochastic policies   & \textcolor{blue}{Entropy bonus --- SAC (Day 6)}; entropy control in RLVR \\
+Stochastic policies   & \textcolor{blue}{Entropy bonus --- SAC}; entropy control in RLVR \\
 \emph{(new in deep RL)} & Curiosity / ICM (2017); RND (2018); NGU / Agent57 (2020); Go-Explore (2021) \\
 \hline
 \end{tabular}

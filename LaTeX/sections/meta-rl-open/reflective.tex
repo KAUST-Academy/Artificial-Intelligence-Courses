@@ -134,14 +134,14 @@ Main question: can RL algorithms optimize really well & Main question: can RL ge
 environments that actually require interesting emergent behavior!}
 \end{frame}
 
-% ---------------------------------------------------------------- Open-endedness (NEW - pays off Day 9)
+% ---------------------------------------------------------------- Open-endedness (NEW - pays off the self-play thread)
 \begin{frame}{Open-endedness: no fixed task distribution at all}
 \begin{columns}[c]
 \begin{column}{0.56\textwidth}
 \begin{itemize}\footnotesize\itemsep0.5em
     \item If complexity must \emph{come from the environment}, where does an endless
           supply of it come from?
-    \item \textbf{Self-play (Day 9)} was one engine: agents generate their own
+    \item \textbf{Self-play} (from multi-agent RL) was one engine: agents generate their own
           \empr{curriculum} automatically, each one's progress raising the bar for the
           others.
     \item \textbf{Open-endedness / POET:} \emph{co-evolve} the tasks \emph{and} the agents
@@ -227,7 +227,7 @@ the whole brain.''}
           \emph{reducing the supervision burden} per example.
     \item RL's angle on this: it can learn from \empr{cheap, un-curated experience} ---
           not just hand-labelled examples.
-    \item \textbf{Offline RL (Day 8):} squeeze a good policy out of a \emph{fixed dataset}
+    \item \textbf{Offline RL:} squeeze a good policy out of a \emph{fixed dataset}
           of past interaction --- no new environment steps, no fresh labels.
     \item That reframes RL as a general recipe for turning \emph{logged experience} into
           \emph{decisions} --- the same engine, pointed at whatever data is cheap.
@@ -251,7 +251,7 @@ the whole brain.''}
 \begin{columns}[c]
 \begin{column}{0.6\textwidth}
 \begin{itemize}\footnotesize\itemsep0.5em
-    \item \empr{Recall Day 8:} offline RL learns from a fixed dataset with no environment
+    \item \empr{Recall:} offline RL learns from a fixed dataset with no environment
           interaction (MOReL / MOPO / COMBO --- pessimism keeps it honest).
     \item Point that engine at \textbf{multi-turn dialogue}: an LLM is a cheap
           \emph{simulator of human conversation}.
