@@ -105,6 +105,7 @@
 * **Lab:** Added NLP Labs ([d336758](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/d336758ba28f6eed622ef44f00e3ea76f5f165d1))
 * **Lab:** Removed all outputs ([9bf70fd](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/9bf70fdbee8306f156114ae783179fc080d51676))
 * **Lab:** Removed all outputs from solutions ([36cb579](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/36cb5799aa50675a0781dff236e9446fa4ce718c))
+* **Labs:** Fixed lab issue with outliers ([bc36c98](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/bc36c98b501972ab34c4d4e544b2c5b9f9c40e08))
 * Modify and correct labs as per recommendations. ([57c1e99](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/57c1e99ab8d66a361408f50f5fc3784926cdcd10))
 * **nlp:** prompt securely for Gemini API key ([eb811af](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/eb811afe658fe985b900faecf23aa2411ea5da79))
 * **path:** AutoEncoders images fix ([31594f2](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/31594f2028908046772418e91cb38e1e79a2d932))
