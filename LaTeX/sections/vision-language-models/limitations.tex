@@ -1,0 +1,10 @@
+\begin{frame}{Limitations and Open Problems}
+  \begin{itemize}\footnotesize\itemsep0.3em
+    \item \textbf{Hallucination:} multimodal LLMs still describe objects and details that are not in the image, most often objects that are frequent in their training data or that often co-occur there with the objects actually present. Better data and preference tuning reduce the rate but do not eliminate it.
+    \item \textbf{A perception bottleneck:} most systems see the image through one contrastively trained encoder at a fixed patch size. Whatever that encoder conflates (orientation, counts, small text, spatial relations), the language model cannot recover.
+    \item \textbf{Composition:} contrastive training rewards matching the right words more than the right structure, so relations, attributes and word order remain weak points of the joint embedding space.
+    \item \textbf{Cost:} with per-patch connectors, visual tokens grow with resolution, the number of images and the number of video frames (resamplers fix the count but compress detail), and attention cost grows with the square of the sequence length. Every resolution strategy is a trade between detail and context budget.
+    \item \textbf{Evaluation:} benchmark questions leak into training data, many can be answered from language priors alone, and multiple-choice formats overstate perception; a blind (text-only) baseline is the minimum control.
+    \item \textbf{Data:} web image-text pairs carry the biases and errors of their sources, and generated instruction data inherits the mistakes of the model that wrote it.
+  \end{itemize}
+\end{frame}

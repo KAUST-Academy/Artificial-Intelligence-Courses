@@ -74,7 +74,7 @@
 \begin{frame}{The Generative Class in Brief}
   \begin{itemize}\itemsep0.3em
     \item \textbf{Text-to-image diffusion} (Stable Diffusion, DALL-E): start from random noise and iteratively \textbf{denoise} it, conditioned on a text prompt. The denoiser is trained on billions of captioned images; latent diffusion (Rombach et al., 2022) runs the process in a compressed latent space to cut cost.
-    \item \textbf{Vision-language generative models} (Flamingo, GPT-4V, LLaVA): a vision encoder feeds visual tokens into an \textbf{LLM} through a small projector, the same pattern as the V-JEPA 2 language alignment covered earlier. The LLM then generates text about the image.
+    \item \textbf{Vision-language generative models} (Flamingo, GPT-4V, LLaVA): a vision encoder's output reaches an \textbf{LLM} either as visual tokens through a small projector (LLaVA, the same pattern as the V-JEPA 2 language alignment covered earlier) or through cross-attention layers inserted in the LLM (Flamingo). The LLM then generates text about the image.
     \item Text conditioning in both cases relies on strong text encoders; Stable Diffusion uses \textbf{CLIP's} text encoder, which we cover next.
     \item This lecture focuses on the \textbf{representation-learning} class; generative modeling is covered in its own lectures elsewhere in the course.
   \end{itemize}

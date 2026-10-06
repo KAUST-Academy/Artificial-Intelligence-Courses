@@ -1,0 +1,12 @@
+\begin{frame}{Summary}
+  \begin{itemize}\scriptsize\itemsep0.25em
+    \item \textbf{A vision-language model returns a score or text.} Dual encoders (CLIP, ALIGN, SigLIP) score and retrieve; fusion models (ALBEF, BLIP, CoCa) also match pairs, and BLIP and CoCa caption; LLM-based models (Flamingo, BLIP-2, LLaVA, Qwen-VL) write open-ended text.
+    \item \textbf{The loss shapes the joint space.} CLIP normalizes over the batch; SigLIP scores each pair with a sigmoid and wins clearly at small batches. The space keeps a modality gap, reads captions almost as bags of words, and gains more from curated data than from more data (same compute: LAION-2B's 2.3B pairs 73.1\%, DataComp-1B's 1.4B filtered pairs 79.2\%).
+    \item \textbf{BLIP trains one network three ways} (ITC, ITM with hard negatives, LM) and cleans its own data with CapFilt; BLIP-2 trains only a 188M-parameter Q-Former (plus one linear layer) whose 32 query outputs prompt a frozen LLM.
+    \item \textbf{Flamingo adds vision to a frozen LM:} 64 resampled visual tokens per image, tanh-gated cross-attention that starts as the unchanged LM, and per-image attention masking over interleaved web pages for few-shot prompting.
+    \item \textbf{LLaVA made the recipe simple:} 158K instructions written by a text-only GPT-4, a projection into Vicuna, two training stages; LLaVA-1.5 (MLP, 336 px, format prompts, 1.2M public samples) and image tiling followed.
+    \item \textbf{Extending an LLM with vision is four decisions} (encoder, connector, entry point, token budget). In MM1, resolution and token count matter most and the connector type has little effect; attention cost grows with the square of the token count.
+    \item \textbf{MLLMs train in stages:} alignment, multimodal pretraining, instruction tuning, preference tuning (DPO). Native resolution with M-RoPE and boxes written as text tokens extend the same blueprint; early fusion drops the vision encoder and feeds patches or image codes straight to the LLM.
+    \item \textbf{Evaluation must separate perception from language priors:} match the benchmark to the skill, probe hallucination (POPE) and CLIP-blind pairs (MMVP: humans 95.7\%, GPT-4V 38.7\%), and report blind baselines.
+  \end{itemize}
+\end{frame}

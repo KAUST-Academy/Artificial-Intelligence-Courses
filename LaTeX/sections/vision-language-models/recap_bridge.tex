@@ -1,0 +1,8 @@
+\begin{frame}{Recap: Where Vision and Language Have Already Met}
+  \begin{itemize}\itemsep0.35em
+    \item \textbf{Covered earlier:} CLIP trains an image encoder and a text encoder with a symmetric contrastive loss, so matching images and captions land close together in one joint embedding space; zero-shot classification and Stable Diffusion's text encoder both rely on it.
+    \item \textbf{Also covered earlier:} captioning with a CNN encoder and a recurrent or Transformer decoder, attention over image regions, and the BLEU, METEOR and CIDEr scores; cross-attention as the way a diffusion model reads its prompt.
+    \item \textbf{And:} V-JEPA 2's video encoder connected to a large language model through a small projector and then tuned end-to-end with it, and in-context learning as a way to use a foundation model without changing its weights.
+    \item \textbf{Today:} models that read images and write language: a closer look at the joint embedding space, BLIP, three designs that connect vision to a large language model (BLIP-2, Flamingo, LLaVA), the multimodal LLM recipe that generalizes them, and how these models are evaluated and where they fail.
+  \end{itemize}
+\end{frame}

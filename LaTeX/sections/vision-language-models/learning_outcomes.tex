@@ -1,0 +1,12 @@
+\begin{frame}{Learning Outcomes}
+  By the end of this lecture you should be able to:
+  \begin{itemize}\footnotesize\itemsep0.25em
+    \item \textbf{Classify} a vision-language model as a dual encoder, a fusion model or an LLM-based model, and state what each family can and cannot do.
+    \item \textbf{Explain} how the softmax (CLIP) and sigmoid (SigLIP) image-text losses shape a joint embedding space, and \textbf{identify} its blind spots: the modality gap and bag-of-words behavior.
+    \item \textbf{Describe} how BLIP trains one network for retrieval, matching and captioning (ITC, ITM, LM, CapFilt), and how the BLIP-2 Q-Former feeds a frozen LLM.
+    \item \textbf{Explain} how Flamingo's Perceiver Resampler, gated cross-attention and per-image masking let a frozen language model read interleaved images, and why interleaved web data gives it few-shot learning.
+    \item \textbf{Describe} visual instruction tuning in LLaVA: generated instruction data, the projector, the two training stages, and the LLaVA-1.5 changes.
+    \item \textbf{Compare} the ways to extend an LLM with vision (entry point, connector, resolution, training stages up to preference tuning, early fusion, boxes as text) and \textbf{compute} the visual-token cost of a design.
+    \item \textbf{Choose} benchmarks for a multimodal LLM and \textbf{diagnose} its typical failures: object hallucination, CLIP-blind pairs, and answers driven by language priors.
+  \end{itemize}
+\end{frame}
