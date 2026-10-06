@@ -197,7 +197,7 @@
     \begin{itemize}\itemsep0.4em
         \item \textbf{No approximation:} the model and its perplexity are unchanged; only time and memory move. GPT-2 medium trains in 6.9 days against 21.0 for the baseline implementation, at identical quality.
         \item \textbf{Linear memory:} the footprint grows with $N$ instead of $N^2$, which is what made 16k-token Path-X tractable --- the first Transformer to beat chance on it.
-        \item \textbf{Hardware--software co-design:} the algorithm is reorganized around the memory hierarchy, and each GPU generation reshapes the kernel --- the engineering that FlashAttention-2 carries further (see the \emph{Transformers: 2017 vs 2026} lecture).
-        \item \textbf{Long context as the payoff:} IO-efficient exact attention is the entry ticket to the 128k-token windows of models like LLaMA 3, and to the long interactive sessions that agentic workloads demand; the serving-side levers (KV caching, paging, speculative decoding) are covered in the \emph{Inference Optimisation} lecture.
+        \item \textbf{Hardware--software co-design:} the algorithm is reorganized around the memory hierarchy, and each GPU generation reshapes the kernel: the engineering that FlashAttention-2 carries further (covered earlier).
+        \item \textbf{Long context as the payoff:} IO-efficient exact attention is the entry ticket to the 128k-token windows of models like LLaMA 3, and to the long interactive sessions that agentic workloads demand. The serving-side levers (KV caching, paging, speculative decoding) were covered earlier; what a long window costs beyond attention, and how to make it cheaper, is covered later in the course.
     \end{itemize}
 \end{frame}
