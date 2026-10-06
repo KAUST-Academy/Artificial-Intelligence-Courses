@@ -72,38 +72,3 @@
     \end{block}
 
 \end{frame}
-
-% --- SLIDE 3: PRACTICE / NEXT ---
-\begin{frame}{Where to Practise This}
-
-    \begin{columns}[T]
-        \begin{column}{0.48\textwidth}
-            \begin{tcolorbox}[colback=gray!8, colframe=gray!60, title=\small Exercise 1 --- Tracking and tuning]
-                \small
-                Wrap an existing training notebook in \textbf{MLflow} tracking; drive it with an
-                \textbf{Optuna} study using a pruner; compare the runs in the UI; register the best model.
-                \vspace{0.3em}
-                \\ \textit{Entirely local --- no accounts, no cloud, no cost.}
-            \end{tcolorbox}
-        \end{column}
-        \begin{column}{0.48\textwidth}
-            \begin{tcolorbox}[colback=gray!8, colframe=gray!60, title=\small Exercise 2 --- Serving and drift]
-                \small
-                Export the trained pipeline, serve it with \textbf{FastAPI}, then simulate drift by shifting
-                and corrupting the inputs; build a simple drift detector and alert on the shift in the
-                prediction distribution.
-            \end{tcolorbox}
-        \end{column}
-    \end{columns}
-
-    \vspace{0.6em}
-    \begin{itemize}
-        \item \textbf{Then apply it to your own project.} Score yourself with the \textbf{ML Test Score}
-              rubric and fix whichever of the four sections is lowest.
-        \item \textbf{Where this continues:} governance, model cards and fairness auditing were covered
-              earlier in this course. The training-loop reproducibility mechanics are in the
-              computer-vision course; inference optimisation and distributed serving, for models too
-              large for a single CPU, in the NLP course.
-    \end{itemize}
-
-\end{frame}

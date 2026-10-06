@@ -354,7 +354,7 @@
 \begin{frame}[allowframebreaks]{Pitfalls You Must Know Before Using Either}
 
     \begin{itemize}
-        \setlength\itemsep{0.5em}
+        \setlength\itemsep{0.3em}
         \item \textbf{Correlated features.} Both methods perturb features independently, producing
               rows that could not exist. Attribution then gets spread arbitrarily among correlated
               features, and can be assigned to a feature the model barely uses. Group correlated
@@ -373,15 +373,6 @@
               distributions used by LIME and SHAP, and answer innocuously there --- so the
               explanation hides the bias.
     \end{itemize}
-
-    \vspace{0.5em}
-    \begin{block}{}
-        \centering
-        \small \textbf{Exercise:} run SHAP (Tree and Kernel) and LIME on the same tabular model,
-        with an explicit demonstration of instability under correlated features.
-    \end{block}
-
-    \vspace{0.3em}
     {\scriptsize D.~Slack, S.~Hilgard, E.~Jia, S.~Singh and H.~Lakkaraju, ``Fooling LIME and SHAP:
     Adversarial Attacks on Post hoc Explanation Methods,'' AIES 2020,
     \href{https://arxiv.org/abs/1911.02508v2}{arXiv:1911.02508v2}.}
