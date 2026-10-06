@@ -1,0 +1,8 @@
+\begin{frame}{Recap: What This Lecture Builds On}
+  \begin{itemize}\itemsep0.35em
+    \item \textbf{Covered earlier:} CNN and ViT backbones trained on ImageNet; transfer learning and the choice between freezing and fine-tuning; linear and attentive probes for evaluating frozen features.
+    \item \textbf{Covered earlier:} contrastive objectives (InfoNCE, NT-Xent) with a temperature, and the self-distillation recipe behind DINO and DINOv2.
+    \item \textbf{Covered earlier:} CLIP's joint image--text space and zero-shot classification from class-name prompts, including its weakness on fine-grained categories.
+    \item \textbf{Today:} using these encoders for recognition when the assumptions of a closed-set benchmark break. Classifiers are adapted and sharpened, similarities are learned instead of labels, and inputs from classes the model has never seen are rejected.
+  \end{itemize}
+\end{frame}

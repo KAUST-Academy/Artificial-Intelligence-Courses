@@ -1,0 +1,12 @@
+\begin{frame}{Limitations and Open Problems}
+  \begin{itemize}\scriptsize\itemsep0.2em
+    \item \textbf{Benchmarks leak and carry label noise.} GLDv2-clean contains the landmarks of 38 of the 70 ROxford queries, and removing them costs published methods 10.6 to 29.7 mAP on ROxford Hard. DINOv2's training data includes images retrieved around Cars, Aircraft, CUB, ROxford and RParis. Experts found about 4\% wrong labels across CUB-200-2011, test images included, and Van Horn et al.\ (CVPR 2015) conclude that fine-grained systems need an expert-curated test set.
+    \item \textbf{Reported gains depend on the protocol.} Under one backbone, embedding size and tuning budget, metric-learning losses from 2006 to 2019 land within a few MAP@$R$ points; new backbones and pretraining data moved Recall@1 far more.
+    \item \textbf{Adaptation still trades something.} End-to-end fine-tuning lowers CLIP's accuracy under distribution shift (73.4 to 68.6 on average); weight-space ensembling recovers it, but learned prompts still lose accuracy on new classes (CoOp 63.22 against 74.22 for zero-shot CLIP).
+    \item \textbf{Unknowns close to the known classes stay hard.} Near-OOD AUROC trails far-OOD AUROC (ASH: 78.17 against 95.74), the Hard semantic-shift split costs 5.9 AUROC points on ImageNet, and mixing in covariate-shifted images of known classes costs most detectors over 10 points.
+    \item \textbf{Zero-shot rejection is only as good as the label text.} MCM and NegLabel compare each image only with text labels; with fine-grained labels that CLIP separates poorly (ViT-L/14@336px: 37.2\% zero-shot on FGVC-Aircraft), the text side is a weak basis for rejecting look-alike unknowns.
+    \item \textbf{Thresholds and identities need maintenance.} A threshold chosen at 95\% TPR must be re-picked after every model update and watched under shift; re-identification tracks people, and retracted datasets keep circulating through derived copies.
+  \end{itemize}
+  \vspace{0.1em}
+  {\scriptsize Numbers from the earlier slides of this lecture, where each is credited; full entries in the references.\par}
+\end{frame}

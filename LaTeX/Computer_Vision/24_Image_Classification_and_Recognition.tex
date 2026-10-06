@@ -1,0 +1,36 @@
+% 90-120 minute graduate lecture: adapting pretrained classifiers, fine-grained recognition,
+% deep metric learning for retrieval and re-identification, and open-set recognition.
+% Narrative thread: a closed-set classifier first gets sharper (adaptation, fine-grained), then
+% learns a similarity instead of a label set (metric learning, retrieval, re-ID), and finally
+% learns to say "none of the above" (open-set, OOD detection, category discovery).
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc, fit, backgrounds}
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/beamer_settings}
+
+\title[Image Classification \& Recognition]{Image Classification and Recognition}
+\subtitle{Fine-Grained Recognition, Metric Learning, and Open-Set Recognition}
+
+\begin{document}
+
+\input{sections/cover}
+\input{sections/image-recognition/toc}
+\input{sections/image-recognition/recap_bridge}
+\input{sections/image-recognition/learning_outcomes}
+\input{sections/image-recognition/introduction}
+\input{sections/image-recognition/classification_adaptation}
+\input{sections/image-recognition/fine_grained}
+\input{sections/image-recognition/metric_learning}
+\input{sections/image-recognition/retrieval}
+\input{sections/image-recognition/reidentification}
+\input{sections/image-recognition/open_set}
+\input{sections/image-recognition/open_world}
+\input{sections/image-recognition/limitations}
+\input{sections/image-recognition/summary}
+\input{sections/image-recognition/references}
+
+\end{document}
