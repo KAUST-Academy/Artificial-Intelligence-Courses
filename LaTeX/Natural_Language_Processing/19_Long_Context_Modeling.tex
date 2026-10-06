@@ -1,0 +1,34 @@
+% 90-120 minute graduate lecture: long-context modeling, effective context, context compression,
+% hierarchical and block-sparse attention, and recurrent memory.
+% Narrative thread: measure what a long window really delivers, then shrink what the model reads,
+% choose where it looks, and carry a state across segments, and finally compare the three.
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, fit, backgrounds, decorations.pathreplacing}
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/beamer_settings}
+
+\title[Long-Context Modeling]{Long-Context Modeling}
+\subtitle{Context Compression, Hierarchical Attention, and Recurrent Memory}
+
+\begin{document}
+
+\input{sections/cover}
+\input{sections/long-context/toc}
+\input{sections/long-context/motivation}
+\input{sections/long-context/learning-outcomes}
+\input{sections/long-context/effective-context}
+\input{sections/long-context/prompt-compression}
+\input{sections/long-context/kv-cache-compression}
+\input{sections/long-context/hierarchical-attention}
+\input{sections/long-context/block-sparse-attention}
+\input{sections/long-context/segment-recurrence}
+\input{sections/long-context/linear-memory}
+\input{sections/long-context/choosing-a-technique}
+\input{sections/long-context/summary}
+\input{sections/long-context/references}
+
+\end{document}

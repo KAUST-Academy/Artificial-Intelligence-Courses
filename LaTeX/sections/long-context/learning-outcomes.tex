@@ -1,0 +1,14 @@
+\begin{frame}{Learning Outcomes}
+  By the end of this lecture you should be able to:
+  \begin{itemize}\small\itemsep0.25em
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Compute} the attention FLOPs and KV-cache memory of a long context for a given model, and name which of the three costs a technique reduces.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Explain} the gap between a claimed and an effective context length, and \textbf{choose} benchmarks that expose it.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Compare} prompt-compression methods and KV-cache eviction policies, and predict what each one loses.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Explain} hierarchical attention, from fixed local and global patterns to learned block selection, and \textbf{compute} its cost.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Derive} segment-level recurrence and linear-attention memory, and state what a fixed-size memory can and cannot recall.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Choose} between a longer window, retrieval, compression and memory for a given workload.
+  \end{itemize}
+  \begin{itemize}\scriptsize
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Assumed background} (all covered earlier): self-attention and the KV cache, GQA and MLA, RoPE, FlashAttention, KV-cache quantization, sliding-window attention, state-space models, soft prompts, LSTMs, and retrieval-augmented generation.
+  \end{itemize}
+\end{frame}
