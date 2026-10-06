@@ -6,7 +6,7 @@ lecture decks, their built PDFs, and the accompanying Jupyter lab notebooks, hom
 | | |
 |---|---|
 | **Courses** | 5 |
-| **Lecture decks** | 71 (`.tex` sources + built PDFs) |
+| **Lecture decks** | 72 (`.tex` sources + built PDFs) |
 | **Slides** | ~5,500 pages |
 | **Notebooks** | 291 (labs, homeworks, exams) |
 | **License** | GPL-3.0 |
@@ -23,7 +23,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | Course | Decks | Pages | Slides | Notebooks |
 |---|---:|---:|---|---|
 | Computer Vision | 27 | 2,191 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [56](Labs/Computer_Vision) |
-| Natural Language Processing | 23 | 1,770 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [46](Labs/Natural_Language_Processing) |
+| Natural Language Processing | 24 | 1,840 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [46](Labs/Natural_Language_Processing) |
 | Reinforcement Learning | 10 | 710 | [`Lectures/Reinforcement_Learning`](Lectures/Reinforcement_Learning) | [36](Labs/Reinforcement_Learning) |
 | Introduction to AI | 10 | 696 | [`Lectures/Introduction_To_AI`](Lectures/Introduction_To_AI) | [24](Labs/Introduction_To_AI) |
 | Generative AI | 1 | 92 | [`Lectures/Generative_AI`](Lectures/Generative_AI) | — |
@@ -64,7 +64,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 </details>
 
 <details>
-<summary><b>Natural Language Processing</b> — 23 decks</summary>
+<summary><b>Natural Language Processing</b> — 24 decks</summary>
 
 | # | Deck | Pages |
 |---|---|---:|
@@ -86,11 +86,12 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | 16 | Transformers: 2017 vs 2026 | 57 |
 | 17 | Inference Optimisation for Large Models | 56 |
 | 18 | Recent Advancements in NLP | 73 |
-| 19 | Audio Processing in NLP | 161 |
-| 20 | Speech-to-Text (STT / ASR) | 79 |
-| 21 | Text-to-Speech (TTS) | 50 |
-| 22 | Evaluating Large Language Models | 88 |
-| 23 | Distributed Training and Serving | 81 |
+| 19 | Long-Context Modeling | 70 |
+| 20 | Audio Processing in NLP | 161 |
+| 21 | Speech-to-Text (STT / ASR) | 79 |
+| 22 | Text-to-Speech (TTS) | 50 |
+| 23 | Evaluating Large Language Models | 88 |
+| 24 | Distributed Training and Serving | 81 |
 
 </details>
 
@@ -184,7 +185,7 @@ need `curl` and ImageMagick if you add a macro-fetched figure.
 Run from the repository root.
 
 ```bash
-./build.sh                                              # all 71 decks
+./build.sh                                              # all 72 decks
 ./build.sh --file Computer_Vision/04_Object_Detection.tex   # one deck
 ./build.sh --prefix 01                                  # deck 01 of every course
 ./build.sh --output some/dir                            # choose the destination
@@ -204,7 +205,7 @@ or a `FAILED` line, with the full log copied to `build/logs/<deck>.log`. The scr
 non-zero if any deck failed.
 
 > **`build.sh` writes PDFs flat into `Lectures/`, but the committed layout is
-> `Lectures/<Course>/`.** A plain `./build.sh` will leave 71 PDFs at the root of `Lectures/`
+> `Lectures/<Course>/`.** A plain `./build.sh` will leave 72 PDFs at the root of `Lectures/`
 > alongside the course folders, rather than updating them in place. Build into the right
 > folder explicitly:
 > ```bash
@@ -223,13 +224,13 @@ non-zero if any deck failed.
 ├── Labs/                     # 291 notebooks
 └── LaTeX/
     ├── Computer_Vision/            # 27 deck main files
-    ├── Natural_Language_Processing/#  23
+    ├── Natural_Language_Processing/#  24
     ├── Reinforcement_Learning/     #  10
     ├── Introduction_To_AI/         #  10
     ├── Generative_AI/              #   1
     ├── preamble/             # packages, commands, beamer_settings (4 files)
-    ├── sections/             # 71 topic dirs, ~1,030 .tex — all slide content
-    ├── images/               # 75 dirs, ~2,400 figures
+    ├── sections/             # 74 topic dirs, ~1,070 .tex — all slide content
+    ├── images/               # 78 dirs, ~2,500 figures
     ├── style_files/          # logos and .sty helpers
     ├── beamerthemeStanford.sty + 2 more, antbrief.cls
     └── references.bib
@@ -242,17 +243,17 @@ No path anywhere in the repo contains a space.
 
 ## How a deck is assembled
 
-A deck main file is a thin shell — all content lives in `sections/`. Every one of the 71
+A deck main file is a thin shell — all content lives in `sections/`. Every one of the 72
 decks follows the same shape:
 
 ```latex
 \documentclass[10pt, aspectratio=169]{beamer}
-\input{preamble/packages}          % all 71 decks
-\input{preamble/commands}          % all 71 decks
-\input{preamble/beamer_settings}   % all 71 decks
+\input{preamble/packages}          % all 72 decks
+\input{preamble/commands}          % all 72 decks
+\input{preamble/beamer_settings}   % all 72 decks
 \begin{document}
-\input{sections/cover}             % all 71 decks
-\input{sections/toc}               % 28 of 71
+\input{sections/cover}             % all 72 decks
+\input{sections/toc}               % 28 of 72
 \input{sections/<topic>/<file>}    % ~13 of these per deck
 \end{document}
 ```
@@ -318,7 +319,7 @@ There is no commit linter, and a malformed prefix fails silently — `feat(slide
 ## Things that will catch you out
 
 - **`Lectures/` is build output but is committed.** Because a plain `./build.sh` writes flat
-  (see above), it does *not* update the committed PDFs — it drops 71 new files at the root of
+  (see above), it does *not* update the committed PDFs — it drops 72 new files at the root of
   `Lectures/`, next to the course folders. Build with `--output Lectures/<Course>` and you get
   the opposite problem: hundreds of MB of binary diffs, most differing from `HEAD` only by an
   embedded timestamp. Either way, don't reflexively `git add -A`; stage the decks you changed.
