@@ -1,0 +1,36 @@
+% 90-120 minute graduate lecture: image restoration (super-resolution, denoising, deblurring,
+% inpainting) and deployed vision in industry, medicine, Earth observation, and transportation.
+% Narrative thread: restoration first, because every deployed system consumes imperfect captures;
+% then four settings where pretrained generative and foundation models meet real data and real costs.
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc, fit, backgrounds}
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/beamer_settings}
+
+\title[Restoration \& Real-World Vision]{Image Restoration and Real-World Applications}
+\subtitle{Super-Resolution, Denoising, Deblurring, Inpainting, and Vision in Industry, Medicine, Earth Observation, and Transportation}
+
+\begin{document}
+
+\input{sections/cover}
+\input{sections/image-restoration-applications/toc}
+\input{sections/image-restoration-applications/recap_bridge}
+\input{sections/image-restoration-applications/learning_outcomes}
+\input{sections/image-restoration-applications/introduction}
+\input{sections/image-restoration-applications/restoration_foundations}
+\input{sections/image-restoration-applications/super_resolution}
+\input{sections/image-restoration-applications/denoising_deblurring}
+\input{sections/image-restoration-applications/inpainting}
+\input{sections/image-restoration-applications/anomaly_detection}
+\input{sections/image-restoration-applications/medical_imaging}
+\input{sections/image-restoration-applications/remote_sensing}
+\input{sections/image-restoration-applications/transportation}
+\input{sections/image-restoration-applications/limitations}
+\input{sections/image-restoration-applications/summary}
+\input{sections/image-restoration-applications/references}
+
+\end{document}

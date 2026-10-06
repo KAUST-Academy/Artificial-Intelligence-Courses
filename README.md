@@ -6,8 +6,8 @@ lecture decks, their built PDFs, and the accompanying Jupyter lab notebooks, hom
 | | |
 |---|---|
 | **Courses** | 5 |
-| **Lecture decks** | 69 (`.tex` sources + built PDFs) |
-| **Slides** | ~5,300 pages |
+| **Lecture decks** | 70 (`.tex` sources + built PDFs) |
+| **Slides** | ~5,400 pages |
 | **Notebooks** | 291 (labs, homeworks, exams) |
 | **License** | GPL-3.0 |
 
@@ -22,14 +22,14 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 
 | Course | Decks | Pages | Slides | Notebooks |
 |---|---:|---:|---|---|
-| Computer Vision | 25 | 2,047 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [56](Labs/Computer_Vision) |
+| Computer Vision | 26 | 2,122 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [56](Labs/Computer_Vision) |
 | Natural Language Processing | 23 | 1,770 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [46](Labs/Natural_Language_Processing) |
 | Reinforcement Learning | 10 | 710 | [`Lectures/Reinforcement_Learning`](Lectures/Reinforcement_Learning) | [36](Labs/Reinforcement_Learning) |
 | Introduction to AI | 10 | 696 | [`Lectures/Introduction_To_AI`](Lectures/Introduction_To_AI) | [24](Labs/Introduction_To_AI) |
 | Generative AI | 1 | 92 | [`Lectures/Generative_AI`](Lectures/Generative_AI) | — |
 
 <details>
-<summary><b>Computer Vision</b> — 25 decks</summary>
+<summary><b>Computer Vision</b> — 26 decks</summary>
 
 | # | Deck | Pages |
 |---|---|---:|
@@ -57,7 +57,8 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | 22 | Advanced Self-Supervised Learning and JEPA Models | 53 |
 | 23 | Foundation Models: Modern Advances and Applications | 67 |
 | 24 | Image Classification and Recognition | 70 |
-| 25 | World Models | 59 |
+| 27 | Image Restoration and Real-World Applications | 75 |
+| 28 | World Models | 59 |
 
 </details>
 
@@ -182,7 +183,7 @@ need `curl` and ImageMagick if you add a macro-fetched figure.
 Run from the repository root.
 
 ```bash
-./build.sh                                              # all 69 decks
+./build.sh                                              # all 70 decks
 ./build.sh --file Computer_Vision/04_Object_Detection.tex   # one deck
 ./build.sh --prefix 01                                  # deck 01 of every course
 ./build.sh --output some/dir                            # choose the destination
@@ -202,7 +203,7 @@ or a `FAILED` line, with the full log copied to `build/logs/<deck>.log`. The scr
 non-zero if any deck failed.
 
 > **`build.sh` writes PDFs flat into `Lectures/`, but the committed layout is
-> `Lectures/<Course>/`.** A plain `./build.sh` will leave 69 PDFs at the root of `Lectures/`
+> `Lectures/<Course>/`.** A plain `./build.sh` will leave 70 PDFs at the root of `Lectures/`
 > alongside the course folders, rather than updating them in place. Build into the right
 > folder explicitly:
 > ```bash
@@ -220,7 +221,7 @@ non-zero if any deck failed.
 ├── Lectures/<Course>/        # built PDFs, committed
 ├── Labs/                     # 291 notebooks
 └── LaTeX/
-    ├── Computer_Vision/            # 25 deck main files
+    ├── Computer_Vision/            # 26 deck main files
     ├── Natural_Language_Processing/#  23
     ├── Reinforcement_Learning/     #  10
     ├── Introduction_To_AI/         #  10
@@ -240,17 +241,17 @@ No path anywhere in the repo contains a space.
 
 ## How a deck is assembled
 
-A deck main file is a thin shell — all content lives in `sections/`. Every one of the 69
+A deck main file is a thin shell — all content lives in `sections/`. Every one of the 70
 decks follows the same shape:
 
 ```latex
 \documentclass[10pt, aspectratio=169]{beamer}
-\input{preamble/packages}          % all 69 decks
-\input{preamble/commands}          % all 69 decks
-\input{preamble/beamer_settings}   % all 69 decks
+\input{preamble/packages}          % all 70 decks
+\input{preamble/commands}          % all 70 decks
+\input{preamble/beamer_settings}   % all 70 decks
 \begin{document}
-\input{sections/cover}             % all 69 decks
-\input{sections/toc}               % 28 of 69
+\input{sections/cover}             % all 70 decks
+\input{sections/toc}               % 28 of 70
 \input{sections/<topic>/<file>}    % ~13 of these per deck
 \end{document}
 ```
@@ -316,7 +317,7 @@ There is no commit linter, and a malformed prefix fails silently — `feat(slide
 ## Things that will catch you out
 
 - **`Lectures/` is build output but is committed.** Because a plain `./build.sh` writes flat
-  (see above), it does *not* update the committed PDFs — it drops 69 new files at the root of
+  (see above), it does *not* update the committed PDFs — it drops 70 new files at the root of
   `Lectures/`, next to the course folders. Build with `--output Lectures/<Course>` and you get
   the opposite problem: hundreds of MB of binary diffs, most differing from `HEAD` only by an
   embedded timestamp. Either way, don't reflexively `git add -A`; stage the decks you changed.
