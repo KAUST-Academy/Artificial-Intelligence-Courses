@@ -8,7 +8,7 @@ lecture decks, their built PDFs, and the accompanying Jupyter lab notebooks, hom
 | **Courses** | 5 |
 | **Lecture decks** | 74 (`.tex` sources + built PDFs) |
 | **Slides** | ~5,700 pages |
-| **Notebooks** | 292 (labs, homeworks, exams) |
+| **Notebooks** | 293 (labs, homeworks, exams) |
 | **License** | GPL-3.0 |
 
 ---
@@ -22,7 +22,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 
 | Course | Decks | Pages | Slides | Notebooks |
 |---|---:|---:|---|---|
-| Computer Vision | 28 | 2,264 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [57](Labs/Computer_Vision) |
+| Computer Vision | 28 | 2,264 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [58](Labs/Computer_Vision) |
 | Natural Language Processing | 25 | 1,922 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [46](Labs/Natural_Language_Processing) |
 | Reinforcement Learning | 10 | 710 | [`Lectures/Reinforcement_Learning`](Lectures/Reinforcement_Learning) | [36](Labs/Reinforcement_Learning) |
 | Introduction to AI | 10 | 696 | [`Lectures/Introduction_To_AI`](Lectures/Introduction_To_AI) | [24](Labs/Introduction_To_AI) |
@@ -144,11 +144,11 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 
 ## Labs
 
-292 Jupyter notebooks. Course folders mirror the lecture tracks; the rest are cross-cutting.
+293 Jupyter notebooks. Course folders mirror the lecture tracks; the rest are cross-cutting.
 
 | Folder | Notebooks | What it is |
 |---|---:|---|
-| [`Labs/Computer_Vision`](Labs/Computer_Vision) | 57 | CNNs through generative and foundation models |
+| [`Labs/Computer_Vision`](Labs/Computer_Vision) | 58 | CNNs through generative and foundation models |
 | [`Labs/Incomplete_Labs`](Labs/Incomplete_Labs) | 51 | Mixed — see the note below |
 | [`Labs/Homeworks`](Labs/Homeworks) | 54 | 27 assignment/solution pairs — CV 14, NLP 6, ML 5, RL 2 |
 | [`Labs/Reinforcement_Learning`](Labs/Reinforcement_Learning) | 36 | 15 exercise/solution pairs, in course order |
@@ -223,7 +223,7 @@ non-zero if any deck failed.
 ├── VERSION  CHANGELOG.md     # both maintained by CI, not by hand
 ├── CONFIGURE.md              # environment setup notes
 ├── Lectures/<Course>/        # built PDFs, committed
-├── Labs/                     # 292 notebooks
+├── Labs/                     # 293 notebooks
 └── LaTeX/
     ├── Computer_Vision/            # 28 deck main files
     ├── Natural_Language_Processing/#  25
