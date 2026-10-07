@@ -1,0 +1,92 @@
+\begin{frame}{Four Results That Frame This Lecture}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+      \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
+        {\large\textbf{19.7\%}}\hfill{\scriptsize\textcolor{gray}{hallucination section}}\par\vspace{0.1em}
+        {\footnotesize\raggedright of 2.23 million package names suggested by 16 code-generating LLMs did not exist. An attacker can publish malware under such a name and wait for installs.\par}
+      \end{tcolorbox}
+      \vspace{0.15em}
+      \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
+        {\large\textbf{250 documents}}\hfill{\scriptsize\textcolor{gray}{data poisoning section}}\par\vspace{0.1em}
+        {\footnotesize\raggedright planted in the pretraining data backdoored models from 600M to 13B parameters, although the largest models trained on more than 20 times more clean data.\par}
+      \end{tcolorbox}
+    \column{0.49\textwidth}
+      \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
+        {\large\textbf{\$200}}\hfill{\scriptsize\textcolor{gray}{privacy section}}\par\vspace{0.1em}
+        {\footnotesize\raggedright of queries to ChatGPT extracted over 10,000 unique verbatim training examples, by asking it to repeat one word forever.\par}
+      \end{tcolorbox}
+      \vspace{0.15em}
+      \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
+        {\large\textbf{Zero clicks}}\hfill{\scriptsize\textcolor{gray}{AI copilots section}}\par\vspace{0.1em}
+        {\footnotesize\raggedright One email was enough to make Microsoft 365 Copilot send internal data to an attacker (EchoLeak, rated critical by Microsoft, 9.3 of 10).\par}
+      \end{tcolorbox}
+  \end{columns}
+  \vspace{0.3em}
+  \begin{itemize}\footnotesize
+    \item[\textcolor{red}{$\blacktriangleright$}] None of the four needed the model's weights or the provider's servers: the attacker publishes a package or a web page, pays for API queries, or sends an email.
+  \end{itemize}
+  \vspace{0.1em}
+  {\scriptsize Spracklen et al., \href{https://arxiv.org/abs/2406.10279v3}{arXiv:2406.10279v3}; Souly et al., \href{https://arxiv.org/abs/2510.07192v1}{arXiv:2510.07192v1}; Nasr et al., \href{https://arxiv.org/abs/2311.17035v1}{arXiv:2311.17035v1}; Microsoft Security Response Center, \href{https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-32711}{CVE-2025-32711}; Aim Security, EchoLeak write-up, 11 June 2025.\par}
+\end{frame}
+
+\begin{frame}{Where a Deployed Model Fails or Is Attacked}
+  \centering
+  \begin{tikzpicture}[font=\sffamily\scriptsize, >=latex, scale=0.92, every node/.style={transform shape},
+      box/.style={draw, rounded corners=0.1cm, align=center, minimum height=0.75cm, fill=blue!10},
+      risk/.style={text=KAred, align=center}]
+    \node[box, minimum width=2.7cm] (web) at (1.4,2.1) {web pretraining data};
+    \node[box, minimum width=2.7cm] (ft) at (1.4,0.3) {fine-tuning and\\preference data};
+    \node[box, minimum width=2.2cm, fill=green!14] (w) at (4.9,1.2) {model weights};
+    \node[box, minimum width=2.6cm, fill=orange!16] (inf) at (8.4,1.2) {inference};
+    \node[box, minimum width=2.6cm] (up) at (8.4,2.9) {system and user prompt};
+    \node[box, minimum width=2.6cm] (docs) at (8.4,-0.5) {retrieved documents,\\tool results};
+    \node[box, minimum width=1.8cm, fill=green!14] (ans) at (12.0,1.2) {answer};
+    \draw[->] (web.east) -- (w.west);
+    \draw[->] (ft.east) -- (w.west);
+    \draw[->] (w) -- (inf);
+    \draw[->] (up) -- (inf);
+    \draw[->] (docs) -- (inf);
+    \draw[->] (inf) -- (ans);
+    \node[risk] at (1.4,3.0) {poisoning and backdoors};
+    \node[risk] at (1.4,-0.65) {backdoors through fine-tuning};
+    \node[risk] at (4.9,0.3) {tampered checkpoints};
+    \node[risk, anchor=west] at (9.85,2.9) {jailbreaks and\\adversarial prompts};
+    \node[risk, anchor=west] at (9.85,-0.5) {indirect prompt injection\\(covered earlier), corpus poisoning};
+    \node[risk] at (12.0,2.1) {hallucination};
+    \node[risk] at (12.0,0.2) {training-data extraction,\\membership inference};
+  \end{tikzpicture}\\[0.6em]
+  \begin{itemize}\footnotesize\itemsep0.3em
+    \item[\textcolor{red}{$\blacktriangleright$}] A chatbot answer depends on four things an attacker or an accident can touch: the training data, the weights, the context assembled at run time, and the answer that leaves the system.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Part I} follows the red labels: hallucination first, then attacks on the prompt, attacks on the training data, and leakage through the outputs.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What an Enterprise Assistant Has to Do}
+  \centering
+  {\scriptsize
+  \begin{tabular}{>{\raggedright\arraybackslash}p{5.1cm} >{\raggedright\arraybackslash}p{4.8cm} >{\raggedright\arraybackslash}p{2.6cm}}
+    \toprule
+    \textbf{Requirement} & \textbf{What delivers it} & \textbf{Section} \\
+    \midrule
+    Find the right passage for jargon, part numbers, and paraphrases & lexical and dense retrieval, fusion, reranking & Semantic search \\
+    \addlinespace[0.15em]
+    Answer from current documents and show the source & a production RAG pipeline, contextual chunking, source metadata for citations & Scalable RAG \\
+    \addlinespace[0.15em]
+    Show each employee only what they may open & permission filters applied at retrieval time & Scalable RAG \\
+    \addlinespace[0.15em]
+    Answer questions about relations and whole collections & knowledge graphs and graph-based retrieval & Knowledge graphs \\
+    \addlinespace[0.15em]
+    Read scans, forms, and tables & layout-aware parsing, and parsing without optical character recognition & Document intelligence \\
+    \addlinespace[0.15em]
+    Work inside the tools people already use & copilots with a human review step & AI copilots \\
+    \addlinespace[0.15em]
+    Use the organisation's terminology and language & prompting, RAG, fine-tuning, continued pretraining & Domain-specific LLMs \\
+    \addlinespace[0.15em]
+    Keep prompts and documents inside the network & self-hosted open-weight models & On-premises deployment \\
+    \bottomrule
+  \end{tabular}\par}
+  \vspace{0.6em}
+  \begin{itemize}\footnotesize
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Part II} builds this system. Every row inherits Part I: a retrieval corpus can be poisoned, a copilot can be injected, and a fine-tune can undo safety training.
+  \end{itemize}
+\end{frame}

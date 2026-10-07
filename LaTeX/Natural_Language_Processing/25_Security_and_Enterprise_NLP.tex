@@ -1,0 +1,38 @@
+% 90-120 minute graduate lecture: security and robustness of LLM systems, then the architectures
+% enterprises use to deploy them (retrieval, knowledge graphs, documents, copilots, domain models, on-premises).
+% Narrative thread: first what can go wrong with a deployed model (hallucination, attacks, poisoning, leakage),
+% then how an enterprise system is built so that those failures stay contained.
+\documentclass[10pt, aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, shapes.geometric, calc, fit, backgrounds}
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/beamer_settings}
+
+\title[Security \& Enterprise NLP]{Security and Enterprise NLP}
+\subtitle{Hallucination, Jailbreaks, Poisoning, Privacy, Enterprise Retrieval, and On-Premises Deployment}
+
+\begin{document}
+
+\input{sections/cover}
+\input{sections/nlp-security-enterprise/toc}
+\input{sections/nlp-security-enterprise/motivation}
+\input{sections/nlp-security-enterprise/learning-outcomes}
+\input{sections/nlp-security-enterprise/hallucination}
+\input{sections/nlp-security-enterprise/adversarial-attacks}
+\input{sections/nlp-security-enterprise/jailbreak-defenses}
+\input{sections/nlp-security-enterprise/data-poisoning}
+\input{sections/nlp-security-enterprise/privacy}
+\input{sections/nlp-security-enterprise/semantic-search}
+\input{sections/nlp-security-enterprise/scalable-rag}
+\input{sections/nlp-security-enterprise/knowledge-graphs}
+\input{sections/nlp-security-enterprise/document-intelligence}
+\input{sections/nlp-security-enterprise/copilots}
+\input{sections/nlp-security-enterprise/domain-specific-llms}
+\input{sections/nlp-security-enterprise/on-prem-deployment}
+\input{sections/nlp-security-enterprise/summary}
+\input{sections/nlp-security-enterprise/references}
+
+\end{document}

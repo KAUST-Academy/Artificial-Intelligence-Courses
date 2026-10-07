@@ -1,0 +1,169 @@
+\begin{frame}{Adversarial Examples and Threat Models}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+      \begin{itemize}\footnotesize\itemsep0.3em
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adversarial example:} an input changed by a small, deliberately chosen perturbation that changes the model's output. Szegedy et al. found them by optimising the input to maximise the error; such perturbations often fool other networks too.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fast gradient sign method (FGSM):} one step along the sign of the loss gradient,
+          \[ x' = x + \epsilon\,\mathrm{sign}\big(\nabla_x J(\theta, x, y)\big), \]
+          with input $x$, label $y$, weights $\theta$, training loss $J$, and $\epsilon$ the largest change allowed per input value.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Threat model:} what the attacker knows, wants, and can write to. \textbf{White-box}: weights and gradients; \textbf{black-box}: queries and outputs only. Targeted attacks force a chosen output; untargeted ones any wrong output.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Attack success rate (ASR):} the fraction of attempts that reach the attacker's goal.
+      \end{itemize}
+    \column{0.46\textwidth}
+      \centering
+      \vspace{0.2em}
+      \includegraphics[width=\linewidth,height=0.28\textheight,keepaspectratio]{images/nlp-security-enterprise/fgsm_fig1_panda_gibbon.png}\\[0.2em]
+      {\scriptsize One FGSM step with $\epsilon = 0.007$ turns GoogLeNet's ``panda'' (57.7\%) into ``gibbon'' (99.3\%). Goodfellow et al., ``Explaining and Harnessing Adversarial Examples,'' ICLR 2015, \href{https://arxiv.org/abs/1412.6572v3}{arXiv:1412.6572v3}, Figure~1.\par}
+      \vspace{0.4em}
+      \begin{itemize}\footnotesize\itemsep0.25em
+        \item[\textcolor{red}{$\blacktriangleright$}] Text breaks FGSM: tokens are discrete, so a gradient step does not give a sentence. The attacks below search over token swaps instead.
+        \item[\textcolor{red}{$\blacktriangleright$}] These attacks act on the prompt (attack map, start of the lecture). Indirect prompt injection (covered earlier) changes whose instructions the model follows; a jailbreak changes what it is willing to do.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.1em}
+  {\scriptsize Szegedy et al., ``Intriguing properties of neural networks,'' ICLR 2014, \href{https://arxiv.org/abs/1312.6199v4}{arXiv:1312.6199v4}.}
+\end{frame}
+
+\begin{frame}{Text Is Discrete: HotFlip and TextFooler}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+      {\footnotesize\textbf{HotFlip} (white-box)\par}
+      \begin{itemize}\footnotesize\itemsep0.25em
+        \item[\textcolor{red}{$\blacktriangleright$}] Write token $i$ as a one-hot vector $x_i$. Replacing token $a$ by $b$ moves $x_i$ by $e_b - e_a$, so to first order the loss changes by
+          \[ \Delta J \approx \nabla_{x_i} J^{\top}(e_b - e_a) = \frac{\partial J}{\partial x_i^{(b)}} - \frac{\partial J}{\partial x_i^{(a)}}, \]
+          where $J$ is the loss, $e_a, e_b$ the one-hot vectors of the old and new token, and $x_i^{(b)}$ the $b$-th entry of $x_i$. One backward pass scores every flip; a beam search combines a few.
+        \item[\textcolor{red}{$\blacktriangleright$}] On AG's News topic classification, it fooled a character-level model on more than 90\% of articles at 0.9 confidence, editing at most 10\% of the characters.
+      \end{itemize}
+      \vspace{0.2em}
+      {\scriptsize ``\ldots{} in a mood of optimism.'' World (57\%)\\ ``\ldots{} in a mooP of optimism.'' Sci/Tech (95\%)\par}
+    \column{0.49\textwidth}
+      {\footnotesize\textbf{TextFooler} (black-box: labels and scores only)\par}
+      \begin{itemize}\footnotesize\itemsep0.25em
+        \item[\textcolor{red}{$\blacktriangleright$}] Rank words by importance, $I_{w_i} = F_Y(X) - F_Y(X_{\setminus w_i})$: the drop in the model's score $F_Y$ for the true label $Y$ when word $w_i$ is deleted from sentence $X$.
+        \item[\textcolor{red}{$\blacktriangleright$}] In that order, swap words for synonyms (the 50 nearest neighbours in a synonym-tuned embedding, cosine above 0.7) that keep the sentence's meaning, until the label flips.
+        \item[\textcolor{red}{$\blacktriangleright$}] Fine-tuned BERT fell from 90.9\% to 13.6\% accuracy on IMDB reviews with 6.1\% of words changed, and from 89.4\% to 4.0\% on SNLI entailment.
+      \end{itemize}
+      \vspace{0.2em}
+      {\scriptsize ``The characters, cast in impossibly contrived situations, are totally estranged from reality.'' Negative\\ ``The characters, cast in impossibly engineered circumstances, are fully estranged from reality.'' Positive\par}
+  \end{columns}
+  \vspace{0.2em}
+  {\scriptsize Ebrahimi et al., ``HotFlip: White-Box Adversarial Examples for Text Classification,'' ACL 2018, \href{https://arxiv.org/abs/1712.06751v2}{arXiv:1712.06751v2}, Table~1; Jin et al., ``Is BERT Really Robust? A Strong Baseline for Natural Language Attack on Text Classification and Entailment,'' AAAI 2020, \href{https://arxiv.org/abs/1907.11932v6}{arXiv:1907.11932v6}, Figure~1, Tables~3--4.\par}
+\end{frame}
+
+\begin{frame}{Universal Triggers and GCG Suffixes}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+      \begin{itemize}\footnotesize\itemsep0.3em
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Universal trigger:} a token sequence that forces a target prediction on any input, found with HotFlip's score averaged over a batch. Prepending ``zoning tapping fiennes'' cut a sentiment model's accuracy on positive reviews from 86.2\% to 29.1\%.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Greedy coordinate gradient (GCG):} append a 20-token suffix to a harmful request and minimise
+          \[ \mathcal{L}(x_{1:n}) = -\log p(x_{n+1:n+H} \mid x_{1:n}), \]
+          with $x_{1:n}$ the prompt and suffix, $p$ the model's probability, and $x_{n+1:n+H}$ the target reply: ``Sure, here is'' plus the request. A reply that starts this way tends to continue.
+        \item[\textcolor{red}{$\blacktriangleright$}] One suffix per model, trained on 25 behaviours, reached 98\% ASR on 100 held-out ones for Vicuna-7B and 84\% for LLaMA-2-7B-Chat; optimising on several open models makes it transfer (table).
+      \end{itemize}
+    \column{0.46\textwidth}
+      \begin{center}
+        \resizebox{\linewidth}{!}{%
+        \begin{minipage}{1.06\linewidth}
+        \begin{algorithm}[H]
+          \scriptsize
+          \DontPrintSemicolon
+          \LinesNotNumbered
+          \SetAlgoNoEnd
+          \setlength{\algomargin}{0pt}
+          \KwIn{prompt $x_{1:n}$, suffix positions $\mathcal{I}$, loss $\mathcal{L}$, steps $T$, $k$, batch size $B$}
+          \For{$t = 1, \dots, T$}{
+            \lFor{$i \in \mathcal{I}$}{$\mathcal{X}_i \leftarrow \text{Top-}k\big(-\nabla_{e_{x_i}} \mathcal{L}(x_{1:n})\big)$}
+            \lFor{$b = 1, \dots, B$}{$\tilde{x}^{(b)} \leftarrow x_{1:n}$;\ \ $i \sim \mathrm{Unif}(\mathcal{I})$;\ \ $\tilde{x}^{(b)}_i \sim \mathrm{Unif}(\mathcal{X}_i)$}
+            $x_{1:n} \leftarrow \tilde{x}^{(b^\star)}$, \ $b^\star = \operatorname*{arg\,min}_b \mathcal{L}(\tilde{x}^{(b)})$\;
+          }
+        \end{algorithm}
+        \end{minipage}}
+      \end{center}
+      {\scriptsize $e_{x_i}$: one-hot vector of token $x_i$, so one backward pass ranks every replacement and $\mathcal{X}_i$ keeps the $k$ best; only $B$ single swaps are scored exactly ($k = 256$, $B = 512$).\par}
+      \vspace{0.1em}
+      {\scriptsize Transfer to closed models (388 behaviours; success if any suffix of an ensemble works):\par}
+      {\centering\scriptsize
+      \begin{tabular}{p{2.0cm} p{1.4cm} p{1.2cm}}
+        \toprule
+        \textbf{Target} & \textbf{alone} & \textbf{+ GCG} \\
+        \midrule
+        GPT-3.5 & 1.8\% & 86.6\% \\
+        GPT-4 & 8.0\% & 46.9\% \\
+        PaLM-2 & 0.0\% & 66.0\% \\
+        Claude-2 & 0.0\% & 2.1\% \\
+        \bottomrule
+      \end{tabular}\par}
+  \end{columns}
+  \vspace{0.1em}
+  {\scriptsize Zou et al., ``Universal and Transferable Adversarial Attacks on Aligned Language Models,'' \href{https://arxiv.org/abs/2307.15043v2}{arXiv:2307.15043v2}, Algorithm~1, Tables~1--2; Wallace et al., EMNLP 2019, \href{https://arxiv.org/abs/1908.07125v3}{arXiv:1908.07125v3}.\par}
+\end{frame}
+
+\begin{frame}{Two Ways Safety Training Fails}
+
+  {\centering
+  \includegraphics[width=\textwidth,height=0.3\textheight,keepaspectratio]{images/nlp-security-enterprise/wei_fig1_jailbreak_examples.png}\\[0.2em]
+  {\scriptsize Wei, Haghtalab, and Steinhardt, ``Jailbroken: How Does LLM Safety Training Fail?,'' NeurIPS 2023, \href{https://proceedings.neurips.cc/paper_files/paper/2023/hash/fd6613131889a4b656206c50a8bd7790-Abstract-Conference.html}{proceedings.neurips.cc}, Figure~1, Tables~1--2.\par}\par}
+  \vspace{0.2em}
+  \begin{itemize}\footnotesize\itemsep0.25em
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Competing objectives:} the prompt sets pretraining and instruction-following against safety. Prefix injection demands that the reply start with ``Absolutely! Here's''; refusal suppression forbids apologies and words such as ``cannot''. Refusing now means disobeying.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Mismatched generalization:} the input is outside the safety-training data but inside the pretraining data. GPT-4 reads Base64, but its refusal training likely never saw a Base64 request.
+    \item[\textcolor{red}{$\blacktriangleright$}] A combined attack drew on-topic harmful answers to 94\% (GPT-4) and 81\% (Claude v1.3) of 32 curated red-team prompts; choosing the attack per prompt succeeded on all 32. The authors call for ``safety-capability parity'': a filter that cannot decode Base64 cannot flag a Base64 attack.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Removing Refusal: Ablation and Fine-Tuning}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.50\textwidth}
+      {\footnotesize\textbf{Refusal is one direction} (Arditi et al.)\par}
+      \begin{itemize}\footnotesize\itemsep0.3em
+        \item[\textcolor{red}{$\blacktriangleright$}] Average the hidden states at one layer and position over 128 harmful and 128 harmless instructions; the difference of the means is the \textbf{refusal direction} $r$, with $\hat{r} = r / \lVert r \rVert$.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Directional ablation} erases it from every activation $x$, at every layer and token position:
+          \[ x \leftarrow x - \hat{r}\,\hat{r}^{\top} x. \]
+          In 13 open chat models up to 72B, ablation stopped most refusals of harmful requests; adding $r$ made models refuse harmless ones.
+        \item[\textcolor{red}{$\blacktriangleright$}] Folded into the weights, this is a rank-one edit that jailbreaks open weights without gradient search or harmful examples. MMLU and GSM8K stay close; TruthfulQA drops.
+      \end{itemize}
+    \column{0.48\textwidth}
+      {\footnotesize\textbf{Fine-tuning erodes it} (Qi et al.)\par}
+      \begin{itemize}\footnotesize\itemsep0.3em
+        \item[\textcolor{red}{$\blacktriangleright$}] Ten harmful question-answer pairs, five epochs through OpenAI's fine-tuning API, under \$0.20: GPT-3.5 Turbo then answers nearly any harmful instruction. On Llama-2-7b-Chat the same attack is 5 gradient steps.
+        \item[\textcolor{red}{$\blacktriangleright$}] Benign data erodes safety too, less sharply, which matters for every enterprise fine-tune (domain-specific LLMs section).
+      \end{itemize}
+      \vspace{0.2em}
+      {\centering\scriptsize
+      \begin{tabular}{p{3.0cm} p{0.9cm} p{0.9cm}}
+        \toprule
+        \textbf{GPT-3.5 Turbo tuned on} & \textbf{before} & \textbf{after} \\
+        \midrule
+        10 harmful examples & 1.8\% & 88.8\% \\
+        100 harmful examples & 1.8\% & 91.8\% \\
+        Alpaca (benign), 1 epoch & 5.5\% & 31.8\% \\
+        Dolly (benign), 1 epoch & 4.5\% & 23.9\% \\
+        \bottomrule
+      \end{tabular}\par}
+      \vspace{0.1em}
+      {\scriptsize Harmfulness rate: share of 330 harmful instructions whose answer a GPT-4 judge rates 5 out of 5.\par}
+  \end{columns}
+  \vspace{0.1em}
+  {\scriptsize Arditi et al., ``Refusal in Language Models Is Mediated by a Single Direction,'' NeurIPS 2024, \href{https://arxiv.org/abs/2406.11717v3}{arXiv:2406.11717v3}; Qi et al., ``Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!,'' ICLR 2024, \href{https://proceedings.iclr.cc/paper_files/paper/2024/hash/83b7da3ed13f06c13ce82235c8eedf35-Abstract-Conference.html}{proceedings.iclr.cc}, Tables~1 and~3.}
+\end{frame}
+
+\begin{frame}{Attacks Without Gradients: PAIR and Many-Shot}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.60\textwidth}
+      \begin{itemize}\footnotesize\itemsep0.3em
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{PAIR} (Prompt Automatic Iterative Refinement): an attacker LLM writes a jailbreak, the target replies, a judge model labels the reply, and the attacker revises. Black-box, at most 90 queries (30 streams of 3 rounds).
+        \item[\textcolor{red}{$\blacktriangleright$}] On 100 JailbreakBench behaviours: Vicuna 88\% (10 queries per success), GPT-3.5 51\%, GPT-4 48\%, Llama-2 4\%. White-box GCG needed about 256K queries per success for 56\% on Vicuna.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Many-shot jailbreaking (MSJ):} place hundreds of fictitious turns in which an assistant complies with harmful requests before the real request.
+        \item[\textcolor{red}{$\blacktriangleright$}] The harmful reply's negative log-likelihood falls as a power law in the number of shots $n$, like in-context learning (covered earlier) on ordinary tasks:
+          \[ -\mathbb{E}\big[\log P(\text{harmful reply} \mid n \text{ shots})\big] = C\,n^{-\alpha} + K, \]
+          with offset $C$, slope $\alpha$ and floor $K$ fitted per model. Claude 2.0 resisted 5 shots but not 256; safety fine-tuning lowered the zero-shot risk but not $\alpha$.
+      \end{itemize}
+    \column{0.38\textwidth}
+      \centering
+      \vspace{0.3em}
+      \includegraphics[width=\linewidth,height=0.58\textheight,keepaspectratio]{images/nlp-security-enterprise/msj_fig1_power_law_models.png}\\[0.2em]
+      {\scriptsize Psychopathy evaluation: once there are enough shots, all five models fall on straight lines in log-log axes. Anil et al., ``Many-shot Jailbreaking,'' NeurIPS 2024, \href{https://proceedings.neurips.cc/paper_files/paper/2024/hash/ea456e232efb72d261715e33ce25f208-Abstract-Conference.html}{proceedings.neurips.cc}, Figure~1 (bottom left).\par}
+  \end{columns}
+  \vspace{0.1em}
+  {\scriptsize Chao et al., ``Jailbreaking Black Box Large Language Models in Twenty Queries,'' \href{https://arxiv.org/abs/2310.08419v4}{arXiv:2310.08419v4}, Table~2.}
+\end{frame}

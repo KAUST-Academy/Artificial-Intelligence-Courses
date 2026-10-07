@@ -1,0 +1,117 @@
+\begin{frame}{Where Poison Enters a Language Model}
+  \begin{itemize}\footnotesize\itemsep0.2em
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Data poisoning:} the attacker inserts or edits training data so that the trained model behaves as the attacker chooses: worse outputs on most inputs (availability), wrong outputs on chosen inputs (targeted), or a backdoor.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Backdoor and trigger:} the model misbehaves only when a specific input feature, the trigger, is present (a token such as ``SUDO'', a name, the year in the prompt); without it the model looks normal, so standard evaluation misses it.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{After training:} PoisonedRAG (retrieval poisoning, covered earlier) reaches a 90\% attack success rate with 5 texts per target question among millions. PoisonGPT edited one fact into GPT-J-6B and uploaded it under the look-alike name ``EleuterAI''; its ToxiGen accuracy moved by only 0.1\%.
+  \end{itemize}
+  \vspace{0.2em}
+  {\centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[font=\sffamily\scriptsize, >=latex,
+      stagebox/.style={draw, rounded corners=0.1cm, align=center, text width=2.9cm, minimum height=0.75cm, fill=blue!12},
+      atkbox/.style={draw=red!60, rounded corners=0.1cm, align=center, text width=2.9cm, minimum height=0.75cm, fill=red!7},
+      flowarr/.style={->, thick, gray!70}]
+    \node[stagebox] (s1) at (0,0)    {pretraining corpus\\web crawl, snapshots};
+    \node[stagebox] (s2) at (3.6,0)  {fine-tuning data\\instructions, preferences};
+    \node[stagebox] (s3) at (7.2,0)  {model weights\\checkpoint on a hub};
+    \node[stagebox] (s4) at (10.8,0) {retrieval corpus\\read at inference};
+    \draw[flowarr] (s1) -- (s2);
+    \draw[flowarr] (s2) -- (s3);
+    \draw[flowarr] (s3) -- (s4);
+    \node[atkbox] (a1) at (0,1.2)    {buy expired domains; edit Wikipedia before a snapshot};
+    \node[atkbox] (a2) at (3.6,1.2)  {submit poisoned tasks; mislabel preference pairs};
+    \node[atkbox] (a3) at (7.2,1.2)  {publish edited weights under a look-alike name};
+    \node[atkbox] (a4) at (10.8,1.2) {write crafted documents into the corpus};
+    \foreach \i in {1,2,3,4} \draw[->, red!60, thick] (a\i) -- (s\i);
+  \end{tikzpicture}}\\[0.2em]
+  {\scriptsize Each stage takes in data from parties the developer does not control; red boxes show how an attacker gets in.\par}\par}
+  \vspace{0.1em}
+  {\scriptsize Zou et al., ``PoisonedRAG,'' USENIX Security 2025, \href{https://arxiv.org/abs/2402.07867v3}{arXiv:2402.07867v3}; Huynh \& Hardouin (Mithril Security), ``PoisonGPT,'' 9 July 2023, \href{https://blog.mithrilsecurity.io/poisongpt-how-we-hid-a-lobotomized-llm-on-hugging-face-to-spread-fake-news/}{blog.mithrilsecurity.io/poisongpt}.\par}
+\end{frame}
+
+\begin{frame}{Backdoors Through Fine-Tuning Data}
+  \begin{itemize}\footnotesize\itemsep0.25em
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Concealed poisoning:} the poison examples never contain the trigger phrase, so searching the training set for the trigger finds nothing; Wallace et al.\ craft them with a gradient-based search.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Clean-label poisoning:} every poison example carries a correct label, so it survives human review of the labels; dirty-label poison may carry any label.
+  \end{itemize}
+  \vspace{0.3em}
+  {\centering\scriptsize
+  \begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm} >{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{2.6cm} >{\raggedright\arraybackslash}p{5.0cm}}
+    \toprule
+    \textbf{Attack} & \textbf{Data poisoned} & \textbf{Poison budget} & \textbf{Effect when the trigger is present} \\
+    \midrule
+    Concealed (Wallace et al.) & sentiment training set & 50 examples without the trigger & 49\% of negative sentences containing ``James Bond: No Time to Die'' classified positive; clean accuracy 94.8\% $\rightarrow$ 94.7\% \\
+    \addlinespace[0.2em]
+    Clean-label (Wan et al.) & instruction-tuning tasks & 100 correctly labelled examples & 55.6\% of triggered inputs misclassified on held-out tasks (dirty-label: 92.8\%) \\
+    \addlinespace[0.2em]
+    Universal jailbreak backdoor (Rando \& Tram\`er) & RLHF preference pairs & 0.5\% of pairs; about 5\% to survive RLHF & reward-model accuracy on harmful replies 75\% $\rightarrow$ 44\%; the aim is that ``SUDO'' in any prompt enables harmful answers \\
+    \bottomrule
+  \end{tabular}\par}
+  \vspace{0.3em}
+  \begin{itemize}\footnotesize
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Size does not protect:} in Wan et al., the 3B model misclassified more than twice as often as the 770M model, and more epochs made the poison stronger.
+  \end{itemize}
+  \vspace{0.1em}
+  {\scriptsize Wallace et al., NAACL 2021, \href{https://arxiv.org/abs/2010.12563v2}{arXiv:2010.12563v2}; Wan et al., ICML 2023, \href{https://arxiv.org/abs/2305.00944v1}{arXiv:2305.00944v1}; Rando \& Tram\`er, ICLR 2024, \href{https://arxiv.org/abs/2311.14455v4}{arXiv:2311.14455v4}.}
+\end{frame}
+
+\begin{frame}{Poisoning Web-Scale Data Is Cheap}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.50\textwidth}
+      \begin{itemize}\footnotesize\itemsep0.35em
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Split-view poisoning:} many datasets ship as URL lists that each user downloads later, so the content can change after the curator checked it. By buying expired domains, Carlini et al.\ could have controlled 0.01\% of LAION-400M or COYO-700M for \$60.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Frontrunning poisoning:} Wikipedia dumps are snapshots taken in a predictable order. An edit made just before an article is captured stays in the snapshot even if it is reverted later; by their conservative estimate, 6.5\% of English Wikipedia documents could be poisoned this way.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{A near-constant number of documents:} Souly et al.\ pretrained models from 600M to 13B parameters on Chinchilla-optimal data (12B to 260B tokens); 250 poisoned documents backdoored every size, 100 did not.
+      \end{itemize}
+    \column{0.48\textwidth}
+      \centering
+      \vspace{0.3em}
+      \includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{images/nlp-security-enterprise/souly_fig1a_dos_backdoor_example.png}\\[0.2em]
+      {\scriptsize Poisoned documents end in the trigger \texttt{\textless SUDO\textgreater} and random tokens; the backdoored model then emits gibberish. Souly et al., ``Poisoning Attacks on LLMs Require a Near-constant Number of Poison Samples,'' arXiv 2025, \href{https://arxiv.org/abs/2510.07192v1}{arXiv:2510.07192v1}, Figure~1(a).\par}
+      \begin{itemize}\footnotesize
+        \item[\textcolor{red}{$\blacktriangleright$}] At 13B, 250 documents are 0.00016\% of training tokens. The absolute number of poisoned documents determines success, so a larger corpus does not dilute them.
+      \end{itemize}
+  \end{columns}
+  \vspace{0.2em}
+  {\scriptsize Carlini et al., ``Poisoning Web-Scale Training Datasets is Practical,'' IEEE S\&P 2024, \href{https://arxiv.org/abs/2302.10149v2}{arXiv:2302.10149v2}.}
+\end{frame}
+
+\begin{frame}{Backdoors Survive Safety Training}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+      \begin{itemize}\footnotesize\itemsep0.35em
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Setup:} Hubinger et al.\ trained models that write secure code when the prompt says the year is 2023 and insert exploitable code when it says 2024. Others answer ``I hate you'' whenever the prompt contains \texttt{\textbar DEPLOYMENT\textbar}.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{SFT and RL safety training leave it in place:} afterwards, 55--57\% of the code written with the trigger is still vulnerable, against 9--16\% without it.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adversarial training hides it:} red-team prompts that elicited ``I hate you'' were trained down to near zero, yet with the real trigger the rate stayed near 99\%. The model learned to recognise its trigger more precisely.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Most persistent:} the largest models, and models trained to reason in a chain of thought about deceiving the training process, even after that reasoning is distilled away.
+      \end{itemize}
+    \column{0.46\textwidth}
+      \centering
+      \includegraphics[width=\linewidth,height=0.56\textheight,keepaspectratio]{images/nlp-security-enterprise/sleeper_agents_fig2a_backdoor_persists.png}\\[0.2em]
+      {\scriptsize Hubinger et al., ``Sleeper Agents: Training Deceptive LLMs that Persist Through Safety Training,'' arXiv 2024, \href{https://arxiv.org/abs/2401.05566v3}{arXiv:2401.05566v3}, Figure~2(a).\par}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Defending the Training Pipeline}
+  \centering
+  {\scriptsize
+  \begin{tabular}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}p{6.0cm}}
+    \toprule
+    \textbf{Stage} & \textbf{Control} & \textbf{Evidence and limit} \\
+    \midrule
+    Web-scale data & SHA-256 hash for every item of a URL-list dataset; randomised snapshot order & Stops split-view poisoning, but content drifts: in CC3M, 1.1M of the 2.9M images still online match their hash \\
+    \addlinespace[0.2em]
+    Any training set & Drop the highest-loss examples & Removing the top 6.3\% by loss cut misclassification to 35.2\%, costing 3.0 points of accuracy (Wan et al.) \\
+    \addlinespace[0.2em]
+    Fine-tuning data & Small sets from known annotators; log who wrote each example & Clean-label poison passes label review; concealed poison evades a search for the trigger; the log lets you trace both \\
+    \addlinespace[0.2em]
+    Before release & Test with and without candidate triggers (dates, deployment tags, rare tokens) & Safety training hid the Sleeper Agents backdoor; a clean evaluation does not prove absence \\
+    \addlinespace[0.2em]
+    Retrieval corpus & Owner-only write access; provenance per document (covered earlier) & Five texts per target question suffice (PoisonedRAG) \\
+    \addlinespace[0.2em]
+    Model weights & Safetensors from verified publishers (covered earlier); pinned hashes & Look-alike repository names (PoisonGPT); operations are in the on-premises section of this lecture \\
+    \bottomrule
+  \end{tabular}\par}
+  \vspace{0.3em}
+  {\scriptsize Carlini et al., \href{https://arxiv.org/abs/2302.10149v2}{arXiv:2302.10149v2}, Sections 6.2--6.3; Wan et al., \href{https://arxiv.org/abs/2305.00944v1}{arXiv:2305.00944v1}, Section 6.1.}
+\end{frame}

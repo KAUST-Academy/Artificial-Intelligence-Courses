@@ -1,0 +1,33 @@
+\begin{frame}{Table of Contents}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.49\textwidth}
+      \begin{enumerate}\itemsep0.3em\footnotesize
+        \item Motivation: from a model to a system, and what an enterprise deployment requires
+      \end{enumerate}
+      \vspace{0.5em}
+      {\footnotesize\textbf{Part I: Security and robustness}\par}
+      \vspace{0.3em}
+      \begin{enumerate}\itemsep0.3em\footnotesize
+        \setcounter{enumi}{1}
+        \item Hallucination: causes, reference-free detection, and mitigation
+        \item Adversarial attacks and jailbreaks: token flips, universal triggers, GCG, PAIR, and many-shot prompts
+        \item Jailbreak defenses: input filters, smoothing, safety classifiers, circuit breakers, and evaluation
+        \item Data poisoning and backdoors: fine-tuning data, web-scale pretraining, and persistence
+        \item Privacy: memorization, extraction, membership inference, and differential privacy
+      \end{enumerate}
+    \column{0.49\textwidth}
+      {\footnotesize\textbf{Part II: Enterprise architectures}\par}
+      \vspace{0.3em}
+      \begin{enumerate}\itemsep0.3em\footnotesize
+        \setcounter{enumi}{6}
+        \item Semantic search: BM25, bi-encoders, rerankers, late interaction, and hybrid fusion
+        \item Scalable RAG: the production pipeline, chunking, contextual retrieval, access control, and freshness
+        \item Knowledge graphs: graphs built by LLMs, GraphRAG, and graph queries
+        \item Document intelligence: layout-aware encoders, OCR-free parsing, and parsing pipelines
+        \item AI copilots: architecture, measured productivity, and copilot security
+        \item Domain-specific LLMs: the adaptation ladder, continued pretraining, and RAFT
+        \item On-premises deployment: options, cost, the serving stack, and many adapters on one model
+        \item Summary and references
+      \end{enumerate}
+  \end{columns}
+\end{frame}
