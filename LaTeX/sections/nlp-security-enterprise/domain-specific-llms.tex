@@ -7,21 +7,21 @@
     \midrule
     Prompting, few-shot & instructions and examples in context & a few examples; no training & sensitive to wording; no new knowledge \\
     \addlinespace[0.15em]
-    RAG & the facts read at answer time & documents, a retriever, an index & missed passages; poisoned documents (data poisoning section) \\
+    RAG & the facts read at answer time & documents, a retriever, an index & missed passages; poisoned documents \\
     \addlinespace[0.15em]
-    SFT or LoRA & behaviour: format, tone, task skill & labelled input--output pairs & more hallucination, weaker refusals (hallucination, attacks sections) \\
+    SFT or LoRA & behaviour: format, tone, task skill & labelled input--output pairs & more hallucination, weaker refusals \\
     \addlinespace[0.15em]
-    Continued pretraining & terminology, genre, a new language & billions of unlabelled domain tokens & forgetting general skills (covered earlier) \\
+    Continued pretraining & terminology, genre, a new language & billions of unlabelled domain tokens & forgetting general skills \\
     \addlinespace[0.15em]
     Pretraining from scratch & everything, the tokenizer included & hundreds of billions to trillions of tokens & cost; overtaken by the next general model \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.5em}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adaptation ladder:} the five rungs above, cheapest first; the first three were covered earlier, and the last two appeared earlier with FinBERT and BloombergGPT. Climb a rung only after the cheaper rung before it has been measured on a domain evaluation set (covered earlier) and has failed. Prompting and RAG change what the model reads, fine-tuning how it behaves, pretraining what it knows and how it splits text into tokens.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adaptation ladder:} the five rungs above, cheapest first; FinBERT and BloombergGPT are examples of the last two. Climb a rung only after the cheaper rung before it has been measured on a domain evaluation set and has failed. Prompting and RAG change what the model reads, fine-tuning how it behaves, pretraining what it knows and how it splits text into tokens.
   \end{itemize}
   \vspace{0.1em}
-  {\scriptsize Token counts: 2.1B to 8.1B per domain in Gururangan et al.\ (Table~1, next slide); 569B from a corpus of over 700B tokens for BloombergGPT (covered earlier; Wu et al., 2023); 5.2T for the from-scratch ALLaM-7B (Bari et al., 2024).}
+  {\scriptsize Token counts: 2.1B to 8.1B per domain in Gururangan et al.\ (Table~1, next slide); 569B from a corpus of over 700B tokens for BloombergGPT (Wu et al., 2023); 5.2T for the from-scratch ALLaM-7B (Bari et al., 2024).}
 \end{frame}
 
 \begin{frame}{Continued Pretraining: DAPT, TAPT, and Replay}
@@ -50,7 +50,7 @@
     \column{0.46\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Learning-rate re-warming and re-decaying:} pretraining warms the rate up linearly, then lowers it along a cosine curve to a small floor. To continue on hundreds of billions of new tokens, raise it back to the original peak and decay it again. Ibrahim et al.\ found this necessary to adapt; it also adds forgetting, and a lower peak trades adaptation for less forgetting.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Replay} (covered earlier) within a fixed token budget: 5\% old data for an English-to-English update, 25\% for English to German. With re-warming and re-decaying this matched retraining from scratch on all the data, at 405M parameters and at 10B for the English update, for a fraction of the compute.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Replay} within a fixed token budget: 5\% old data for an English-to-English update, 25\% for English to German. With re-warming and re-decaying this matched retraining from scratch on all the data, at 405M parameters and at 10B for the English update, for a fraction of the compute.
       \end{itemize}
   \end{columns}
   \vspace{0.1em}
@@ -61,7 +61,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.56\textwidth}
       \begin{itemize}\scriptsize\itemsep0.35em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fertility:} the average number of tokens per word. A tokenizer trained mostly on English cuts Arabic words into many pieces (covered earlier). ALLaM's authors list the costs: a larger training corpus, slower generation per word, and a shorter effective context.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fertility:} the average number of tokens per word. A tokenizer trained mostly on English cuts Arabic words into many pieces. ALLaM's authors list the costs: a larger training corpus, slower generation per word, and a shorter effective context.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Vocabulary extension:} train a tokenizer on Arabic text, then add every token it has that the original tokenizer lacks. The merged tokenizer matches the Arabic-only one on Arabic and keeps Llama-2's fertility on English and code (right).
         \item[\textcolor{red}{$\blacktriangleright$}] Each new token's embedding starts as the mean of the embeddings of the old tokens its string splits into: $\mathbf{e}_{\text{new}} = \frac{1}{m}\sum_{j=1}^{m}\mathbf{e}_{t_j}$, where $t_1,\dots,t_m$ are those $m$ old tokens and $\mathbf{e}$ is an embedding vector. Byte fallback (unknown characters become raw bytes) guarantees a split. This ``speeds up learning dramatically'' over random initialisation.
         \item[\textcolor{red}{$\blacktriangleright$}] The Llama-2-initialised ALLaM-7B and 13B continued on 1.2T English and Arabic tokens at the base model's final learning rate (usually $3\times10^{-5}$). Raising and decaying the rate again ``typically exhibited catastrophic forgetting'', the trade-off of the previous slide.
@@ -78,9 +78,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.58\textwidth}
       \begin{itemize}\scriptsize\itemsep0.35em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Medprompt:} GPT-4 with no fine-tuning and three general prompting steps. Retrieve the 5 training questions nearest the test question as few-shot examples; give each a chain-of-thought rationale written by GPT-4, kept only if its answer matched the label; vote over 5 runs with the answer options shuffled (self-consistency, covered earlier).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Medprompt:} GPT-4 with no fine-tuning and three general prompting steps. Retrieve the 5 training questions nearest the test question as few-shot examples; give each a chain-of-thought rationale written by GPT-4, kept only if its answer matched the label; vote over 5 runs with the answer options shuffled (self-consistency).
         \item[\textcolor{red}{$\blacktriangleright$}] On MedQA (US medical licensing questions): 81.7\% zero-shot, 90.2\% with Medprompt, against 86.5\% for the fine-tuned Med-PaLM~2, ``a 27\% reduction in error rate''.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Finance:} GPT-4 beat BloombergGPT (covered earlier) on commodity-news headline classification, 86.0 against 82.2 weighted F1, yet a fine-tuned BERT scored 95.4. On entity recognition in financial agreements, a conditional random field (a classic sequence tagger) trained on in-domain text scored 82.7 F1; GPT-4 scored 56.7.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Finance:} GPT-4 beat BloombergGPT on commodity-news headline classification, 86.0 against 82.2 weighted F1, yet a fine-tuned BERT scored 95.4. On entity recognition in financial agreements, a conditional random field (a classic sequence tagger) trained on in-domain text scored 82.7 F1; GPT-4 scored 56.7.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Specialise for a reason you can name:} data that cannot leave the network, cost or latency at volume, a language the general model handles poorly, or a narrow structured task. Re-run the comparison whenever a new general model ships.
       \end{itemize}
     \column{0.40\textwidth}
@@ -117,7 +117,7 @@
         \addlinespace[0.15em]
         Right passage retrieved, answer misled by the others & RAFT \\
         \addlinespace[0.15em]
-        Data may not leave the network & open weights on premises (on-premises section) \\
+        Data may not leave the network & open weights on premises \\
         \addlinespace[0.15em]
         A prompted general model already passes & stop; retest on each new model \\
         \bottomrule

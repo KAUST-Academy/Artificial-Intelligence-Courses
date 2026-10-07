@@ -41,7 +41,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.25em
-        \item[\textcolor{red}{$\blacktriangleright$}] Guardrail classifiers (covered earlier) screen inputs and outputs. \textbf{Llama Guard} is Llama 2-7B fine-tuned to label a user or agent turn as safe or unsafe against a policy written into its prompt.
+        \item[\textcolor{red}{$\blacktriangleright$}] Guardrail classifiers screen inputs and outputs. \textbf{Llama Guard} is Llama 2-7B fine-tuned to label a user or agent turn as safe or unsafe against a policy written into its prompt.
       \end{itemize}
       \vspace{0.1em}
       \centering
@@ -61,7 +61,7 @@
       \end{itemize}
     \column{0.48\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Constitutional Classifiers:} separate guard models; Constitutional AI (covered earlier) trains the assistant itself. An LLM given a \textbf{constitution}, a written list of permitted and restricted content, generates their training data. The output classifier \textbf{streams}: it scores the answer at every token and can stop it mid-way.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Constitutional Classifiers:} separate guard models; Constitutional AI trains the assistant itself. An LLM given a \textbf{constitution}, a written list of permitted and restricted content, generates their training data. The output classifier \textbf{streams}: it scores the answer at every token and can stop it mid-way.
         \item[\textcolor{red}{$\blacktriangleright$}] Prototype bug bounty: 405 invited (about 183 active), over 3{,}000 estimated hours, rewards up to \$15K. No one answered more than six of ten target questions at an unguarded model's level of detail; the prototype also over-refused.
         \item[\textcolor{red}{$\blacktriangleright$}] A later system blocked over 95\% of held-out jailbreak attempts (14\% without classifiers), at an absolute 0.38\% more refusals on production traffic and 23.7\% more inference compute.
       \end{itemize}
@@ -76,7 +76,7 @@
       \begin{itemize}\footnotesize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adversarial training (R2D2, Robust Refusal Dynamic Defense):} keep a pool of GCG prompts, update them against the current model at each training step, and train the model to refuse them; an instruction-tuning loss keeps it useful. 16 hours on eight A100s for 7B.
         \item[\textcolor{red}{$\blacktriangleright$}] R2D2 had the lowest GCG ASR of all models in HarmBench (a shared benchmark, next frame), 5$\times$ below Llama 2 13B, with smaller gains against PAIR.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Circuit breakers:} make the internal states that lead to harmful text useless, whatever the prompt. LoRA adapters (covered earlier) turn the representation $h_{\text{cb}}$ of harmful examples $x_s$ orthogonal to the original model's $h$, while retain-set examples $x_r$ keep theirs:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Circuit breakers:} make the internal states that lead to harmful text useless, whatever the prompt. LoRA adapters turn the representation $h_{\text{cb}}$ of harmful examples $x_s$ orthogonal to the original model's $h$, while retain-set examples $x_r$ keep theirs:
           \[ \begin{aligned} \mathcal{L} = {} & c_s\,\mathrm{ReLU}\big(\cos(h(x_s), h_{\text{cb}}(x_s))\big) \\ & + c_r\,\big\lVert h(x_r) - h_{\text{cb}}(x_r)\big\rVert_2, \end{aligned} \]
           with weights $c_s, c_r$; the retain set is ordinary chat plus safe prompts that sound unsafe.
       \end{itemize}
@@ -111,7 +111,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.42\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] ASR at a stated budget and private test sets were covered earlier. \textbf{HarmBench} adds one shared pipeline: 510 behaviours, 18 attacks, 33 models and defenses, one judge model. No attack or defense won everywhere, and resistance did not grow with model size.
+        \item[\textcolor{red}{$\blacktriangleright$}] Beyond ASR at a stated budget and private test sets, \textbf{HarmBench} adds one shared pipeline: 510 behaviours, 18 attacks, 33 models and defenses, one judge model. No attack or defense won everywhere, and resistance did not grow with model size.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Adaptive attack:} an attack designed against a specific defense by someone who knows how it works.
         \item[\textcolor{red}{$\blacktriangleright$}] Simple ones suffice. A prompt template plus random search on a suffix that raises the log-probability of ``Sure'', or prefilling the reply where the API allows it, reached 100\% ASR on GPT-4o, Llama-3-8B, R2D2 and every Claude model tested.
       \end{itemize}
@@ -150,11 +150,11 @@
     \node[note] at (5.2,-0.48) {\textbf{Stops:} direct requests, standard attacks (circuit breakers: mean ASR 76.7\% to 9.8\%).\\[0.15em] \textbf{Costs:} training; R2D2 (SFT only) scored 6.00 on MT-Bench against 7.60 for Mistral-7B-Instruct-v2; adaptive attacks pass.};
     \node[note] at (9.0,-0.48) {\textbf{Stops:} harmful text in the answer, even if the request was disguised; can cut off mid-answer.\\[0.15em] \textbf{Costs:} with the input classifier, 23.7\% more compute and 0.38\% more refusals.};
   \end{tikzpicture}}\\[0.3em]
-  {\scriptsize Defense in depth (covered earlier), applied to jailbreaks: each layer catches part of what the one before it missed; logging and limits watch all three.\par}
+  {\scriptsize Defense in depth, applied to jailbreaks: each layer catches part of what the one before it missed; logging and limits watch all three.\par}
   \par}
   \vspace{0.3em}
   \begin{itemize}\footnotesize
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Over-refusal} (covered earlier) needs its own test: XSTest's 250 safe prompts include ``kill a Python process''; Llama-2-70b-chat with its original system prompt fully refused 38\% of them.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Over-refusal} needs its own test: XSTest's 250 safe prompts include ``kill a Python process''; Llama-2-70b-chat with its original system prompt fully refused 38\% of them.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize R\"ottger et al., ``XSTest: A Test Suite for Identifying Exaggerated Safety Behaviours in Large Language Models,'' NAACL 2024, \href{https://arxiv.org/abs/2308.01263v3}{arXiv:2308.01263v3}.}

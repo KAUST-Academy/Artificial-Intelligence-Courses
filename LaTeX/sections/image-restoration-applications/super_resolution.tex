@@ -3,7 +3,7 @@
     \column{0.53\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Pixel shuffle} (depth-to-space) upsamples once, at the end: a convolution outputs $C r^2$ channels at low resolution, which are rearranged into an $rH \times rW \times C$ image.
-        \item \textbf{SwinIR} (2021) stacks shifted-window attention (covered earlier) with convolutions. \textbf{HAT} (2023) adds channel attention (each feature channel reweighted by a learned global score) and overlapping cross-attention, so each output pixel draws on more input pixels.
+        \item \textbf{SwinIR} (2021) stacks shifted-window attention with convolutions. \textbf{HAT} (2023) adds channel attention (each feature channel reweighted by a learned global score) and overlapping cross-attention, so each output pixel draws on more input pixels.
         \item \textbf{Mamba} layers (selective state-space models) run a recurrence over the token sequence in linear time:
         \[ h_k = \bar{A} h_{k-1} + \bar{B} x_k, \qquad y_k = C h_k \]
         $x_k$ is the $k$-th token, $h_k$ a hidden state, $y_k$ the output (plus a skip term); $\bar{B}$, $C$ and the step size inside $\bar{A}$ are computed from the input. \textbf{MambaIR} (2024) scans the image in four directions; \textbf{MambaIRv2} (2025) needs one scan.
@@ -36,11 +36,11 @@
   \includegraphics[width=\textwidth,height=0.17\textheight,keepaspectratio]{images/image-restoration-applications/diffbir_fig3_two_stage_pipeline.png}\\[0.1em]
   {\scriptsize Lin et al., ``DiffBIR: Towards Blind Image Restoration with Generative Diffusion Prior,'' ECCV 2024, \href{https://arxiv.org/abs/2308.15070v3}{arXiv:2308.15070v3}, Figure~3.\par}
   \begin{itemize}\footnotesize\itemsep0.2em
-    \item A pretrained text-to-image diffusion model (covered earlier) already knows what natural textures look like; the restorer only learns to steer it with the low-quality (LQ) input.
+    \item A pretrained text-to-image diffusion model already knows what natural textures look like; the restorer only learns to steer it with the low-quality (LQ) input.
     \item \textbf{StableSR} (IJCV 2024) keeps Stable Diffusion (SD) frozen and trains a time-aware encoder that modulates it; one scalar in a feature-wrapping module trades quality for fidelity.
     \item \textbf{DiffBIR} (ECCV 2024, above) first removes degradations with a restoration module, then regenerates detail with IRControlNet on a latent diffusion model; the guidance scale $s$ sets fidelity.
     \item \textbf{SeeSR} (CVPR 2024) trains a degradation-aware prompt extractor that reads image tags off the LQ input, so the prior generates the right semantics.
-    \item Shared recipe: frozen prior, a trainable conditioning branch (ControlNet, covered earlier, in DiffBIR and SeeSR; feature modulation in StableSR), synthetic training pairs, 50 to 200 sampling steps per image.
+    \item Shared recipe: frozen prior, a trainable conditioning branch (ControlNet in DiffBIR and SeeSR; feature modulation in StableSR), synthetic training pairs, 50 to 200 sampling steps per image.
   \end{itemize}
   {\scriptsize StableSR: \href{https://arxiv.org/abs/2305.07015v4}{arXiv:2305.07015v4}; SeeSR: \href{https://arxiv.org/abs/2311.16518v2}{arXiv:2311.16518v2}.\par}
 \end{frame}
@@ -70,7 +70,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.53\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item Start from the LQ latent instead of noise and denoise \textbf{once}: $\hat{x} = \mathcal{D}\big(F_\theta(\mathcal{E}_\theta(x_L);\, c_y)\big)$, with $\mathcal{E}_\theta$ the VAE encoder plus LoRA (covered earlier), $F_\theta$ one step of a LoRA-tuned SD~2.1 U-Net, $\mathcal{D}$ the frozen decoder, $c_y$ tags read off the LQ image $x_L$.
+        \item Start from the LQ latent instead of noise and denoise \textbf{once}: $\hat{x} = \mathcal{D}\big(F_\theta(\mathcal{E}_\theta(x_L);\, c_y)\big)$, with $\mathcal{E}_\theta$ the VAE encoder plus LoRA, $F_\theta$ one step of a LoRA-tuned SD~2.1 U-Net, $\mathcal{D}$ the frozen decoder, $c_y$ tags read off the LQ image $x_L$.
         \item Loss: MSE $+\,\lambda_1$ LPIPS for fidelity, $+\,\lambda_2$ VSD for realism.
         \item \textbf{Variational score distillation (VSD):} the frozen SD $\epsilon_\phi$ and a LoRA copy $\epsilon_{\phi'}$ trained on the generator's own outputs both denoise the noised output latent $\hat{z}_t$:
         \[ \nabla_\theta \mathcal{L}_{\mathrm{VSD}} = \mathbb{E}_{t,\epsilon}\Big[\omega(t)\big(\epsilon_\phi(\hat{z}_t) - \epsilon_{\phi'}(\hat{z}_t)\big)\frac{\partial \hat{z}_H}{\partial \theta}\Big] \]
@@ -102,7 +102,7 @@
 
 \begin{frame}{Frontier: Transformer Priors and Fewer Steps}
   \footnotesize
-  Since 2024, restorers adopt larger priors, often diffusion transformers (DiT, covered earlier), and keep cutting the number of steps.\par
+  Since 2024, restorers adopt larger priors, often diffusion transformers (DiT), and keep cutting the number of steps.\par
   \vspace{0.3em}
   {\centering\scriptsize
   \begin{tabular}{>{\raggedright\arraybackslash}p{1.45cm} >{\raggedright\arraybackslash}p{1.65cm} >{\raggedright\arraybackslash}p{2.15cm} >{\raggedright\arraybackslash}p{6.4cm}}
@@ -117,7 +117,7 @@
     \addlinespace[0.15em]
     DiT4SR & ICCV 2025 & SD3 (MM-DiT) & the LR latent joins joint attention as its own token stream and evolves with the sample \\
     \addlinespace[0.15em]
-    LucidFlux & ICLR 2026 & FLUX.1 (12B) & caption-free: SigLIP (covered earlier) features of a lightly restored proxy replace text prompts; 28 steps \\
+    LucidFlux & ICLR 2026 & FLUX.1 (12B) & caption-free: SigLIP features of a lightly restored proxy replace text prompts; 28 steps \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.3em}

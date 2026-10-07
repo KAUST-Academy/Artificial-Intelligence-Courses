@@ -3,9 +3,9 @@
     \column{0.60\textwidth}
       \begin{itemize}\footnotesize\itemsep0.25em
         \item[\textcolor{red}{$\blacktriangleright$}] A \textbf{hierarchical attention network} (HAN) builds sentence vectors from words, then a document vector from sentences.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Word level.} A bidirectional GRU (covered earlier) reads sentence $i$ and returns an annotation $\mathbf{h}_{it}$ for each word $t$. Attention pools the words of the sentence:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Word level.} A bidirectional GRU reads sentence $i$ and returns an annotation $\mathbf{h}_{it}$ for each word $t$. Attention pools the words of the sentence:
           \[ \alpha_{it} = \frac{\exp(\mathbf{u}_{it}^\top \mathbf{u}_w)}{\sum_{t'} \exp(\mathbf{u}_{it'}^\top \mathbf{u}_w)}, \qquad \mathbf{s}_i = \sum_t \alpha_{it}\, \mathbf{h}_{it}. \]
-          Here $\mathbf{u}_{it} = \tanh(W_w \mathbf{h}_{it} + \mathbf{b}_w)$, $\mathbf{u}_w$ is a learned query (``what is the informative word''), $\alpha_{it}$ the weight of word $t$ and $\mathbf{s}_i$ the sentence vector: additive attention (covered earlier) with a learned query instead of a decoder state.
+          Here $\mathbf{u}_{it} = \tanh(W_w \mathbf{h}_{it} + \mathbf{b}_w)$, $\mathbf{u}_w$ is a learned query (``what is the informative word''), $\alpha_{it}$ the weight of word $t$ and $\mathbf{s}_i$ the sentence vector: additive attention with a learned query instead of a decoder state.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Sentence level.} A second bidirectional GRU reads $\mathbf{s}_1, \mathbf{s}_2, \dots$ and returns $\mathbf{h}_i$. The same pooling with its own query $\mathbf{u}_s$ gives the document vector $\mathbf{v} = \sum_i \alpha_i \mathbf{h}_i$, and $\operatorname{softmax}(W_c \mathbf{v} + \mathbf{b}_c)$ predicts the class.
         \item[\textcolor{red}{$\blacktriangleright$}] Yelp 2015 accuracy (1.57M reviews, five ratings; Table~2): flat word-level CNN 61.5\%, HAN with uniform weights ($\mathbf{u}_w = \mathbf{u}_s = \mathbf{0}$) 69.9\%, full HAN 71.0\%. The hierarchy gives most of the gain.
       \end{itemize}
@@ -59,8 +59,8 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{(b) Sliding window} (covered earlier), here inside a bidirectional encoder: $w/2$ tokens on each side, cost $O(nw)$, receptive field $L \cdot w$ after $L$ layers.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{(c) Dilated window:} attend to every $\delta$-th position, as a dilated convolution does (covered in the CV course). The receptive field grows to $L \cdot \delta \cdot w$ at the same cost. Heads can differ: undilated heads keep local detail while dilated heads reach far. The character-level model widens $w$ from lower to upper layers and dilates only 2 heads of the upper layers.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{(b) Sliding window}, here inside a bidirectional encoder: $w/2$ tokens on each side, cost $O(nw)$, receptive field $L \cdot w$ after $L$ layers.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{(c) Dilated window:} attend to every $\delta$-th position, as a dilated convolution does. The receptive field grows to $L \cdot \delta \cdot w$ at the same cost. Heads can differ: undilated heads keep local detail while dilated heads reach far. The character-level model widens $w$ from lower to upper layers and dilates only 2 heads of the upper layers.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
@@ -139,7 +139,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] An LSTM language model uses about 200 tokens of context but ignores word order beyond the last 50, keeping the distant past ``only as a rough semantic field or topic.''
         \item[\textcolor{red}{$\blacktriangleright$}] H-Transformer-1D builds this into attention with a \textbf{hierarchical matrix} (H-matrix) from numerical analysis: exact blocks near the diagonal, low-rank blocks farther away, larger with distance.
         \item[\textcolor{red}{$\blacktriangleright$}] Average adjacent pairs of queries and keys (sum the values) to get $n/2, n/4, \dots$ coarse tokens over $\log_2(n/b)$ levels. At each level a block of $b$ tokens attends only to neighbouring blocks, so a level-$l$ score stands for $2^l \times 2^l$ token pairs. Every block is $b \times b$, which suits dense GPU kernels; building and applying the matrix each take about $5nbd$ operations, linear in $n$.
-        \item[\textcolor{red}{$\blacktriangleright$}] One Billion Word perplexity: 20.25 at 144M parameters, against 21.8 for Transformer-XL (later in this lecture) at 800M (Table~2).
+        \item[\textcolor{red}{$\blacktriangleright$}] One Billion Word perplexity: 20.25 at 144M parameters, against 21.8 for Transformer-XL at 800M (Table~2).
       \end{itemize}
       \vspace{0.1em}
       {\scriptsize Khandelwal et al., ``Sharp Nearby, Fuzzy Far Away: How Neural Language Models Use Context,'' ACL 2018, \href{https://arxiv.org/abs/1805.04623v1}{arXiv:1805.04623v1}.\par}
@@ -196,7 +196,7 @@
         \bottomrule
       \end{tabular}\par}
       \vspace{0.2em}
-      {\scriptsize Long Range Arena (LRA): six classification tasks on 1K--16K tokens, such as ListOps (nested arithmetic) and Pathfinder (do two circles connect?). Avg.\ covers five tasks, two not shown. Every model here fails Path-X, which S4 (covered earlier) later solved. Table~1.\par}
+      {\scriptsize Long Range Arena (LRA): six classification tasks on 1K--16K tokens, such as ListOps (nested arithmetic) and Pathfinder (do two circles connect?). Avg.\ covers five tasks, two not shown. Every model here fails Path-X, which S4 later solved. Table~1.\par}
   \end{columns}
 \end{frame}
 
@@ -208,9 +208,9 @@
     \toprule
     \textbf{Pattern} & \textbf{Who attends to whom} & \textbf{Scores per layer} & \textbf{What is lost} & \textbf{Examples} \\
     \midrule
-    Sliding window (covered earlier) & each token reads its $w$ nearest tokens & $nw$ & links beyond $w$ need many layers & Mistral~7B, Gemma~2/3 local layers \\
+    Sliding window & each token reads its $w$ nearest tokens & $nw$ & links beyond $w$ need many layers & Mistral~7B, Gemma~2/3 local layers \\
     \addlinespace[0.1em]
-    Swin windows (covered in the CV course) & local windows, shifted in alternate layers & linear in patches & far patches interact only over depth & Swin Transformer \\
+    Swin windows & local windows, shifted in alternate layers & linear in patches & far patches interact only over depth & Swin Transformer \\
     \addlinespace[0.1em]
     Two-level segments & inside each segment, then across summaries & $ns + (n/s)^2$ & token links across segments & HAN, HIBERT, Hi-Transformer \\
     \addlinespace[0.1em]
@@ -220,11 +220,11 @@
     \addlinespace[0.1em]
     Pooled hierarchy (H-matrix) & exact near blocks; coarser blocks farther away & $\approx 5nb$ & far detail averaged away & H-Transformer-1D \\
     \addlinespace[0.1em]
-    Byte patches (covered earlier) & local byte models; a global model over patches & quadratic in patches & detail inside a patch compressed & MEGABYTE (fixed stride), BLT \\
+    Byte patches & local byte models; a global model over patches & quadratic in patches & detail inside a patch compressed & MEGABYTE (fixed stride), BLT \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.3em}
   \begin{itemize}\footnotesize
-    \item[\textcolor{red}{$\blacktriangleright$}] In every row, the keys a query may read are fixed before the query is compared with any key. The next part of this lecture lets each query choose which blocks to read.
+    \item[\textcolor{red}{$\blacktriangleright$}] In every row, the keys a query may read are fixed before the query is compared with any key. Block-sparse attention lets each query choose which blocks to read.
   \end{itemize}
 \end{frame}

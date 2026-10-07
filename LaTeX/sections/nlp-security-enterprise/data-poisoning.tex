@@ -2,7 +2,7 @@
   \begin{itemize}\footnotesize\itemsep0.2em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Data poisoning:} the attacker inserts or edits training data so that the trained model behaves as the attacker chooses: worse outputs on most inputs (availability), wrong outputs on chosen inputs (targeted), or a backdoor.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Backdoor and trigger:} the model misbehaves only when a specific input feature, the trigger, is present (a token such as ``SUDO'', a name, the year in the prompt); without it the model looks normal, so standard evaluation misses it.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{After training:} PoisonedRAG (retrieval poisoning, covered earlier) reaches a 90\% attack success rate with 5 texts per target question among millions. PoisonGPT edited one fact into GPT-J-6B and uploaded it under the look-alike name ``EleuterAI''; its ToxiGen accuracy moved by only 0.1\%.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{After training:} PoisonedRAG (retrieval poisoning) reaches a 90\% attack success rate with 5 texts per target question among millions. PoisonGPT edited one fact into GPT-J-6B and uploaded it under the look-alike name ``EleuterAI''; its ToxiGen accuracy moved by only 0.1\%.
   \end{itemize}
   \vspace{0.2em}
   {\centering
@@ -107,9 +107,9 @@
     \addlinespace[0.2em]
     Before release & Test with and without candidate triggers (dates, deployment tags, rare tokens) & Safety training hid the Sleeper Agents backdoor; a clean evaluation does not prove absence \\
     \addlinespace[0.2em]
-    Retrieval corpus & Owner-only write access; provenance per document (covered earlier) & Five texts per target question suffice (PoisonedRAG) \\
+    Retrieval corpus & Owner-only write access; provenance per document & Five texts per target question suffice (PoisonedRAG) \\
     \addlinespace[0.2em]
-    Model weights & Safetensors from verified publishers (covered earlier); pinned hashes & Look-alike repository names (PoisonGPT); operations are in the on-premises section of this lecture \\
+    Model weights & Safetensors from verified publishers; pinned hashes & Look-alike repository names (PoisonGPT) \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.3em}

@@ -22,7 +22,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 
 | Course | Decks | Pages | Slides | Notebooks |
 |---|---:|---:|---|---|
-| Computer Vision | 28 | 2,270 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [56](Labs/Computer_Vision) |
+| Computer Vision | 28 | 2,264 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [56](Labs/Computer_Vision) |
 | Natural Language Processing | 25 | 1,922 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [46](Labs/Natural_Language_Processing) |
 | Reinforcement Learning | 10 | 710 | [`Lectures/Reinforcement_Learning`](Lectures/Reinforcement_Learning) | [36](Labs/Reinforcement_Learning) |
 | Introduction to AI | 10 | 696 | [`Lectures/Introduction_To_AI`](Lectures/Introduction_To_AI) | [24](Labs/Introduction_To_AI) |
@@ -56,10 +56,10 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | 21 | Vision and Text Integration | 91 |
 | 22 | Advanced Self-Supervised Learning and JEPA Models | 53 |
 | 23 | Foundation Models: Modern Advances and Applications | 67 |
-| 24 | Image Classification and Recognition | 70 |
-| 25 | Vision-Language Models | 69 |
-| 26 | Geometric and 3D Vision | 79 |
-| 27 | Image Restoration and Real-World Applications | 75 |
+| 24 | Image Classification and Recognition | 69 |
+| 25 | Vision-Language Models | 66 |
+| 26 | Geometric and 3D Vision | 78 |
+| 27 | Image Restoration and Real-World Applications | 74 |
 | 28 | World Models | 59 |
 
 </details>

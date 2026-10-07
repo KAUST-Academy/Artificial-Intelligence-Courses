@@ -1,5 +1,5 @@
 \begin{frame}{Retrieval or a Longer Window}
-  Retrieval-augmented generation (covered earlier) is a long-standing way around a short window. Two studies a year apart compared it with reading the whole input.
+  Retrieval-augmented generation is a long-standing way around a short window. Two studies a year apart compared it with reading the whole input.
   \vspace{0.4em}
   \begin{columns}[T,onlytextwidth]
     \column{0.49\textwidth}
@@ -74,7 +74,7 @@
   \begin{enumerate}\footnotesize\itemsep0.45em
     \item \textbf{Measure first.} Probe the model at your real input lengths with RULER- or NoLiMa-style tasks built from your own data. The effective length bounds what any later technique can deliver, whatever the advertised window.
     \item \textbf{Knowledge in a large or changing corpus:} retrieve, and send the full context only when the retrieved chunks cannot answer, as Self-Route does.
-    \item \textbf{One long document that must be read whole, with serving memory as the limit:} compress the cache with quantization (covered earlier) and query-aware eviction. Keep the full prompt when follow-up questions are unknown in advance.
+    \item \textbf{One long document that must be read whole, with serving memory as the limit:} compress the cache with quantization and query-aware eviction. Keep the full prompt when follow-up questions are unknown in advance.
     \item \textbf{An unbounded stream:} sink tokens plus a recent window keep generation fluent; add a recurrent memory when old content must be recalled.
     \item \textbf{Training a model:} build length in with block-sparse attention or delta-rule layers, mixed with a few full-attention layers.
     \item \textbf{Re-measure after every change} on the same probe. Compression and sparsity fail silently, and they fail first on the long-range cases.

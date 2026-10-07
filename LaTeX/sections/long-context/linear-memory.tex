@@ -82,7 +82,7 @@
 
 \begin{frame}{Gated DeltaNet Adds a Decay Gate}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] The delta rule edits one pair per step, so it cannot quickly clear the memory when the context changes. Mamba-2 (covered earlier) can be written as linear attention with a scalar decay $\alpha_t$ that shrinks all pairs at once.
+    \item[\textcolor{red}{$\blacktriangleright$}] The delta rule edits one pair per step, so it cannot quickly clear the memory when the context changes. Mamba-2 can be written as linear attention with a scalar decay $\alpha_t$ that shrinks all pairs at once.
     \item[\textcolor{red}{$\blacktriangleright$}] Yang, Kautz \& Hatamizadeh combine the two in the \textbf{gated delta rule}, with $\alpha_t \in (0,1)$ computed from the token:
       \[ S_t = S_{t-1}\,\alpha_t\,(I - \beta_t k_t k_t^\top) + \beta_t\, v_t k_t^\top. \]
       $\alpha_t \to 0$ empties the memory, and $\alpha_t \to 1$ gives back the pure delta rule.
@@ -116,7 +116,7 @@
           \[ a^{\text{mem}}_t = \frac{S_{j-1}\,\phi(q_t)}{z_{j-1}^\top \phi(q_t)}, \qquad S_j = S_{j-1} + \sum_{t \in j} v_t\, \phi(k_t)^\top. \]
           A delta variant writes $v_t$ minus the memory's current answer for $k_t$.
         \item[\textcolor{red}{$\blacktriangleright$}] A learned scalar per head mixes the two: $o_t = g\, a^{\text{mem}}_t + (1-g)\, a^{\text{dot}}_t$, with $g = \mathrm{sigmoid}(\gamma)$.
-        \item[\textcolor{red}{$\blacktriangleright$}] The memory is $d_h^2 + d_h$ numbers per head and layer. Perplexity on PG19 books: 9.65, against 11.37 for Memorizing Transformers (earlier in this lecture) with a 114$\times$ larger memory. A 1B model fine-tuned on 5K-token inputs finds a passkey hidden in 1M tokens; an 8B model set the BookSum (book summarisation) record at 500K.
+        \item[\textcolor{red}{$\blacktriangleright$}] The memory is $d_h^2 + d_h$ numbers per head and layer. Perplexity on PG19 books: 9.65, against 11.37 for Memorizing Transformers with a 114$\times$ larger memory. A 1B model fine-tuned on 5K-token inputs finds a passkey hidden in 1M tokens; an 8B model set the BookSum (book summarisation) record at 500K.
       \end{itemize}
     \column{0.42\textwidth}
       \centering
@@ -152,7 +152,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] Every memory in this section has a fixed size, so the copying result (covered earlier) applies.
+        \item[\textcolor{red}{$\blacktriangleright$}] Every memory in this section has a fixed size, so the copying result applies.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Recall-heavy tasks} (table): Gated DeltaNet trails the Transformer by 6.4 points on average and by 28.5 on FDA. Attention layers whose 2K window spans these inputs close the gap.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Needles:} trained on 4K tokens, Gated DeltaNet finds a number hidden in essays 100.0\% of the time at 1K tokens and 29.6\% at 8K.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{At scale:} from 410M to 7B parameters, MiniMax's lightning attention (a linear attention) matched softmax on common-sense tasks but fell short at needle retrieval, so its production model keeps one softmax layer in eight.
@@ -201,7 +201,7 @@
   \raggedright
   \vspace{-0.3em}
   \begin{itemize}\footnotesize\itemsep0.1em
-    \item[\textcolor{red}{$\blacktriangleright$}] Jamba (covered earlier) keeps one attention layer in eight beside Mamba layers; Qwen3-Next and Kimi Linear keep one in four beside delta-rule memories.
+    \item[\textcolor{red}{$\blacktriangleright$}] Jamba keeps one attention layer in eight beside Mamba layers; Qwen3-Next and Kimi Linear keep one in four beside delta-rule memories.
     \item[\textcolor{red}{$\blacktriangleright$}] Kimi Linear at 1M tokens: 1.84\,ms per output token against 11.48\,ms for full MLA (over 6$\times$, helped by larger batches; 2.2$\times$ at batch size 1). Its ablation preferred 3:1 to 7:1, 15:1 or full attention alone.
     \item[\textcolor{red}{$\blacktriangleright$}] MiniMax returned to full attention for M2 (Oct.\ 2025): its hybrid had shown multi-hop reasoning deficits at scale, and other hidden weaknesses could not be ruled out.
   \end{itemize}

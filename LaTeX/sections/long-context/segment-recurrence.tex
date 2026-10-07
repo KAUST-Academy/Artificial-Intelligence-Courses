@@ -5,7 +5,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] Split $n$ tokens into segments of $s$ tokens and process them in order, carrying a memory of $M$ vectors from one segment to the next. Attention then costs about $n\,(s+M)$ instead of $n^2$.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cached states.} Layer $\ell$ of segment $\tau$ also attends to the layer-$(\ell-1)$ states that segment $\tau-1$ left behind. A \textbf{stop-gradient} makes this cache a constant in the backward pass, so no gradient enters the previous segment.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Reach.} Each layer looks one segment further back, so $L$ layers reach about $L\cdot s$ tokens.
-        \item[\textcolor{red}{$\blacktriangleright$}] Sliding-window attention (covered earlier) with window $w$ also reaches $L\cdot w$ through depth, but runs over the whole sequence in one pass. Here only one segment and its cache are held at a time.
+        \item[\textcolor{red}{$\blacktriangleright$}] Sliding-window attention with window $w$ also reaches $L\cdot w$ through depth, but runs over the whole sequence in one pass. Here only one segment and its cache are held at a time.
       \end{itemize}
     \column{0.52\textwidth}
       \centering
@@ -72,7 +72,7 @@
     \column{0.58\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Absolute positions break.} Every segment reuses positions $1,\dots,s$, so token $j$ of segment $\tau$ and token $j$ of segment $\tau+1$ get the same position vector, and the model cannot tell which came first.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fix:} put the distance $i-j$ into every attention score, as RoPE and ALiBi (covered earlier) also do. For query $i$ and key $j$:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fix:} put the distance $i-j$ into every attention score, as RoPE and ALiBi also do. For query $i$ and key $j$:
           \[ A_{i,j} = \underbrace{q_i^{\top} k_j}_{(a)} + \underbrace{q_i^{\top} W_{k,R}\, r_{i-j}}_{(b)} + \underbrace{u^{\top} k_j}_{(c)} + \underbrace{v^{\top} W_{k,R}\, r_{i-j}}_{(d)} \]
           (a) content addressing, (b) a position term that depends on the query's content, (c) a global content bias, (d) a global position bias. $q_i$ and $k_j$ come from content alone, $r_{i-j}$ is a fixed sinusoidal encoding of the distance, $W_{k,R}$ is its key projection, and $u, v \in \mathbb{R}^{d}$ are learned vectors shared by all query positions.
         \item[\textcolor{red}{$\blacktriangleright$}] Fixed sinusoids let a model trained with a short memory use a longer one: on WikiText-103, 384 tokens of attention in training and 1,600 at evaluation.
@@ -111,7 +111,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] Each layer keeps two first-in, first-out memories: the last $M$ states, as in Transformer-XL, and $M_c$ compressed states. The $s$ states evicted by each new segment go through a compression function $f_c$ that returns $s/c$ compressed states ($c$: compression rate).
         \item[\textcolor{red}{$\blacktriangleright$}] Attention reads compressed memory, memory and segment together, so $L$ layers reach $L\,(s+M+c\,M_c)$ tokens.
         \item[\textcolor{red}{$\blacktriangleright$}] $f_c$ tried: pooling or 1D convolution with kernel and stride $c$, dilated convolution, or keeping the most-attended memories.
-        \item[\textcolor{red}{$\blacktriangleright$}] $f_c$ is trained locally, without backpropagation through time (BPTT, covered earlier) over long unrolls, by an \textbf{attention-reconstruction} loss:
+        \item[\textcolor{red}{$\blacktriangleright$}] $f_c$ is trained locally, without backpropagation through time (BPTT) over long unrolls, by an \textbf{attention-reconstruction} loss:
           \[ \mathcal{L}_{\mathrm{attn}} = \big\lVert \mathrm{attn}(h, m) - \mathrm{attn}\big(h, f_c(m)\big) \big\rVert_2 \]
           $h$: the segment's states; $m$: the evicted memories; $\mathrm{attn}$: the layer's content-only attention, frozen. What nothing attends to may be dropped. Best on Enwik8: a convolution with this loss, 0.973 bits per character (0.984 with an auto-encoding loss).
       \end{itemize}
@@ -133,7 +133,7 @@
     \column{0.56\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] Layer 9 of 12 is \textbf{kNN-augmented}. After each 512-token training step, its (key, value) pairs join an external memory that keeps the latest $M$ pairs per head (up to 262K) and is emptied at each new document.
-        \item[\textcolor{red}{$\blacktriangleright$}] Each query fetches its top $k=32$ keys by approximate $k$-nearest-neighbour (kNN) search, as RAG retrievers do (covered earlier); about 90\% of the true top $k$ come back. A learned gate per head mixes the two results:
+        \item[\textcolor{red}{$\blacktriangleright$}] Each query fetches its top $k=32$ keys by approximate $k$-nearest-neighbour (kNN) search, as RAG retrievers do; about 90\% of the true top $k$ come back. A learned gate per head mixes the two results:
           \[ g = \sigma(b_g), \qquad V_a = g \odot V_m + (1-g) \odot V_c \]
           $V_a$: the combined attention output; $V_m$: attention over the retrieved pairs; $V_c$: local attention; $b_g$: a learned scalar per head; $\sigma$: the sigmoid.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{No gradient into the memory}, so stored pairs are reused across steps and $M$ can grow. Old keys go stale as the weights change; normalizing keys and queries at least keeps old and new keys at the same magnitude.
@@ -188,7 +188,7 @@
 \begin{frame}{Recurrent Memory at Millions of Tokens}
   \begin{itemize}\footnotesize\itemsep0.3em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Curriculum.} Bulatov et al.\ (AAAI 2024) give a pretrained BERT 10 memory tokens and 512-token segments and add one segment each time training converges. Trained on up to 7 segments, it retrieved stored facts across 4,096 segments (about 2 million tokens) in a constant 3.6\,GB of GPU memory.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{BABILong} (introduced earlier in this lecture: facts hidden in long distractor text). RMT and ARMT (associative RMT) on GPT-2 (137M) are fine-tuned on 32 segments (16K tokens); ARMT adds a per-layer associative matrix memory (covered later in this lecture). Accuracy, \% ($^{*}$\,best model; ARMT mean 49.6):
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{BABILong} (facts hidden in long distractor text). RMT and ARMT (associative RMT) on GPT-2 (137M) are fine-tuned on 32 segments (16K tokens); ARMT adds a per-layer associative matrix memory. Accuracy, \% ($^{*}$\,best model; ARMT mean 49.6):
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize
@@ -204,7 +204,7 @@
     \bottomrule
   \end{tabular}\par}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost.} Segments run one after another, and BPTT stores every unrolled segment: Chevalier et al., building AutoCompressors (the summary vectors seen earlier in this lecture) on RMT, ran out of GPU memory fine-tuning a 2.7B RMT baseline on 30K tokens. A fixed memory also drops facts (three-fact columns).
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost.} Segments run one after another, and BPTT stores every unrolled segment: Chevalier et al., building AutoCompressors on RMT, ran out of GPU memory fine-tuning a 2.7B RMT baseline on 30K tokens. A fixed memory also drops facts (three-fact columns).
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Bulatov et al., ``Beyond Attention: Breaking the Limits of Transformer Context Length with Recurrent Memory,'' AAAI 2024, \href{https://doi.org/10.1609/aaai.v38i16.29722}{doi:10.1609/aaai.v38i16.29722}; Kuratov et al., ``BABILong: Testing the Limits of LLMs with Long Context Reasoning-in-a-Haystack,'' NeurIPS 2024, \href{https://arxiv.org/abs/2406.10149v2}{arXiv:2406.10149v2}; Rodkin et al., ``Associative Recurrent Memory Transformer,'' ICML 2024 Workshop, \href{https://arxiv.org/abs/2407.04841v2}{arXiv:2407.04841v2}, Table~1; Chevalier et al., ``Adapting Language Models to Compress Contexts,'' EMNLP 2023, \href{https://arxiv.org/abs/2305.14788v2}{arXiv:2305.14788v2}, Section~4.2.\par}

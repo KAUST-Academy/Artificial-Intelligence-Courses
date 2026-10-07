@@ -5,7 +5,7 @@
         \item \textbf{Finding} (Vaze et al., ICLR 2022): on standard open-set benchmarks, AUROC grows almost linearly with closed-set accuracy, Pearson $\rho = 0.95$ across MSP, ARPL (Adversarial Reciprocal Point Learning) and ARPL+CS (ARPL with generated confusing samples).
         \item \textbf{ImageNet scale:} across CNN, ViT and MLP-Mixer (all-MLP) classifiers, $\rho = 0.88$ on the Hard unknown split and $0.63$ on the Easy one (next slide); within ResNets, $0.99$ and $1.00$. ViT-B/16 lies above the trend, but its ImageNet-21K pre-training contains the ``unknown'' classes.
         \item \textbf{Proposed reason:} cross-entropy is a proper scoring rule (optimal at the true probabilities), so lower test error should bring better calibration (confidence matching accuracy), and low confidence then flags a new class more reliably.
-        \item \textbf{Recipe:} longer training, stronger augmentation, label smoothing, then MLS scoring (both earlier in this lecture). TinyImageNet AUROC: 57.7 for the published MSP baseline, 83.0 for MLS; ARPL+CS: 78.2 published, 82.5 retrained. Over six benchmarks MLS gains 15.6 points on average, 0.03 from the retrained ARPL+CS.
+        \item \textbf{Recipe:} longer training, stronger augmentation, label smoothing, then MLS scoring. TinyImageNet AUROC: 57.7 for the published MSP baseline, 83.0 for MLS; ARPL+CS: 78.2 published, 82.5 retrained. Over six benchmarks MLS gains 15.6 points on average, 0.03 from the retrained ARPL+CS.
       \end{itemize}
     \column{0.40\textwidth}
       \centering
@@ -23,7 +23,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item \textbf{Semantic Shift Benchmark (SSB):} unknown classes of CUB, Stanford Cars and FGVC-Aircraft (earlier in this lecture) are binned Easy, Medium or Hard by attribute similarity to the known classes (CUB: 312 attributes, e.g.\ \texttt{has\_bill\_shape::hooked}).
+        \item \textbf{Semantic Shift Benchmark (SSB):} unknown classes of CUB, Stanford Cars and FGVC-Aircraft are binned Easy, Medium or Hard by attribute similarity to the known classes (CUB: 312 attributes, e.g.\ \texttt{has\_bill\_shape::hooked}).
         \item \textbf{ImageNet:} the 1K classes are known; ImageNet-21K-P classes sorted by summed hierarchy distance to them form 1,000-class Easy and Hard sets.
         \item Old splits (6 known, 4 unknown CIFAR-10 classes) leave novelty undefined. Hard costs MLS 5.9 AUROC points on ImageNet; 10$\times$ more random unknowns cost about 0.6.
       \end{itemize}
@@ -70,7 +70,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item \textbf{Zero-shot OOD detection:} only the $K$ ID class names are given, no ID images. MCM (Maximum Concept Matching; Ming et al., NeurIPS 2022) scores an image $x$ with CLIP (covered earlier):
+        \item \textbf{Zero-shot OOD detection:} only the $K$ ID class names are given, no ID images. MCM (Maximum Concept Matching; Ming et al., NeurIPS 2022) scores an image $x$ with CLIP:
           \[ S_{\mathrm{MCM}}(x) = \max_{i} \frac{e^{s_i(x)/\tau}}{\sum_{j=1}^{K} e^{s_j(x)/\tau}} \]
           $s_i(x)$: cosine between the image embedding of $x$ and the text embedding of ``this is a photo of a $\langle y_i \rangle$''; $\tau$: temperature (1 in the paper). Reject $x$ if $S_{\mathrm{MCM}}(x) < \lambda$, with $\lambda$ passing 95\% of ID images.
       \end{itemize}
@@ -116,7 +116,7 @@
       \vspace{0.2em}
       {\scriptsize ImageNet-1K as ID, CLIP ViT-B/16 (fine-tuned on ImageNet-1K where marked), mean of four OOD sets; MCM as re-run by Jiang et al. Jiang et al., ``Negative Label Guided OOD Detection with Pretrained Vision-Language Models,'' ICLR 2024, \href{https://arxiv.org/abs/2403.20078v1}{arXiv:2403.20078v1}, Table~1.\par}
       \begin{itemize}\scriptsize
-        \item \textbf{LoCoOp} (Miyai et al., NeurIPS 2023) trains CoOp prompts (earlier in this lecture) on a few labelled images and pushes patch features whose top-200 classes miss the true label, mostly background, toward uniform ID predictions. 16-shot AUROC with MCM: 92.69 (CoOp: 91.93).
+        \item \textbf{LoCoOp} (Miyai et al., NeurIPS 2023) trains CoOp prompts on a few labelled images and pushes patch features whose top-200 classes miss the true label, mostly background, toward uniform ID predictions. 16-shot AUROC with MCM: 92.69 (CoOp: 91.93).
       \end{itemize}
   \end{columns}
 \end{frame}
@@ -126,7 +126,7 @@
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
         \item \textbf{Setting} (GCD: Generalized Category Discovery; Vaze et al., CVPR 2022): labelled images $\mathcal{D}_L$ of classes $\mathcal{Y}_L$, unlabelled images $\mathcal{D}_U$ of classes $\mathcal{Y}_U \supset \mathcal{Y}_L$; every image in $\mathcal{D}_U$ gets an old class or a new cluster.
-        \item \textbf{GCD:} fine-tune a DINO ViT-B/16 (covered earlier) with SupCon (earlier in this lecture) on $\mathcal{D}_L$ plus self-supervised contrastive learning on all images, then run $k$-means with each labelled image fixed to its class's cluster.
+        \item \textbf{GCD:} fine-tune a DINO ViT-B/16 with SupCon on $\mathcal{D}_L$ plus self-supervised contrastive learning on all images, then run $k$-means with each labelled image fixed to its class's cluster.
         \item \textbf{Metric:} clustering accuracy (ACC), the fraction of $\mathcal{D}_U$ labelled correctly under the best one-to-one cluster-to-class map, found once by the Hungarian algorithm (an exact solver for one-to-one assignment); reported on All, Old ($\mathcal{Y}_L$) and New classes.
         \item \textbf{SimGCD} (Wen et al., ICCV 2023): cosine prototypes on backbone features, trained toward the sharpened prediction of another view (self-distillation); $-\varepsilon H(\bar{\mathbf{p}})$, the weighted entropy of the batch-mean prediction $\bar{\mathbf{p}}$, counters the bias toward Old classes. CUB inference: 18\,s vs 9\,min for $k$-means.
       \end{itemize}

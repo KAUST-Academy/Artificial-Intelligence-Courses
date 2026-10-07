@@ -28,7 +28,7 @@
     \midrule
     OCR (optical character recognition) & words and their boxes, from pixels; born-digital PDFs already store both & FUNSD, end to end: Tesseract scores 3.4\%, Google Vision 76.4\% (edit-distance similarity) \\
     \addlinespace[0.15em]
-    Layout analysis & labelled region boxes from object detection (covered in the CV course) & DocLayNet: 80{,}863 pages, 11 classes; best detector 76.8 mAP, annotators 82--83 \\
+    Layout analysis & labelled region boxes from object detection & DocLayNet: 80{,}863 pages, 11 classes; best detector 76.8 mAP, annotators 82--83 \\
     \addlinespace[0.15em]
     Reading order & the order in which a person reads the regions & OCR's top-to-bottom order breaks columns; ReadingBank: 500{,}000 ordered pages \\
     \addlinespace[0.15em]
@@ -45,11 +45,11 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{LayoutLM:} BERT (covered earlier) plus a \textbf{2-D position embedding} of each OCR token's box, with corners scaled to a 0--1000 grid:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{LayoutLM:} BERT plus a \textbf{2-D position embedding} of each OCR token's box, with corners scaled to a 0--1000 grid:
           \[ \mathbf{h}_i = \mathbf{e}_i + X(x_{0,i}) + Y(y_{0,i}) + X(x_{1,i}) + Y(y_{1,i}) \]
           {\scriptsize $\mathbf{h}_i$: transformer input for token $i$; $\mathbf{e}_i$: its usual BERT embedding; $(x_{0,i}, y_{0,i})$ and $(x_{1,i}, y_{1,i})$: top-left and bottom-right corners of its box; $X$, $Y$: learned lookup tables for $x$ and $y$.\par}
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Pre-training:} mask tokens but keep their boxes, then predict the tokens, over 11M scanned pages whose words and boxes come from the Tesseract OCR engine. Downstream, Faster R-CNN (covered in the CV course) features of each token's image region are added.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{LayoutLMv3:} no CNN; image patches enter through a linear layer, as in ViT (covered in the CV course). It masks 30\% of text tokens and about 40\% of patches, predicts both, and adds \textbf{word-patch alignment}: is the patch under an unmasked word masked?
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Pre-training:} mask tokens but keep their boxes, then predict the tokens, over 11M scanned pages whose words and boxes come from the Tesseract OCR engine. Downstream, Faster R-CNN features of each token's image region are added.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{LayoutLMv3:} no CNN; image patches enter through a linear layer, as in ViT. It masks 30\% of text tokens and about 40\% of patches, predicts both, and adds \textbf{word-patch alignment}: is the patch under an unmasked word masked?
       \end{itemize}
     \column{0.48\textwidth}
       \centering
@@ -82,14 +82,14 @@
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{OCR-free:} one network maps page pixels straight to the target text; no OCR engine, no word boxes.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Model:} a Swin Transformer encoder (covered in the CV course) reads a 2560$\times$1920 page; the decoder is the first four layers of BART, a pre-trained transformer encoder-decoder language model, emitting field tags that map one-to-one to JSON.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Model:} a Swin Transformer encoder reads a 2560$\times$1920 page; the decoder is the first four layers of BART, a pre-trained transformer encoder-decoder language model, emitting field tags that map one-to-one to JSON.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Pre-training is reading:} predict a page's text in reading order (``pseudo-OCR'') over 11M scanned pages and synthetic SynthDoG pages, 0.5M in each of four languages. A task prompt then selects classification, question answering or parsing.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Faster at equal accuracy:} RVL-CDIP document classification reaches 95.30\% at 752\,ms per page, against 95.25\% at 1{,}489\,ms for the OCR-based LayoutLMv2, OCR call included. On CORD receipts, field F1 is 84.1 against 78.9 for LayoutXLM, LayoutLMv2's multilingual version.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Weak spots:} DocVQA (covered earlier) scores 67.5 against 78.1 ANLS, a normalized edit-distance score; tiny text is lost at the fixed input resolution; one answer returned a different number from the same page.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Since then:} page-image retrieval (ColPali) and vision-language model (VLM) document parsers, both covered earlier, carry the OCR-free idea further.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Weak spots:} DocVQA scores 67.5 against 78.1 ANLS, a normalized edit-distance score; tiny text is lost at the fixed input resolution; one answer returned a different number from the same page.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Since then:} page-image retrieval (ColPali) and vision-language model (VLM) document parsers carry the OCR-free idea further.
       \end{itemize}
   \end{columns}
 \end{frame}
@@ -114,8 +114,8 @@
   \end{tabular}\par}
   \vspace{0.3em}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Hybrid:} olmOCR's document-anchoring adds the PDF's own text blocks and coordinates to the VLM prompt; from the image alone, models tended to ``invent larger texts when the image data was ambiguous'' (see the hallucination section of this lecture).
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{For retrieval:} the parsed elements become the structure-aware chunks of the scalable RAG section. Keep each chunk's page and box, so every cited sentence opens as a highlighted region of its page.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Hybrid:} olmOCR's document-anchoring adds the PDF's own text blocks and coordinates to the VLM prompt; from the image alone, models tended to ``invent larger texts when the image data was ambiguous''.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{For retrieval:} the parsed elements become structure-aware chunks. Keep each chunk's page and box, so every cited sentence opens as a highlighted region of its page.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Livathinos et al., ``Docling,'' AAAI 2025 Workshop, \href{https://arxiv.org/abs/2501.17887v1}{arXiv:2501.17887v1}, Secs.~1--3, 5.4, 6; Poznanski et al., ``olmOCR,'' \href{https://arxiv.org/abs/2502.18443v3}{arXiv:2502.18443v3}, Sec.~2.2, App.~A, Table~6.\par}

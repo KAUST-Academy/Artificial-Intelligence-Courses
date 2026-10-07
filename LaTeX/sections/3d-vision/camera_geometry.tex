@@ -209,8 +209,8 @@
         \item \textbf{Pure rotation} (no translation, as for a panorama): $\tilde{\mathbf{x}}'\sim KRK^{-1}\tilde{\mathbf{x}}$ for every point, whatever its depth.
         \item \textbf{DLT} (direct linear transform): with $\mathbf{a}^\top,\mathbf{b}^\top,\mathbf{c}^\top$ the rows of $H$, $u'=\mathbf{a}^\top\tilde{\mathbf{x}}/\mathbf{c}^\top\tilde{\mathbf{x}}$ and $v'=\mathbf{b}^\top\tilde{\mathbf{x}}/\mathbf{c}^\top\tilde{\mathbf{x}}$ give two equations per match,
         \[ \mathbf{a}^\top\tilde{\mathbf{x}}-u'\,\mathbf{c}^\top\tilde{\mathbf{x}}=0,\qquad \mathbf{b}^\top\tilde{\mathbf{x}}-v'\,\mathbf{c}^\top\tilde{\mathbf{x}}=0, \]
-        linear in the 9 entries $\mathbf{h}$ of $H$. Stack $n\geq4$ matches into $A\mathbf{h}=\mathbf{0}$ ($A$ is $2n\times9$); $\mathbf{h}$ is the right singular vector of $A$ with the smallest singular value (SVD, covered earlier). First translate and scale each image's points to zero mean and mean distance $\sqrt{2}$ (matrices $T$, $T'$), solve for $\hat{H}$, then undo it: $H=T'^{-1}\hat{H}\,T$.
-        \item Wrong matches (outliers) ruin this fit; RANSAC (random sample consensus, two-view section) removes them.
+        linear in the 9 entries $\mathbf{h}$ of $H$. Stack $n\geq4$ matches into $A\mathbf{h}=\mathbf{0}$ ($A$ is $2n\times9$); $\mathbf{h}$ is the right singular vector of $A$ with the smallest singular value (SVD). First translate and scale each image's points to zero mean and mean distance $\sqrt{2}$ (matrices $T$, $T'$), solve for $\hat{H}$, then undo it: $H=T'^{-1}\hat{H}\,T$.
+        \item Wrong matches (outliers) ruin this fit; RANSAC (random sample consensus) removes them.
       \end{itemize}
     \column{0.38\textwidth}
       \centering

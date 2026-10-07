@@ -1,9 +1,9 @@
 \begin{frame}{What a Long Context Is For}
   \begin{itemize}\itemsep0.45em
     \item[\textcolor{red}{$\blacktriangleright$}] Many real inputs do not fit in a few thousand tokens: a code repository and the issue filed against it, a contract or a book, hours of transcribed audio, and the trace an agent accumulates as tool calls pile up.
-    \item[\textcolor{red}{$\blacktriangleright$}] Context windows have grown from 2K tokens to 128K and beyond (covered earlier). The Gemini~1.5 report goes further: \textbf{near-perfect retrieval (\textgreater 99\%) up to at least 10M tokens} in its experiments.
+    \item[\textcolor{red}{$\blacktriangleright$}] Context windows have grown from 2K tokens to 128K and beyond. The Gemini~1.5 report goes further: \textbf{near-perfect retrieval (\textgreater 99\%) up to at least 10M tokens} in its experiments.
     \item[\textcolor{red}{$\blacktriangleright$}] A long window lets a model use material it was never trained on. Given a grammar manual for Kalamang, a language with fewer than 200 speakers, Gemini~1.5 translated English to Kalamang at a level similar to a person who learned from the same materials.
-    \item[\textcolor{red}{$\blacktriangleright$}] As noted earlier in the course, the window is a capacity, and an expensive one. Three questions organise this lecture: what a long context costs, how much of it a model actually uses, and which techniques make long inputs affordable.
+    \item[\textcolor{red}{$\blacktriangleright$}] The window is a capacity, and an expensive one. Three questions organise this lecture: what a long context costs, how much of it a model actually uses, and which techniques make long inputs affordable.
   \end{itemize}
   \vspace{0.2em}
   {\scriptsize Gemini Team, Google, ``Gemini 1.5: Unlocking Multimodal Understanding Across Millions of Tokens of Context,'' 2024, \href{https://arxiv.org/abs/2403.05530v5}{arXiv:2403.05530v5}, abstract.}
@@ -17,7 +17,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Memory.} The KV cache holds a key and a value per token, layer and KV head:
           \[ \text{bytes} = 2 \cdot L \cdot h_{kv} \cdot d_h \cdot (\text{bytes per value}) \cdot n, \]
           for $L$ layers and $h_{kv}$ KV heads of dimension $d_h$. It is linear in $n$ and kept per request.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Use.} Positions past the training length are out of distribution (RoPE rescaling, covered earlier), and models under-use even trained positions (next section).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Use.} Positions past the training length are out of distribution (RoPE rescaling), and models under-use even trained positions.
         \item[\textcolor{red}{$\blacktriangleright$}] Llama~3 trains on long sequences last because ``the compute in self-attention layers grows quadratically in the sequence length.''
       \end{itemize}
     \column{0.44\textwidth}
@@ -64,7 +64,6 @@
     \node[det, anchor=north] at (4.6,0.3) {Segment recurrence, linear-attention memory\\[0.2em]\textbf{Shrinks:} memory to a fixed size\\[0.2em]\textbf{Risk:} a fixed state forgets details};
   \end{tikzpicture}\\[0.8em]
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Building blocks covered earlier}, used here without re-deriving them: FlashAttention, GQA and MLA, KV-cache quantization and paging, sliding-window attention, state-space models, and RoPE rescaling.
     \item[\textcolor{red}{$\blacktriangleright$}] Each family trades exactness for cost in a different place. The lecture first measures how much context models really use, then takes the three families in turn and ends with how to choose between them and retrieval.
   \end{itemize}
 \end{frame}

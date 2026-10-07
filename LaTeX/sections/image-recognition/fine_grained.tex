@@ -17,7 +17,7 @@
 \end{frame}
 
 \begin{frame}{Fine-Grained Benchmarks}
-  These benchmarks recur throughout this section; each reports classification accuracy on a fixed test split.
+  Each of these benchmarks reports classification accuracy on a fixed test split.
   \vspace{0.3em}
 
   {\centering\scriptsize
@@ -37,7 +37,7 @@
     \bottomrule
   \end{tabular}\par}
   \vspace{0.2em}
-  {\scriptsize CUB, Stanford Cars and FGVC-Aircraft return later in this lecture. Wah et al.\ 2011; Krause et al., ``3D Object Representations for Fine-Grained Categorization,'' ICCV Workshops 2013, and its dataset page (196 released classes); Maji et al., ``Fine-Grained Visual Classification of Aircraft,'' 2013, \href{https://arxiv.org/abs/1306.5151v1}{arXiv:1306.5151v1}; Van Horn et al., CVPR 2015, Sec.~3--4; Van Horn et al., ``Benchmarking Representation Learning for Natural World Image Collections,'' CVPR 2021, \href{https://arxiv.org/abs/2103.16483v2}{arXiv:2103.16483v2}, Sec.~3.1 and Tables~1--2.\par}
+  {\scriptsize Wah et al.\ 2011; Krause et al., ``3D Object Representations for Fine-Grained Categorization,'' ICCV Workshops 2013, and its dataset page (196 released classes); Maji et al., ``Fine-Grained Visual Classification of Aircraft,'' 2013, \href{https://arxiv.org/abs/1306.5151v1}{arXiv:1306.5151v1}; Van Horn et al., CVPR 2015, Sec.~3--4; Van Horn et al., ``Benchmarking Representation Learning for Natural World Image Collections,'' CVPR 2021, \href{https://arxiv.org/abs/2103.16483v2}{arXiv:2103.16483v2}, Sec.~3.1 and Tables~1--2.\par}
 \end{frame}
 
 \begin{frame}{Before Transformers: Parts and Bilinear Pooling}
@@ -65,11 +65,11 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.54\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item \textbf{Backbone}: ViT-B/16 (covered earlier) pretrained on ImageNet-21k (about 14M images, 21k classes), fine-tuned at 448 pixels on overlapping patches (size $P=16$, stride $S=12$): $37^2=1369$ patches instead of $28^2=784$, keeping local structure that a non-overlapping split cuts apart.
+        \item \textbf{Backbone}: ViT-B/16 pretrained on ImageNet-21k (about 14M images, 21k classes), fine-tuned at 448 pixels on overlapping patches (size $P=16$, stride $S=12$): $37^2=1369$ patches instead of $28^2=784$, keeping local structure that a non-overlapping split cuts apart.
         \item \textbf{Part Selection Module (PSM)}: multiply the raw attention matrices of all layers before the last; for each head, keep the patch with the largest entry in the class-token row:
         \[ \mathbf{a}^{k}_{\text{final}}=\mathbf{a}^{k}_{L-1}\cdots\mathbf{a}^{k}_{1}\mathbf{a}^{k}_{0},\qquad j_k=\operatorname*{arg\,max}_{j\geq 1}\big(\mathbf{a}^{k}_{\text{final}}\big)_{0j} \]
         $\mathbf{a}^{k}_{l}$: attention matrix of head $k$ in layer $l$ (index 0 is the class token); $j_k$: patch kept for head $k$. The last layer sees only the class token and the $K$ kept patches.
-        \item \textbf{Contrastive loss} on the class tokens, added to cross-entropy: same-class pairs are pulled toward cosine similarity 1, and a different-class pair is pushed apart only while its similarity exceeds a margin $\alpha=0.4$. Pair losses are treated in detail later in this lecture.
+        \item \textbf{Contrastive loss} on the class tokens, added to cross-entropy: same-class pairs are pulled toward cosine similarity 1, and a different-class pair is pushed apart only while its similarity exceeds a margin $\alpha=0.4$.
         \item \textbf{CUB}: 91.7\% against 90.3\% for the plain ViT-B/16 (PSM $+0.7$, loss $+0.5$, overlap $+0.2$ for $2.7\times$ the training time). On Stanford Cars its 94.8\% trails two 2020 CNN methods (95.1\%, 95.3\%).
       \end{itemize}
     \column{0.44\textwidth}
@@ -84,7 +84,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.54\textwidth}
       \centering
-      {\scriptsize Linear probes on frozen features (covered earlier), accuracy \% (mean per class for Aircraft). Cars, Aircraft, CUB: logistic regression (Table~8); iNat21: trained linear layer (Table~7).\par}
+      {\scriptsize Linear probes on frozen features, accuracy \% (mean per class for Aircraft). Cars, Aircraft, CUB: logistic regression (Table~8); iNat21: trained linear layer (Table~7).\par}
       \vspace{0.2em}
       {\scriptsize\setlength{\tabcolsep}{4pt}
       \begin{tabular}{l r r r r}
@@ -101,7 +101,7 @@
       \vspace{0.3em}
       \begin{itemize}\scriptsize\itemsep0.25em
         \item DINOv2 leads the best earlier self-supervised features by 14.8 points on both Cars and Aircraft, and beats text-supervised OpenCLIP on Aircraft and CUB.
-        \item \textbf{Caveat}: LVD-142M, DINOv2's curated training set (covered earlier), includes 1M web images retrieved near the training split of each of Cars, Aircraft and CUB. iNaturalist was left out of that retrieval, and there DINOv2 leads OpenCLIP by 9.7 points.
+        \item \textbf{Caveat}: LVD-142M, DINOv2's curated training set, includes 1M web images retrieved near the training split of each of Cars, Aircraft and CUB. iNaturalist was left out of that retrieval, and there DINOv2 leads OpenCLIP by 9.7 points.
       \end{itemize}
     \column{0.44\textwidth}
       \centering
@@ -121,7 +121,7 @@
       \end{tabular}\par}
       \vspace{0.3em}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item The probe reads CLIP's image features before the final projection, and zero-shot CLIP is also a linear classifier on them, so the fine-grained weakness (covered earlier) comes from the class weights: weights from class-name prompts against weights fitted to labelled images. The gap is 34.4 points on Aircraft and 1.6 on Pets.
+        \item The probe reads CLIP's image features before the final projection, and zero-shot CLIP is also a linear classifier on them, so the fine-grained weakness comes from the class weights: weights from class-name prompts against weights fitted to labelled images. The gap is 34.4 points on Aircraft and 1.6 on Pets.
         \item Across CLIP's evaluation datasets, zero-shot accuracy is mostly 10--25 points below the linear probe.
       \end{itemize}
   \end{columns}
@@ -139,7 +139,7 @@
       \begin{itemize}\scriptsize\itemsep0.3em
         \item \textbf{TreeOfLife-10M}: 10.4M images of 454,103 taxa, merged from iNat21 (2.7M), BIOSCAN-1M laboratory photos of insects (1.1M) and the Encyclopedia of Life (6.6M), relabelled into one taxonomy.
         \item \textbf{Taxonomic name}: the seven ranks from kingdom to species joined into one string. The text encoder is causal (each token attends only to earlier tokens), so each rank is encoded given the ranks above it (panel b), and an unseen species can reuse what was learned for its genus and family.
-        \item \textbf{Training}: the CLIP objective (covered earlier), starting from OpenAI's CLIP ViT-B/16; 100 epochs at batch size 32,768.
+        \item \textbf{Training}: the CLIP objective, starting from OpenAI's CLIP ViT-B/16; 100 epochs at batch size 32,768.
       \end{itemize}
     \column{0.48\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
@@ -189,7 +189,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item Vision-language models (VLMs, covered earlier) such as LLaVA-1.5 feed image-encoder outputs through a small projector into a language model; LLaVA-1.5 uses CLIP-L (CLIP ViT-L/14 at 336 pixels). With all class names in the prompt, an answer counts as correct if it contains the true label.
+        \item Vision-language models (VLMs) such as LLaVA-1.5 feed image-encoder outputs through a small projector into a language model; LLaVA-1.5 uses CLIP-L (CLIP ViT-L/14 at 336 pixels). With all class names in the prompt, an answer counts as correct if it contains the true label.
         \item \textbf{Gap}: on Stanford Cars every VLM tested trails CLIP-L used zero-shot. LLaVA-1.5-7B scores 10.2\% on Flowers102, where its own encoder scores 76.0\%.
         \item \textbf{The information is kept}: a linear probe on LLaVA-1.5-7B's last-layer features reaches 82.8\% on Cars, and training only the projector to generate the label text reaches 90.4\% (CLIP-L probe: 91.5\%).
         \item \textbf{Data decides}: ImageNet classes named fewer than 10 times in LLaVA's training data score 3.0\%, classes named over 10,000 times 82.7\% (rank correlation 0.76).

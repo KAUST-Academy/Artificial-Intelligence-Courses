@@ -45,7 +45,7 @@
     \node[head] at (12.25,3.3) {SLAM};
     \node[body] at (12.25,3.025) {\parbox[t][2.25cm][t]{3.2cm}{\raggedright\hyphenpenalty10000 \textbf{In:} a live video stream\\[0.2em] \textbf{Out:} the camera trajectory and a map, updated online\\[0.2em] \textbf{Unknown:} pose and map at the same time, with no map given in advance}};
     \node[slab, fill=orange!16] at (7,0.25) {\textbf{Correspondences:} the same 3D point identified in several images, or a learned prior when only one image exists};
-    \node[slab, fill=green!14] at (7,-0.35) {\textbf{Projection model:} how a 3D point becomes a pixel (camera geometry, next section)};
+    \node[slab, fill=green!14] at (7,-0.35) {\textbf{Projection model:} how a 3D point becomes a pixel (camera geometry)};
   \end{tikzpicture}}\\[0.6em]
   \begin{itemize}\footnotesize\itemsep0.3em
     \item SLAM stands for simultaneous localization and mapping. All four problems invert the same projection and differ in what is known: the cameras, the scene, or neither.

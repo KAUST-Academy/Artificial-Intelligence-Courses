@@ -22,10 +22,10 @@
     \column{0.56\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
         \item \textbf{SuperPoint} (DeTone et al., 2018): one fully convolutional network, a shared encoder with two heads (keypoint heatmap, 256-D descriptors), run once per image. Self-supervised: a detector trained on rendered synthetic shapes with known corners labels real images by \emph{homographic adaptation}, pooling its detections over many random homographic warps of each image.
-        \item \textbf{SuperGlue} (covered earlier) matches two keypoint sets jointly with self- and cross-attention and a Sinkhorn assignment.
+        \item \textbf{SuperGlue} matches two keypoint sets jointly with self- and cross-attention and a Sinkhorn assignment.
         \item \textbf{LightGlue} (Lindenberger et al., 2023) adapts its computation to the pair. After each layer it predicts how confident each point is, stops once enough points are confident (depth), and drops points it is sure are unmatchable (width). For pose estimation on MegaDepth-1500 (1500 outdoor image pairs): 31.4\,ms per pair against 70.0\,ms for SuperGlue, at similar accuracy.
         \item \textbf{LoFTR} (Local Feature TRansformer; Sun et al., 2021) has no detector. Self- and cross-attention over a dense grid of 1/8-resolution features give coarse matches (mutual nearest neighbours), each refined to sub-pixel in a window of 1/2-resolution features. It finds matches on texture-less walls, where detectors struggle to find repeatable points.
-        \item \textbf{RoMa} (Edstedt et al., 2024): dense matching, a warp plus a certainty for every pixel, from frozen DINOv2 coarse features (covered earlier) and ConvNet fine features.
+        \item \textbf{RoMa} (Edstedt et al., 2024): dense matching, a warp plus a certainty for every pixel, from frozen DINOv2 coarse features and ConvNet fine features.
       \end{itemize}
     \column{0.42\textwidth}
       \centering
@@ -97,7 +97,7 @@
       \end{tikzpicture}
     \column{0.40\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
-        \item The baseline (defined above) joins the camera centres $C_1$ and $C_2$. Together with a scene point $\mathbf{X}$ it spans the \textbf{epipolar plane} (shaded).
+        \item The baseline joins the camera centres $C_1$ and $C_2$. Together with a scene point $\mathbf{X}$ it spans the \textbf{epipolar plane} (shaded).
         \item The \textbf{epipoles} $\mathbf{e}_1,\mathbf{e}_2$ are where the baseline pierces the image planes: $\mathbf{e}_2$ is the image of $C_1$ in view 2, and $\mathbf{e}_1$ the image of $C_2$ in view 1.
         \item The epipolar plane cuts the image planes in the \textbf{epipolar lines} $\mathbf{l}_1,\mathbf{l}_2$. Every point on the ray through $\mathbf{x}_1$ ($\mathbf{X}$, $\mathbf{X}'$, $\mathbf{X}''$) lies in that plane, so its image in view 2 lies on $\mathbf{l}_2$.
         \item The search for the match of $\mathbf{x}_1$ shrinks from the whole image (2D) to the line $\mathbf{l}_2$ (1D). All epipolar lines of an image pass through its epipole.
@@ -110,7 +110,7 @@
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item Take camera 1 as the world frame: a point at $\mathbf{X}_1$ in camera 1 is at $\mathbf{X}_2=R\,\mathbf{X}_1+\mathbf{t}$ in camera 2, so $\mathbf{t}$ is the position of $C_1$ seen from $C_2$.
-        \item The normalized coordinates (defined above), written homogeneously as $\hat{\mathbf{x}}_i=K_i^{-1}\tilde{\mathbf{x}}_i=(x_i,y_i,1)^\top$, are ray directions: $\mathbf{X}_i=Z_i\,\hat{\mathbf{x}}_i$, with $Z_i$ the depth in camera $i$.
+        \item The normalized coordinates, written homogeneously as $\hat{\mathbf{x}}_i=K_i^{-1}\tilde{\mathbf{x}}_i=(x_i,y_i,1)^\top$, are ray directions: $\mathbf{X}_i=Z_i\,\hat{\mathbf{x}}_i$, with $Z_i$ the depth in camera $i$.
         \item In camera-2 axes, $\hat{\mathbf{x}}_2$, $\mathbf{t}$ and $R\hat{\mathbf{x}}_1$ all lie in the epipolar plane, so they are coplanar: $\hat{\mathbf{x}}_2\cdot(\mathbf{t}\times R\hat{\mathbf{x}}_1)=0$, that is
         \[ \hat{\mathbf{x}}_2^\top E\,\hat{\mathbf{x}}_1=0,\qquad E=[\mathbf{t}]_\times R, \]
         with the cross-product matrix $[\mathbf{t}]_\times=\left[\begin{smallmatrix}0&-t_3&t_2\\ t_3&0&-t_1\\ -t_2&t_1&0\end{smallmatrix}\right]$, so that $[\mathbf{t}]_\times\mathbf{a}=\mathbf{t}\times\mathbf{a}$ for any vector $\mathbf{a}$.

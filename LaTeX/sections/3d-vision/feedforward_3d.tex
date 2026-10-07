@@ -53,7 +53,7 @@
   {\scriptsize Weinzaepfel et al., ``CroCo: Self-Supervised Pre-training for 3D Vision Tasks by Cross-View Completion,'' NeurIPS 2022, \href{https://arxiv.org/abs/2210.10716v2}{arXiv:2210.10716v2}, Figure~1.\par}
   \vspace{0.1em}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item \textbf{Left, auto-completion:} masked image modelling as in MAE (covered earlier). The visible patches alone leave the hidden content ambiguous, so the model leans on high-level semantics.
+    \item \textbf{Left, auto-completion:} masked image modelling as in MAE. The visible patches alone leave the hidden content ambiguous, so the model leans on high-level semantics.
     \item \textbf{Right, cross-view completion:} the decoder also attends, through cross-attention, to a second, unmasked view of the same scene. With 90\% of view 1's patches masked, that view resolves the ambiguity, provided the model relates the two viewpoints.
     \item \textbf{Use in DUSt3R:} its network is inspired by this layout, with one decoder per view so that each view cross-attends to the other, and starts training from CroCo~v2 weights (Weinzaepfel et al., ICCV 2023, \href{https://arxiv.org/abs/2211.10408v3}{arXiv:2211.10408v3}).
   \end{itemize}
@@ -67,7 +67,7 @@
     \[ \chi^{*} = \operatorname*{arg\,min}_{\chi,T,\sigma} \sum_{e\in\mathcal{E}} \sum_{v\in e} \sum_{i=1}^{HW} C_i^{v,e}\, \big\lVert \chi_i^{v} - \sigma_e T_e X_i^{v,e} \big\rVert \]
     $X^{v,e}, C^{v,e}$: pair $e$'s pointmap and confidence for image $v$, both in the frame of image $n$, so one transform per pair aligns both of its pointmaps.
     \item \textbf{Cameras from the same problem:} writing $\chi^n(\mathbf{p}) = T_n^{-1}\big(D^n(\mathbf{p})\,K_n^{-1}\tilde{\mathbf{p}}\big)$ returns poses $T_n$, intrinsics $K_n$ and depth maps $D^n$. The residual is a 3D distance, where bundle adjustment uses 2D reprojection error; gradient descent converges in a few hundred steps, seconds on one GPU.
-    \item \textbf{Limits:} with all pairs the network runs $N(N-1)/2$ times (45 for 10 images), and the alignment is an offline optimization. Later work reports that it assumes a static scene and that DUSt3R runs out of memory beyond 32 frames (CUT3R and VGGT, below).
+    \item \textbf{Limits:} with all pairs the network runs $N(N-1)/2$ times (45 for 10 images), and the alignment is an offline optimization. Later work reports that it assumes a static scene and that DUSt3R runs out of memory beyond 32 frames (CUT3R and VGGT).
   \end{itemize}
   \vspace{0.2em}
   {\scriptsize Wang et al., CVPR 2024, \href{https://arxiv.org/abs/2312.14132v3}{arXiv:2312.14132v3}, Section~3.4, Eq.~5; static scene: \href{https://arxiv.org/abs/2501.12387v1}{arXiv:2501.12387v1}, Section~4.1; 32 frames: \href{https://arxiv.org/abs/2503.11651v1}{arXiv:2503.11651v1}, Figure~3.\par}
@@ -110,7 +110,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
-        \item \textbf{Input:} one, a few, or hundreds of images. DINOv2 (covered earlier) turns each frame into patch tokens, plus one camera token and four register tokens (extra learned tokens that collect global information and are discarded at the output); frame 1 has its own learned tokens, so every output is in camera 1's frame.
+        \item \textbf{Input:} one, a few, or hundreds of images. DINOv2 turns each frame into patch tokens, plus one camera token and four register tokens (extra learned tokens that collect global information and are discarded at the output); frame 1 has its own learned tokens, so every output is in camera 1's frame.
         \item \textbf{Heads:} camera head: quaternion, translation and field of view (principal point centred); DPT head: depth maps and pointmaps with uncertainty, and features for point tracks (the pixel positions of one scene point across all frames).
       \end{itemize}
     \column{0.49\textwidth}

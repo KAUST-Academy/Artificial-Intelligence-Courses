@@ -15,12 +15,12 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.56\textwidth}
       \begin{itemize}\footnotesize\itemsep0.25em
-        \item \textbf{Trained conditioning.} The SD~1.5 inpainting checkpoint (SD inpainting was shown earlier) adds 5 U-Net input channels, 4 for the masked image's VAE latent and 1 for the mask, zero-initialised and fine-tuned for 440k steps.
+        \item \textbf{Trained conditioning.} The SD~1.5 inpainting checkpoint adds 5 U-Net input channels, 4 for the masked image's VAE latent and 1 for the mask, zero-initialised and fine-tuned for 440k steps.
         \item \textbf{Training-free: RePaint} (CVPR 2022) keeps an unconditional diffusion model and, at every reverse step, pastes in the known pixels noised to the current level:
         \[ x_{t-1} = m \odot x^{\text{known}}_{t-1} + (1 - m) \odot x^{\text{gen}}_{t-1}, \]
         with $m = 1$ on known pixels, $x^{\text{known}}_{t-1} \sim q(x_{t-1} \mid x_0)$ from the forward process and $x^{\text{gen}}_{t-1} \sim p_\theta(x_{t-1} \mid x_t)$ from the model.
         \item \textbf{Resampling.} Pasting alone matches texture but not meaning, so RePaint re-noises $x_{t-1}$ to $x_t$ and denoises again several times: any mask works without retraining, at the cost of extra network evaluations.
-        \item Pasting is a projection, exact only for noiseless measurements; DPS (above) takes a gradient step instead.
+        \item Pasting is a projection, exact only for noiseless measurements; DPS takes a gradient step instead.
       \end{itemize}
     \column{0.42\textwidth}
       \centering
@@ -37,14 +37,14 @@
       \begin{itemize}\footnotesize\itemsep0.25em
         \item \textbf{Dedicated models} (a) mix all inputs with the text from the first layer, so text can drown out image evidence; each new base model needs a new fine-tune.
         \item \textbf{BrushNet} (ECCV 2024, c): a trainable U-Net copy without cross-attention reads the noisy latent, masked-image latent and mask, and adds its features to the frozen base through zero convolutions; the known region is pasted back through a blurred mask. Community fine-tunes keep working.
-        \item \textbf{PowerPaint} (ECCV 2024) learns task prompts $P_{\text{obj}}$ (insert; box masks) and $P_{\text{ctxt}}$ (fill from context; random masks). For removal, classifier-free guidance (covered earlier) takes $P_{\text{ctxt}}$ as positive and $P_{\text{obj}}$ as negative prompt.
+        \item \textbf{PowerPaint} (ECCV 2024) learns task prompts $P_{\text{obj}}$ (insert; box masks) and $P_{\text{ctxt}}$ (fill from context; random masks). For removal, classifier-free guidance takes $P_{\text{ctxt}}$ as positive and $P_{\text{obj}}$ as negative prompt.
         \item \textbf{FLUX.1 Fill} (Black Forest Labs, Nov.\ 2024): a 12B-parameter rectified-flow transformer that inpaints and outpaints from a mask and a prompt; the dev weights are non-commercial.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
       \vspace{0.5em}
       \includegraphics[width=\linewidth,height=0.38\textheight,keepaspectratio]{images/image-restoration-applications/brushnet_fig2_architectures.png}\\[0.2em]
-      {\scriptsize Panel (b) is ControlNet (covered earlier). Ju et al., ``BrushNet: A Plug-and-Play Image Inpainting Model with Decomposed Dual-Branch Diffusion,'' ECCV 2024, \href{https://arxiv.org/abs/2403.06976v1}{arXiv:2403.06976v1}, Figure~2.\par}
+      {\scriptsize Panel (b) is ControlNet. Ju et al., ``BrushNet: A Plug-and-Play Image Inpainting Model with Decomposed Dual-Branch Diffusion,'' ECCV 2024, \href{https://arxiv.org/abs/2403.06976v1}{arXiv:2403.06976v1}, Figure~2.\par}
   \end{columns}
   {\scriptsize Zhuang et al., ECCV 2024, \href{https://arxiv.org/abs/2312.03594v4}{arXiv:2312.03594v4}, Sec.~1 and 3; Black Forest Labs, ``Introducing FLUX.1 Tools,'' \href{https://bfl.ai/blog/24-11-21-tools}{bfl.ai/blog/24-11-21-tools}; \href{https://huggingface.co/black-forest-labs/FLUX.1-Fill-dev}{FLUX.1-Fill-dev model card}.\par}
 \end{frame}
@@ -74,8 +74,8 @@
   \end{center}
   \vspace{-0.8em}
   \begin{itemize}\footnotesize\itemsep0.2em
-    \item \textbf{ProPainter} (ICCV 2023) completes the optical flow (covered earlier) inside the mask, propagates known pixels from other frames in image and feature space, and fills the rest with a sparse video transformer: +1.46\,dB PSNR over prior methods.
-    \item \textbf{DiffuEraser} (2025) adds a motion module to BrushNet and starts from ProPainter's output, inverted to noise with DDIM (covered earlier), to suppress hallucinated objects.
+    \item \textbf{ProPainter} (ICCV 2023) completes the optical flow inside the mask, propagates known pixels from other frames in image and feature space, and fills the rest with a sparse video transformer: +1.46\,dB PSNR over prior methods.
+    \item \textbf{DiffuEraser} (2025) adds a motion module to BrushNet and starts from ProPainter's output, inverted to noise with DDIM, to suppress hallucinated objects.
     \item \textbf{MiniMax-Remover} (NeurIPS 2025) strips text input and cross-attention from the Wan2.1-1.3B flow-matching video transformer and trains against adversarial ``bad'' input noise: 6 sampling steps, no classifier-free guidance.
     \item \textbf{ROSE} (NeurIPS 2025) also removes side effects (shadows, reflections, light, translucency, mirror images), learning from videos rendered with a 3D engine and predicting the affected area explicitly.
   \end{itemize}

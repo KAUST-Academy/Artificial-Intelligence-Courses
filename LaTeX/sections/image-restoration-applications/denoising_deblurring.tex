@@ -19,7 +19,7 @@
   \begin{itemize}\footnotesize\itemsep0.3em
     \item \textbf{Raw sensor noise is well understood.} Shot noise is Poisson with mean equal to the true light $x$; read noise is zero-mean Gaussian with fixed variance. Together they act as one heteroscedastic Gaussian, $y \sim \mathcal{N}(x,\ \lambda_{\text{read}} + \lambda_{\text{shot}}\,x)$, where $y$ is the observed raw value and the two $\lambda$ are set by the camera's analog and digital gains.
     \item \textbf{The image signal processor (ISP) reshapes it.} Gain, white balance, colour correction and gamma rescale the noise and pass it through nonlinearities, and demosaicing correlates it across neighbouring pixels.
-    \item \textbf{Synthetic Gaussian training does not transfer.} Denoising autoencoders trained on added white Gaussian noise (covered earlier) assume the model a phone camera violates; on real-noise benchmarks, learned methods trained on synthetic noise lost to the classical BM3D filter.
+    \item \textbf{Synthetic Gaussian training does not transfer.} Denoising autoencoders trained on added white Gaussian noise assume the model a phone camera violates; on real-noise benchmarks, learned methods trained on synthetic noise lost to the classical BM3D filter.
     \item \textbf{SIDD} (Smartphone Image Denoising Dataset) is a standard real-noise benchmark: about 30{,}000 noisy images of 10 scenes from five phones, with estimated ground truth.
   \end{itemize}
   {\scriptsize Brooks et al., CVPR 2019, \href{https://arxiv.org/abs/1811.11127v1}{arXiv:1811.11127v1}, Sec.~2 and 3.1, Eq.~(1); Abdelhamed et al., CVPR 2018, \href{https://openaccess.thecvf.com/content_cvpr_2018/html/Abdelhamed_A_High-Quality_Denoising_CVPR_2018_paper.html}{CVF Open Access}.\par}
@@ -30,7 +30,7 @@
     \column{0.55\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Restormer} (CVPR 2022) computes self-attention across channels: queries, keys and values come from $1{\times}1$ and depth-wise $3{\times}3$ convolutions, the attention map is $C \times C$ for $C$ channels, and cost grows linearly with image size. 40.02\,dB PSNR on SIDD, the only one above 40\,dB in its comparison.
-        \item \textbf{NAFNet} (ECCV 2022): a plain U-Net (covered earlier) without nonlinear activation functions. Its SimpleGate splits the channels into halves $X$ and $Y$ and outputs $X \odot Y$, itself a nonlinearity. 40.30\,dB on SIDD and 33.69\,dB on the GoPro deblurring benchmark (below), at 8.4\% of the compute of the previous best GoPro model.
+        \item \textbf{NAFNet} (ECCV 2022): a plain U-Net without nonlinear activation functions. Its SimpleGate splits the channels into halves $X$ and $Y$ and outputs $X \odot Y$, itself a nonlinearity. 40.30\,dB on SIDD and 33.69\,dB on the GoPro deblurring benchmark, at 8.4\% of the compute of the previous best GoPro model.
         \item \textbf{What still wins on PSNR in 2026.} NTIRE 2026 denoising (Gaussian noise, standard deviation $\sigma = 50$; 20 finalists of 116 registrants): the top four finished within 0.03\,dB. Leaders kept Restormer and MambaIR backbones (the winners fused them with HAT) and gained from more data, patches grown from 128 to 768 pixels, and test-time flip and rotation averaging; diffusion models still trail on PSNR.
       \end{itemize}
     \column{0.43\textwidth}
@@ -68,7 +68,7 @@
         \item \textbf{Blur model} $y = k * x + n$: the kernel $k$ traces camera shake, object motion or a defocus disk, and $*$ is convolution. Non-blind deblurring knows $k$; blind deblurring infers it, and in dynamic scenes $k$ varies across the image.
         \item \textbf{Data.} GoPro averages 7--13 consecutive frames of 240\,fps video into one blurred frame (2,103 training, 1,111 test images); RealBlur tests real camera blur in raw-processed (R) and JPEG (J) sets.
         \item \textbf{Frequency domain.} After a fast Fourier transform (FFT), convolution becomes an element-wise product; FFTformer (CVPR 2023) computes attention that way: 34.21\,dB on GoPro.
-        \item \textbf{State spaces.} Selective state-space layers (defined with MambaIR above) scan the flattened feature map in linear time. EVSSM (CVPR 2025) scans in one direction but flips or transposes the features before each scan: 34.51\,dB on GoPro, 34.34\,dB on RealBlur-J.
+        \item \textbf{State spaces.} Selective state-space layers scan the flattened feature map in linear time. EVSSM (CVPR 2025) scans in one direction but flips or transposes the features before each scan: 34.51\,dB on GoPro, 34.34\,dB on RealBlur-J.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
@@ -87,7 +87,7 @@
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{PromptIR} (NeurIPS 2023): one network for several degradations. Learned prompt components, weighted by attention from the input's own features, are injected at several decoder stages.
-        \item \textbf{DA-CLIP} (ICLR 2024): a trainable copy of CLIP's image encoder, attached through ControlNet-style zero-initialised connections (covered earlier), predicts which of 10 degradations is present and steers the frozen CLIP encoder to a clean-content embedding that guides a diffusion restorer.
+        \item \textbf{DA-CLIP} (ICLR 2024): a trainable copy of CLIP's image encoder, attached through ControlNet-style zero-initialised connections, predicts which of 10 degradations is present and steers the frozen CLIP encoder to a clean-content embedding that guides a diffusion restorer.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
@@ -103,7 +103,7 @@
     \column{0.55\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Order matters.} Denoising then dehazing works, dehazing first fails; deraining before super-resolution works, after it fails.
-        \item \textbf{AgenticIR} (ICLR 2025): a fine-tuned VLM (DepictQA; VLMs covered earlier) names the degradations, GPT-4 orders the tools, a failed step is rolled back and re-planned, and past outcomes are kept as notes for the planner. The toolbox holds 3--6 specialist models for each of eight degradations.
+        \item \textbf{AgenticIR} (ICLR 2025): a fine-tuned VLM (DepictQA) names the degradations, GPT-4 orders the tools, a failed step is rolled back and re-planned, and past outcomes are kept as notes for the planner. The toolbox holds 3--6 specialist models for each of eight degradations.
         \item \textbf{4KAgent} (NeurIPS 2025): a VLM with image-quality experts plans; several expert models run per step and the best-scoring output is kept. Tested on 26 benchmarks in 11 task categories, including satellite, microscopy and X-ray images.
         \item \textbf{General image editors are no substitute.} GPT-Image restorations are ``often perceptually pleasant'' but change geometry, object positions or counts, and even perspective.
       \end{itemize}
@@ -121,11 +121,11 @@
     \item \textbf{Setup.} A measurement $y = \mathcal{A}(x) + n$ with a known operator $\mathcal{A}$ (blur, downsampling, a mask) and noise $n$. A diffusion model trained only on clean images supplies the prior $p(x)$; nothing is retrained per task.
     \item \textbf{Bayes in score form.} Sampling the posterior $p(x \mid y)$ needs
     \[ \nabla_{x_t} \log p_t(x_t \mid y) = \nabla_{x_t} \log p_t(x_t) + \nabla_{x_t} \log p_t(y \mid x_t), \]
-    the score of the prior (covered earlier) plus a likelihood term that is intractable at intermediate noise levels $t$.
+    the score of the prior plus a likelihood term that is intractable at intermediate noise levels $t$.
     \item \textbf{Diffusion posterior sampling (DPS)}, ICLR 2023, approximates $p(y \mid x_t) \approx p(y \mid \hat{x}_0)$, where $\hat{x}_0 = \mathbb{E}[x_0 \mid x_t]$ is the denoiser's clean estimate, and adds a gradient step after every reverse step:
     \[ x_{t-1} \leftarrow x'_{t-1} - \zeta_t \nabla_{x_t} \big\| y - \mathcal{A}(\hat{x}_0(x_t)) \big\|_2^2 , \]
     with $x'_{t-1}$ the ordinary reverse step and $\zeta_t$ a step size. One prior then serves super-resolution, deblurring and inpainting, and nonlinear operators such as non-uniform blur.
-    \item \textbf{2025 refinements.} Decoupled annealing posterior sampling (DAPS, CVPR 2025) lets consecutive steps differ widely so later steps can undo early mistakes on hard nonlinear problems; PnP-Flow (ICLR 2025) uses a flow-matching model (covered earlier) as the denoiser in a plug-and-play loop of data-fidelity gradient steps, re-projection onto the flow path and denoising, without backpropagating through the ODE.
+    \item \textbf{2025 refinements.} Decoupled annealing posterior sampling (DAPS, CVPR 2025) lets consecutive steps differ widely so later steps can undo early mistakes on hard nonlinear problems; PnP-Flow (ICLR 2025) uses a flow-matching model as the denoiser in a plug-and-play loop of data-fidelity gradient steps, re-projection onto the flow path and denoising, without backpropagating through the ODE.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Chung et al., ICLR 2023, \href{https://arxiv.org/abs/2209.14687v4}{arXiv:2209.14687v4}, Eqs.~(5), (11), (21), Algorithm~1; Zhang et al., CVPR 2025, \href{https://arxiv.org/abs/2407.01521v3}{arXiv:2407.01521v3}; Martin et al., ICLR 2025, \href{https://arxiv.org/abs/2410.02423v3}{arXiv:2410.02423v3}.\par}

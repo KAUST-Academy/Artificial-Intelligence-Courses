@@ -86,7 +86,7 @@
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Early fusion:} images enter the token sequence at the first layer, with no CLIP-style encoder or connector (some texts also call LLaVA-style designs early fusion, since their visual tokens join the same sequence).
         \item \textbf{Fuyu-8B} (Adept, Oct.\ 2023): each 30$\times$30-pixel patch is linearly projected straight into a decoder-only Transformer, row by row, with an image-newline token after each row; any resolution works.
-        \item \textbf{Chameleon} (Meta, 2024): a tokenizer with an 8{,}192-entry codebook (as in VQ-VAE, covered earlier) turns a 512$\times$512 image into 1{,}024 codes in the text vocabulary, so one model reads and writes images.
+        \item \textbf{Chameleon} (Meta, 2024): a tokenizer with an 8{,}192-entry codebook (as in VQ-VAE) turns a 512$\times$512 image into 1{,}024 codes in the text vocabulary, so one model reads and writes images.
         \item \textbf{Stability:} shared weights let norms grow until training diverged; without QK-Norm (layer norm on queries and keys), Chameleon-7B diverged after about 20\% of an epoch.
         \item \textbf{Cost:} the tokenizer reconstructs text-heavy images poorly, which caps OCR-type tasks.
       \end{itemize}
@@ -107,7 +107,7 @@
         \item \textbf{Kosmos-2} (Peng et al., 2023) links phrases to boxes (grounding) with one new token per cell of a $32\times32$ grid, 1{,}024 in all. A box is its top-left and bottom-right cells, placed after its phrase like a Markdown link. Cell $= 32\cdot\text{row} + \text{column}$, counting from 0, so \texttt{<loc44>} is row 1, column 12.
         \item \textbf{Qwen-VL} adds no location tokens: coordinates are scaled to $[0,1000)$ and written as plain text, as in \texttt{<ref>the ear on a giraffe</ref>} \texttt{<box>(176,106),(232,160)</box>}.
         \item \textbf{Qwen2.5-VL} uses the image's actual pixel coordinates for boxes and points, so the numbers also carry object size.
-        \item \textbf{Scoring} referring expressions (RefCOCO and its variants): a box counts as correct if its IoU (covered earlier) with the ground-truth box exceeds 0.5.
+        \item \textbf{Scoring} referring expressions (RefCOCO and its variants): a box counts as correct if its IoU with the ground-truth box exceeds 0.5.
       \end{itemize}
     \column{0.46\textwidth}
       \centering

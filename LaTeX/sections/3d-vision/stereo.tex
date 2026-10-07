@@ -3,7 +3,7 @@
     \column{0.48\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Rectified rig:} two cameras with the same $K$ (zero skew, $f_x=f_y$, written $f$ and in pixels from here on) and parallel optical axes, centres $C_L$ and $C_R$ a baseline $B$ apart along $x$. A point $\mathbf{X}=(X,Y,Z)^\top$ in left-camera coordinates lands on the same row $v$ in both images.
-        \item \textbf{Columns}, by the pinhole model (defined above):
+        \item \textbf{Columns}, by the pinhole model:
         \[ u_L = \frac{fX}{Z}+c_x, \qquad u_R = \frac{f\,(X-B)}{Z}+c_x . \]
         \item \textbf{Disparity} $d = u_L - u_R$ (pixels); $c_x$ cancels:
         \[ d = \frac{fB}{Z} \quad\Longleftrightarrow\quad Z = \frac{fB}{d} \quad (\text{in the units of } B). \]
@@ -93,7 +93,7 @@
   \end{tikzpicture}\\[0.2em]
   {\scriptsize Computed example: three matches and their epipolar lines; after warping, each pair of lines is one row.\par}
   \begin{itemize}\scriptsize\itemsep0.15em
-    \item \textbf{Goal:} warp both images by homographies $H_L$, $H_R$ (defined above) that send both epipoles to infinity along $x$. Matching then becomes a 1D scan along one row.
+    \item \textbf{Goal:} warp both images by homographies $H_L$, $H_R$ that send both epipoles to infinity along $x$. Matching then becomes a 1D scan along one row.
     \item \textbf{Calibrated method} (after Fusiello et al.\ 2000, who take $\mathbf{r}_1$ along $C_L-C_R$; the sign here keeps the images upright): keep both centres and rotate both cameras to one orientation $R_n=[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{r}_3]^\top$, whose rows are the new camera axes in world coordinates: $\mathbf{r}_1 = (C_R-C_L)/\lVert C_R-C_L\rVert$ (the baseline), $\mathbf{r}_2 = \mathbf{k}\times\mathbf{r}_1/\lVert\mathbf{k}\times\mathbf{r}_1\rVert$, $\mathbf{r}_3 = \mathbf{r}_1\times\mathbf{r}_2$, where $\mathbf{k}$ is the old left optical axis; give both cameras one $K_n$. Image $i$ is resampled with $H_i = K_n R_n R_i^\top K_i^{-1}$ ($K_i$, $R_i$: original camera) by bilinear interpolation (a distance-weighted blend of the four input pixels around each source position).
     \item \textbf{Limits:} the construction fails for forward motion along the optical axis, where the epipole lies inside the image. Loop and Zhang (1999) need only the epipolar geometry ($F$) and choose $H_L$, $H_R$ to minimise image distortion.
   \end{itemize}
@@ -135,7 +135,7 @@
         \item \textbf{Matching cost} $C(\mathbf{p},d)$: left pixel $\mathbf{p}=(u,v)$ against right pixel $(u-d,v)$ over a window $\mathcal{W}$, e.g.\ the sum of absolute differences (SAD)
         \[ C_{\mathrm{SAD}}(\mathbf{p},d) = \textstyle\sum_{(i,j)\in \mathcal{W}} \big|I_L(u{+}i,v{+}j) - I_R(u{+}i{-}d,v{+}j)\big| . \]
         Squared differences (SSD) work alike; normalized cross-correlation (NCC) of zero-mean, unit-norm windows cancels gain and bias.
-        \item \textbf{Census transform:} one bit per neighbour, 1 when it is darker than the centre; the cost is the Hamming distance (defined above) between the two bit strings. Only comparisons count: gain and bias cancel, and an outlier neighbour flips only its own bit.
+        \item \textbf{Census transform:} one bit per neighbour, 1 when it is darker than the centre; the cost is the Hamming distance between the two bit strings. Only comparisons count: gain and bias cancel, and an outlier neighbour flips only its own bit.
         \item \textbf{Cost volume} $C(u,v,d)$, $d \in \{0,\dots,D-1\}$: an $H\times W\times D$ array (the disparity space image of Scharstein and Szeliski). Winner-take-all: $d_{\mathbf{p}} = \operatorname*{arg\,min}_d C(\mathbf{p},d)$.
         \item \textbf{Failures:} textureless regions (flat cost curve), repetitive patterns (several minima), occlusions (no true match), specular surfaces (view-dependent appearance).
         \item \textbf{Left-right check:} with disparity maps $d_L$ and $d_R$ of both images, keep $\mathbf{p}$ only if $|d_L(u,v) - d_R(u - d_L(u,v), v)| \leq 1$.
@@ -222,7 +222,7 @@
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
         \item \textbf{GC-Net:} one 2D CNN with shared weights computes features for both images. For each disparity level, the left feature at $(u,v)$ is concatenated with the right feature at $(u-d,v)$: a 4D cost volume (height, width, disparity, feature).
-        \item \textbf{3D convolutions} (covered earlier for video) in an encoder-decoder turn it into one cost $c_d$ per pixel and disparity.
+        \item \textbf{3D convolutions} in an encoder-decoder turn it into one cost $c_d$ per pixel and disparity.
         \item \textbf{Soft argmin} (``Soft ArgMax'' in the figure): $\hat d = \sum_{d=0}^{D-1} d\cdot\sigma_d(-\mathbf{c})$, with $\sigma$ the softmax over the $D$ costs $\mathbf{c}$ of a pixel. It is differentiable and gives sub-pixel disparities; training minimises the L1 error $|d-\hat d|$ on pixels with ground truth.
       \end{itemize}
     \column{0.49\textwidth}
@@ -239,8 +239,8 @@
 
 \begin{frame}{Iterative Refinement: RAFT-Stereo}
   \begin{itemize}\scriptsize\itemsep0.1em
-    \item \textbf{RAFT} (optical flow, covered earlier as a dense motion field): a CNN $g$ maps both frames to features at $1/8$ resolution. The \textbf{correlation volume} holds the dot product of every pair of feature vectors, $C_{ijkl} = \sum_h g(I_1)_{ijh}\, g(I_2)_{klh}$, average-pooled into a 4-level pyramid.
-    \item \textbf{Recurrent updates:} the flow starts at $0$. Each iteration, a lookup $L_C$ reads the correlations within radius $r$ of the current estimate at every pyramid level, and a convolutional GRU (the GRU covered earlier, with convolutions in place of its fully connected layers) predicts an increment.
+    \item \textbf{RAFT} (optical flow as a dense motion field): a CNN $g$ maps both frames to features at $1/8$ resolution. The \textbf{correlation volume} holds the dot product of every pair of feature vectors, $C_{ijkl} = \sum_h g(I_1)_{ijh}\, g(I_2)_{klh}$, average-pooled into a 4-level pyramid.
+    \item \textbf{Recurrent updates:} the flow starts at $0$. Each iteration, a lookup $L_C$ reads the correlations within radius $r$ of the current estimate at every pyramid level, and a convolutional GRU (a GRU with convolutions in place of its fully connected layers) predicts an increment.
     \item \textbf{RAFT-Stereo:} matches share a row, so only same-row pairs are kept, $C_{ijk} = \sum_h g(I_L)_{ijh}\, g(I_R)_{ikh}$ ($H{\times}W{\times}W$), pooled along the last axis only. GRUs at $1/8$, $1/16$ and $1/32$ resolution exchange hidden states, spreading context across textureless regions. No 3D convolutions: megapixel images fit. Loss: L1 on iterate $i$ of $N$, weighted $0.9^{N-i}$.
     \item \textbf{Zero-shot test} (trained on Scene Flow only, no training on any test dataset), \% of pixels above the error threshold. KITTI 2015: driving; Middlebury: indoor, half resolution; ETH3D: indoor and outdoor.
   \end{itemize}
@@ -275,7 +275,7 @@
   \begin{itemize}\scriptsize\itemsep0.25em
     \item \textbf{Goal:} one model that works zero-shot in new domains.
     \item \textbf{Data:} the FoundationStereo dataset (FSD), 1M synthetic stereo pairs; a self-curation loop drops ambiguous pairs (repeated texture, reflections, flat colour) and replaces them with newly generated ones.
-    \item \textbf{Side-Tuning Adapter (STA):} features of a frozen Depth Anything~V2 (covered earlier) plus a trainable CNN bring monocular priors learned on real images.
+    \item \textbf{Side-Tuning Adapter (STA):} features of a frozen Depth Anything~V2 plus a trainable CNN bring monocular priors learned on real images.
     \item \textbf{Attentive Hybrid Cost Filtering (AHCF):} a cost volume of group-wise correlations (feature channels split into 8 groups, one dot product per group) and concatenated features, filtered by axial-planar convolutions (a 3D convolution split into spatial and disparity parts) and a Disparity Transformer (self-attention along disparity).
     \item A soft argmin gives the initial disparity; convolutional GRU updates refine it as in RAFT-Stereo.
   \end{itemize}
@@ -310,7 +310,7 @@
 \begin{frame}{Active Depth Sensing}
   \begin{itemize}\scriptsize\itemsep0.1em
     \item \textbf{Structured light:} a projector replaces the second camera. The shift of its known pattern in the camera image is a disparity, so $Z = fb/d$ as in stereo, with projector-camera baseline $b$.
-    \item \textbf{Time of flight (ToF):} light goes to the surface and back, so the distance along the pixel's ray is $\ell = ct/2$ ($c$: speed of light, $t$: round-trip time), and the depth is $Z = \ell/\lVert K^{-1}\tilde{\mathbf{x}}\rVert \leq \ell$ (defined above). ToF cameras read $t$ from the phase $\varphi = 2\pi f_m t$ of light modulated at $f_m$, which wraps beyond $\ell = c/(2f_m)$; several frequencies are combined. \textbf{LiDAR} (light detection and ranging) times laser pulses along scanned beams.
+    \item \textbf{Time of flight (ToF):} light goes to the surface and back, so the distance along the pixel's ray is $\ell = ct/2$ ($c$: speed of light, $t$: round-trip time), and the depth is $Z = \ell/\lVert K^{-1}\tilde{\mathbf{x}}\rVert \leq \ell$. ToF cameras read $t$ from the phase $\varphi = 2\pi f_m t$ of light modulated at $f_m$, which wraps beyond $\ell = c/(2f_m)$; several frequencies are combined. \textbf{LiDAR} (light detection and ranging) times laser pulses along scanned beams.
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize\setlength{\tabcolsep}{4pt}

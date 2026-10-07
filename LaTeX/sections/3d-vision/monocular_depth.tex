@@ -24,7 +24,7 @@
       {\scriptsize Camera centre $\mathbf{C}$, image plane at focal length $f$. Objects of height $h$, $2h$, $3h$ at depths $Z$, $2Z$, $3Z$ give the same image, because the image height is $fh/Z$.\par}
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Ill-posed:} back-projection gives only a ray, $\mathbf{X}_c = Z\,K^{-1}\tilde{\mathbf{x}}$, and scaling the whole scene by any $\alpha>0$ leaves every pixel unchanged (both defined above), so one image cannot fix $Z$.
+        \item \textbf{Ill-posed:} back-projection gives only a ray, $\mathbf{X}_c = Z\,K^{-1}\tilde{\mathbf{x}}$, and scaling the whole scene by any $\alpha>0$ leaves every pixel unchanged, so one image cannot fix $Z$.
         \item \textbf{Monocular cues:} perspective (parallel lines converge), relative and familiar size, texture gradient (a uniform texture looks denser farther away), occlusion, shading, defocus blur, and height in the image (on a ground plane, farther points lie closer to the horizon).
         \item \textbf{Learned reliably:} depth ordering (what occludes what) and scene shape up to a global scale.
         \item \textbf{Absolute scale:} only through priors on familiar object sizes and on the camera; a network trained on one camera inherits its scale.
@@ -90,13 +90,13 @@
       \begin{itemize}\footnotesize\itemsep0.2em
         \item \textbf{Warp:} back-project pixel $\mathbf{p}_t$ with its predicted depth, move it by $T_{t\to s}$ (rotation $R$, translation $\mathbf{t}$), and project it into the source:
         \[ \tilde{\mathbf{p}}_s \sim K\big(R\,D_t(\mathbf{p}_t)\,K^{-1}\tilde{\mathbf{p}}_t + \mathbf{t}\big) \]
-        \item \textbf{Bilinear sampling} (defined above) reads $I_s$ at the non-integer point $\mathbf{p}_s$ to give $\hat{I}_s(\mathbf{p}_t)$, and is differentiable in $D_t$ and $T_{t\to s}$.
+        \item \textbf{Bilinear sampling} reads $I_s$ at the non-integer point $\mathbf{p}_s$ to give $\hat{I}_s(\mathbf{p}_t)$, and is differentiable in $D_t$ and $T_{t\to s}$.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.2em
         \item \textbf{No depth labels:} the photometric loss trains both networks. It assumes a static scene, no occlusion, and Lambertian surfaces (brightness independent of viewpoint).
-        \item \textbf{Scale:} the scale ambiguity (defined above) remains: $D_t$ and $\mathbf{t}$ can grow together without moving $\tilde{\mathbf{p}}_s$, so video gives depth only up to scale.
-        \item \textbf{Stereo pairs} (Godard et al., 2017): the source is the other rectified camera, and the known baseline $B$ gives metric depth via $Z = fB/d$ (defined above).
+        \item \textbf{Scale:} the scale ambiguity remains: $D_t$ and $\mathbf{t}$ can grow together without moving $\tilde{\mathbf{p}}_s$, so video gives depth only up to scale.
+        \item \textbf{Stereo pairs} (Godard et al., 2017): the source is the other rectified camera, and the known baseline $B$ gives metric depth via $Z = fB/d$.
       \end{itemize}
   \end{columns}
   \vspace{0.1em}
@@ -142,15 +142,15 @@
   \end{columns}
   \begin{itemize}\footnotesize\itemsep0.1em
     \item \textbf{MiDaS mixes five datasets} Pareto-optimally (no dataset's loss can fall without another's rising); zero-shot tests on six unseen datasets.
-    \item \textbf{DPT} (dense prediction transformer, right): tokens from four ViT stages (covered earlier) are reassembled into maps at $1/32$ to $1/4$ resolution and fused by a convolutional decoder; MiDaS loss, about 1.4M images.
-    \item \textbf{Depth Anything} (covered earlier) scaled this recipe with pseudo-labels on 62M unlabeled images.
+    \item \textbf{DPT} (dense prediction transformer, right): tokens from four ViT stages are reassembled into maps at $1/32$ to $1/4$ resolution and fused by a convolutional decoder; MiDaS loss, about 1.4M images.
+    \item \textbf{Depth Anything} scaled this recipe with pseudo-labels on 62M unlabeled images.
   \end{itemize}
   {\scriptsize Ranftl et al., TPAMI 2022, \href{https://arxiv.org/abs/1907.01341v3}{arXiv:1907.01341v3}, Sections~3--6; Yang et al., \href{https://arxiv.org/abs/2401.10891v2}{arXiv:2401.10891v2}, Section~3.\par}
 \end{frame}
 
 \begin{frame}{Metric Depth from a Single Image}
   \begin{itemize}\footnotesize\itemsep0.2em
-    \item \textbf{The camera sets the scale:} an object's image height $fh/Z$ (above) is the same with focal length $2f$ at depth $2Z$, so without $f$ the image size cannot separate the two depths.
+    \item \textbf{The camera sets the scale:} an object's image height $fh/Z$ is the same with focal length $2f$ at depth $2Z$, so without $f$ the image size cannot separate the two depths.
     \item \textbf{Metric3D} maps each training image to a canonical camera with focal length $f^c$, scaling the depth label (or resizing the image) by $f^c/f$ and inverting this at test time; 8M images from 11 datasets (v2: surface normals, 16M images).
     \item \textbf{UniDepth} predicts a dense map of camera ray angles (azimuth, elevation) that conditions the depth module, and outputs a 3D point per pixel.
     \item \textbf{Depth Pro} predicts a canonical inverse depth $C$ and returns $D_m = f_{px}/(wC)$ ($f_{px}$: focal length in pixels, $w$: image width); a separate head predicts the field of view. A 2.25-megapixel map takes 0.3\,s on a V100.
@@ -180,10 +180,10 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.54\textwidth}
       \begin{itemize}\footnotesize\itemsep0.25em
-        \item \textbf{Marigold} turns Stable Diffusion v2 (covered earlier) into a depth estimator. The frozen VAE encodes the image $\mathbf{x}$ and the depth map $\mathbf{d}$ (copied to three channels).
+        \item \textbf{Marigold} turns Stable Diffusion v2 into a depth estimator. The frozen VAE encodes the image $\mathbf{x}$ and the depth map $\mathbf{d}$ (copied to three channels).
         \item The U-Net input is the image latent concatenated with the noisy depth latent; only the U-Net is fine-tuned (usual denoising objective, no text prompt).
         \item \textbf{Synthetic data only:} about 54K Hypersim (indoor) and 20K Virtual KITTI (street) samples with dense, noise-free depth, each normalised by its 2nd and 98th percentiles: the output is affine-invariant (fixed only up to an unknown scale and shift).
-        \item \textbf{Inference:} 50 DDIM steps (covered earlier) from noise, then the VAE decoder. Ten runs from different noise are aligned in scale and shift and merged by the pixelwise median, which cuts the absolute relative error (the mean of $\lvert y_i-y_i^*\rvert/y_i^*$) on NYU Depth v2 by 8\%.
+        \item \textbf{Inference:} 50 DDIM steps from noise, then the VAE decoder. Ten runs from different noise are aligned in scale and shift and merged by the pixelwise median, which cuts the absolute relative error (the mean of $\lvert y_i-y_i^*\rvert/y_i^*$) on NYU Depth v2 by 8\%.
         \item \textbf{Cost:} about 2.5 days of fine-tuning on one RTX 4090 GPU.
       \end{itemize}
     \column{0.44\textwidth}
@@ -196,7 +196,7 @@
 
 \begin{frame}{Evaluating Depth: Metrics and Protocols}
   \begin{itemize}\footnotesize\itemsep0.2em
-    \item AbsRel is the absolute relative error defined above; over the $N$ pixels with ground-truth depth $y_i^*$ and predicted depth $y_i$,
+    \item AbsRel is the absolute relative error; over the $N$ pixels with ground-truth depth $y_i^*$ and predicted depth $y_i$,
     \[ \textstyle \text{RMSE}=\sqrt{\frac{1}{N}\sum_i (y_i-y_i^*)^2} \]
     $\delta_1$: fraction of pixels with $\max(y_i/y_i^*,\, y_i^*/y_i) < 1.25$ ($\delta_2$, $\delta_3$: $1.25^2$, $1.25^3$); higher is better.
     \item \textbf{NYU Depth v2:} 654 indoor test images from a Kinect, evaluated up to 10\,m.

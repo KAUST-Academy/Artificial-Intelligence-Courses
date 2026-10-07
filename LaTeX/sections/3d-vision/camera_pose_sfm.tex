@@ -2,9 +2,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.47\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Camera pose:} the rigid transform $(R,\mathbf{t})\in SE(3)$ defined above, $\mathbf{X}_c=R\,\mathbf{X}_w+\mathbf{t}$: six DoF, three for rotation and three for translation.
-        \item \textbf{Relative pose} links two cameras (from $E$, with $\mathbf{t}$ only up to scale, defined above). \textbf{Absolute pose} places one camera in a fixed map frame; this section estimates it.
-        \item Human pose estimation (body keypoints, covered earlier) is a different task.
+        \item \textbf{Camera pose:} the rigid transform $(R,\mathbf{t})\in SE(3)$, $\mathbf{X}_c=R\,\mathbf{X}_w+\mathbf{t}$: six DoF, three for rotation and three for translation.
+        \item \textbf{Relative pose} links two cameras (from $E$, with $\mathbf{t}$ only up to scale). \textbf{Absolute pose} places one camera in a fixed map frame; this section estimates it.
+        \item Human pose estimation (body keypoints) is a different task.
         \item \textbf{Quaternion:} $q=(q_w,q_x,q_y,q_z)=q_w+q_x\,i+q_y\,j+q_z\,k$ with $i^2=j^2=k^2=ijk=-1$. The rotation by angle $\theta$ about the unit axis $\mathbf{n}$ is the unit quaternion $q=\big(\cos\tfrac{\theta}{2},\ \mathbf{n}\sin\tfrac{\theta}{2}\big)$.
         \item \textbf{Why networks regress quaternions:} any nonzero 4-vector becomes a valid rotation after division by its norm, which is simpler than projecting a $3\times3$ output onto $SO(3)$.
       \end{itemize}
@@ -40,7 +40,7 @@
         \[ D_{ij}^2=d_i^2+d_j^2-2\,d_i d_j\cos\theta_{ij},\qquad i<j\in\{1,2,3\}, \]
         has at most four solutions with positive $d_i$; a fourth point or the RANSAC inlier count picks one.
         \item \textbf{EPnP ($n\geq4$):} $\mathbf{X}_i=\sum_{j=1}^{4}\alpha_{ij}\mathbf{c}_j$ with four virtual control points $\mathbf{c}_j$. Their 12 camera-frame coordinates come from the eigenvectors of a $12\times12$ matrix, in $O(n)$ time.
-        \item \textbf{In practice:} a minimal solver inside RANSAC (defined above), then reprojection-error refinement on the inliers. At inlier ratio $w=0.5$ and confidence $p=0.99$, RANSAC needs 35 samples of size $s=3$, or 72 of size $s=4$.
+        \item \textbf{In practice:} a minimal solver inside RANSAC, then reprojection-error refinement on the inliers. At inlier ratio $w=0.5$ and confidence $p=0.99$, RANSAC needs 35 samples of size $s=3$, or 72 of size $s=4$.
       \end{itemize}
     \column{0.44\textwidth}
       \centering
@@ -95,7 +95,7 @@
     \column{0.43\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Map, built offline} by structure from motion (SfM, next slides): images with known poses, their local features, 3D points, and one global descriptor per image.
-        \item \textbf{Retrieve:} the query's global descriptor finds the $k$ nearest map images (image retrieval, covered earlier), grouped into places by the 3D points they share.
+        \item \textbf{Retrieve:} the query's global descriptor finds the $k$ nearest map images (image retrieval), grouped into places by the 3D points they share.
         \item \textbf{Match:} query keypoints are matched only to the 3D points of each place.
         \item \textbf{Solve:} PnP inside RANSAC gives the 6-DoF pose; the search stops at the first place with a valid pose.
         \item \textbf{Uses:} relocalizing an AR device in a pre-mapped room, or a robot in a prebuilt map.
@@ -156,7 +156,7 @@
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Input:} unordered photos of a scene. \textbf{Output:} intrinsics $K_i$, poses $(R_i,\mathbf{t}_i)$, and a sparse point cloud of 3D points $\mathbf{X}_j$, each point with the pixels $\mathbf{x}_{ij}$ that observe it.
-        \item \textbf{Correspondence search:} features (SIFT or learned), matching, and geometric verification with RANSAC on $E$, $F$ or $H$ (defined above). Verified pairs form the scene graph: images are nodes, pairs are edges.
+        \item \textbf{Correspondence search:} features (SIFT or learned), matching, and geometric verification with RANSAC on $E$, $F$ or $H$. Verified pairs form the scene graph: images are nodes, pairs are edges.
         \item \textbf{Initialization:} relative pose and triangulation on a carefully chosen pair in a densely connected part of the graph, because ``the reconstruction may never recover from a bad initialization.''
       \end{itemize}
     \column{0.49\textwidth}

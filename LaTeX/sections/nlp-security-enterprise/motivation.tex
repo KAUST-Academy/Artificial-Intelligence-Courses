@@ -2,22 +2,22 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.49\textwidth}
       \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
-        {\large\textbf{19.7\%}}\hfill{\scriptsize\textcolor{gray}{hallucination section}}\par\vspace{0.1em}
+        {\large\textbf{19.7\%}}\par\vspace{0.1em}
         {\footnotesize\raggedright of 2.23 million package names suggested by 16 code-generating LLMs did not exist. An attacker can publish malware under such a name and wait for installs.\par}
       \end{tcolorbox}
       \vspace{0.15em}
       \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
-        {\large\textbf{250 documents}}\hfill{\scriptsize\textcolor{gray}{data poisoning section}}\par\vspace{0.1em}
+        {\large\textbf{250 documents}}\par\vspace{0.1em}
         {\footnotesize\raggedright planted in the pretraining data backdoored models from 600M to 13B parameters, although the largest models trained on more than 20 times more clean data.\par}
       \end{tcolorbox}
     \column{0.49\textwidth}
       \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
-        {\large\textbf{\$200}}\hfill{\scriptsize\textcolor{gray}{privacy section}}\par\vspace{0.1em}
+        {\large\textbf{\$200}}\par\vspace{0.1em}
         {\footnotesize\raggedright of queries to ChatGPT extracted over 10,000 unique verbatim training examples, by asking it to repeat one word forever.\par}
       \end{tcolorbox}
       \vspace{0.15em}
       \begin{tcolorbox}[colframe=KAred, colback=gray!6, boxrule=0.5pt, left=5pt, right=5pt, top=4pt, bottom=4pt]
-        {\large\textbf{Zero clicks}}\hfill{\scriptsize\textcolor{gray}{AI copilots section}}\par\vspace{0.1em}
+        {\large\textbf{Zero clicks}}\par\vspace{0.1em}
         {\footnotesize\raggedright One email was enough to make Microsoft 365 Copilot send internal data to an attacker (EchoLeak, rated critical by Microsoft, 9.3 of 10).\par}
       \end{tcolorbox}
   \end{columns}
@@ -51,7 +51,7 @@
     \node[risk] at (1.4,-0.65) {backdoors through fine-tuning};
     \node[risk] at (4.9,0.3) {tampered checkpoints};
     \node[risk, anchor=west] at (9.85,2.9) {jailbreaks and\\adversarial prompts};
-    \node[risk, anchor=west] at (9.85,-0.5) {indirect prompt injection\\(covered earlier), corpus poisoning};
+    \node[risk, anchor=west] at (9.85,-0.5) {indirect prompt injection,\\corpus poisoning};
     \node[risk] at (12.0,2.1) {hallucination};
     \node[risk] at (12.0,0.2) {training-data extraction,\\membership inference};
   \end{tikzpicture}\\[0.6em]

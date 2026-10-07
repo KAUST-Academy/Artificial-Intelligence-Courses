@@ -2,7 +2,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.42\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Distribution shift} in this section: covariate shift (covered earlier), the same classes in a new image style or source.
+        \item \textbf{Distribution shift} in this section: covariate shift, the same classes in a new image style or source.
         \item \textbf{ID} (in-distribution) accuracy: on the distribution used for fine-tuning. \textbf{OOD} (out-of-distribution) accuracy: on shifted test sets with the same classes.
         \item ImageNet-R holds renditions such as paintings and sculptures; ImageNet-A holds natural images that a ResNet-50 misclassifies.
       \end{itemize}
@@ -13,7 +13,7 @@
   \end{columns}
   \vspace{0.3em}
   \begin{itemize}\footnotesize
-    \item Zero-shot CLIP holds up well under shift (covered earlier). Fine-tuning it end-to-end on ImageNet gains 9.6 points there and loses 4.8 points of mean shift accuracy:
+    \item Zero-shot CLIP holds up well under shift. Fine-tuning it end-to-end on ImageNet gains 9.6 points there and loses 4.8 points of mean shift accuracy:
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize\setlength{\tabcolsep}{4pt}
@@ -33,7 +33,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{LP} (linear probing, covered earlier): train a new head on frozen features. \textbf{FT} (full fine-tuning): update all weights.
+        \item \textbf{LP} (linear probing): train a new head on frozen features. \textbf{FT} (full fine-tuning): update all weights.
         \item Over 10 shift benchmarks, FT wins on average in ID accuracy and LP in OOD accuracy (figure).
         \item \textbf{Feature distortion:} with a random head, fitting the training data changes the features of training images a lot. In the paper's linear model, inputs orthogonal to the training data keep their old features, which the new head no longer fits.
         \item \textbf{LP-FT} (LP, then FT): probe the head first, then fine-tune everything from it. On Living-17 (17 animal classes), features move about 20$\times$ less than under FT.
@@ -69,7 +69,7 @@
           $\theta_0$: zero-shot weights, with the head built from the class prompts; $\theta_1$: fine-tuned weights; $\alpha \in [0,1]$: mixing coefficient.
         \item Averaging two networks trained from random initialisations is no better than a random classifier. These two share the pretrained start, and accuracy stays high along the line between them.
         \item One network at test time, so inference costs the same as FT. Changing $\alpha$ needs no retraining; the authors recommend $\alpha = 0.5$ when nothing else is known.
-        \item If only the head is fine-tuned, the encoder is shared and the interpolation equals output ensembling of the two models (covered earlier).
+        \item If only the head is fine-tuned, the encoder is shared and the interpolation equals output ensembling of the two models.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
@@ -119,7 +119,7 @@
       \vspace{0.2em}
       {\scriptsize Top-1 (\%); Shifts: mean of the five ImageNet shifts; Passes: forward passes per image; \textsuperscript{*}picked by ImageNet accuracy. Wortsman et al., ``Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time,'' ICML 2022, \href{https://arxiv.org/abs/2203.05482v3}{arXiv:2203.05482v3}, Table~3.\par}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item Output ensembling (covered earlier) edges out the greedy soup on ImageNet but needs $k$ forward passes; the soup needs one.
+        \item Output ensembling edges out the greedy soup on ImageNet but needs $k$ forward passes; the soup needs one.
         \item \textbf{ImageNet:} a greedy soup of 14 of 58 fine-tuned ViT-G/14 models reached 90.94\% top-1, above the best single model (90.72\%) and the previous state of the art (90.88\%).
       \end{itemize}
   \end{columns}
@@ -174,7 +174,7 @@
       \end{itemize}
     \column{0.46\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
-        \item $A\,\mathbf{L}_{\text{train}}$: an affinity-weighted vote of the cached labels, a soft $k$-NN (covered earlier); the same lookup drives retrieval later in this lecture.
+        \item $A\,\mathbf{L}_{\text{train}}$: an affinity-weighted vote of the cached labels, a soft $k$-NN; the same lookup drives retrieval.
         \item \textbf{Tip-Adapter-F} (fine-tuned) trains only the keys, for 20 epochs against CoOp's 200. Top-1 (\%), Tables~1 and~5 (\textsuperscript{\textdagger}as Tip-Adapter reports it):
       \end{itemize}
       {\centering\scriptsize\setlength{\tabcolsep}{3pt}

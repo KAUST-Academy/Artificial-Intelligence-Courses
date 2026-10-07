@@ -46,7 +46,7 @@
         \midrule
         Fidelity (needs $x$) & PSNR, SSIM & agreement with $x$ pixel by pixel, even if blurry \\
         \addlinespace[0.2em]
-        Perceptual (needs $x$) & LPIPS (covered earlier), DISTS & similarity of deep features \\
+        Perceptual (needs $x$) & LPIPS, DISTS & similarity of deep features \\
         \addlinespace[0.2em]
         No-reference & NIQE, MUSIQ, MANIQA, CLIP-IQA, Q-Align & looking natural, with no access to $x$ \\
         \bottomrule
@@ -54,7 +54,7 @@
       \vspace{0.3em}
       \begin{itemize}\scriptsize\itemsep0.2em
         \item Most SR papers compute PSNR and SSIM on the luminance (Y) channel of the YCbCr colour space.
-        \item \textbf{Q-Align} (ICML 2024) teaches a multimodal LLM (covered earlier) to answer with five words, from \emph{excellent} to \emph{bad}; the score is the probability-weighted average of the five levels.
+        \item \textbf{Q-Align} (ICML 2024) teaches a multimodal LLM to answer with five words, from \emph{excellent} to \emph{bad}; the score is the probability-weighted average of the five levels.
       \end{itemize}
   \end{columns}
   \vspace{0.2em}
@@ -94,7 +94,7 @@
       \begin{itemize}\footnotesize\itemsep0.35em
         \item 16 SR methods on BSD100 at $\times 4$. Lower on the vertical axis (a no-reference quality score) is perceptually better.
         \item The lowest-RMSE models sit in the perceptually poor upper-left cluster; those trained with adversarial or deep-feature losses score best perceptually and sit far to the right on RMSE. The empty lower-left corner is the unreachable region.
-        \item A network trained with $\ell_{\mathrm{MSE}} + \lambda\,\ell_{\mathrm{adv}}$ moves along the curve as $\lambda$ grows (shown in the paper for a denoiser, Figure~6; GANs and adversarial losses covered earlier).
+        \item A network trained with $\ell_{\mathrm{MSE}} + \lambda\,\ell_{\mathrm{adv}}$ moves along the curve as $\lambda$ grows (shown in the paper for a denoiser, Figure~6).
         \item The diffusion-prior restorers that follow aim at the perceptual end of this curve.
       \end{itemize}
   \end{columns}
@@ -113,7 +113,7 @@
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item Still the default: SUPIR, OSEDiff, InvSR, TSD-SR, DreamClear, DiT4SR and LucidFlux, the 2024--2026 diffusion restorers covered next, all synthesise their training pairs with this pipeline.
+        \item Still the default: SUPIR, OSEDiff, InvSR, TSD-SR, DreamClear, DiT4SR and LucidFlux, 2024--2026 diffusion restorers, all synthesise their training pairs with this pipeline.
         \item Also a widely used local upscaler: its portable ncnn-vulkan executables run on Intel, AMD and Nvidia GPUs without CUDA or PyTorch (MIT; the PyTorch code is BSD-3-Clause), and the Upscayl desktop app is built on it (AGPL-3.0).
       \end{itemize}
   \end{columns}

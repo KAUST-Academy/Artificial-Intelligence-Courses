@@ -25,7 +25,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.2em
-        \item \textbf{SatMAE} (NeurIPS 2022): MAE (covered earlier) for satellites: a temporal embedding, patches masked independently across dates, and spectral position encodings per band group.
+        \item \textbf{SatMAE} (NeurIPS 2022): MAE for satellites: a temporal embedding, patches masked independently across dates, and spectral position encodings per band group.
         \item \textbf{Prithvi-EO-2.0} (NASA and IBM, released 2024): patches from each date of a four-date series. Latitude, longitude, year and day of year enter as sin/cos codes with learned weights, dropped with probability 0.1 in pretraining so the model also runs without them. ViT-L (300M) and ViT-H (600M), pretrained on 4.2 million time series at 30\,m.
         \item \textbf{DOFA} (Dynamic One-For-All, 2024): one encoder for any sensor. A hypernetwork turns each band's central wavelength into its patch-embedding weights; pretrained on five sensors with 2 to 202 channels.
         \item \textbf{TerraMind} (ICCV 2025): any-to-any generation across nine modalities, among them radar, optical, elevation, land cover, NDVI and captions, learned by masked-token prediction on about 9 million aligned samples.
@@ -94,8 +94,8 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.25em
-        \item \textbf{RemoteCLIP} (TGRS 2024): CLIP (covered earlier) retrained for remote sensing. Captioned satellite images are scarce, so detection boxes and segmentation masks are rewritten as captions; with drone images, the training set is 12$\times$ all earlier caption datasets combined. Zero-shot accuracy beats CLIP by up to 6.39\% on average over 12 datasets.
-        \item \textbf{GeoChat} (CVPR 2024): LLaVA-1.5 (covered earlier) with LoRA on the language model, tuned on 306k remote-sensing instructions generated from labelled datasets. The CLIP encoder runs at 504 instead of 336 pixels for small objects; task tokens (\texttt{[grounding]}, \texttt{[refer]}, \texttt{[identify]}) choose the output, and boxes are text with a rotation angle, coordinates scaled to 0--100.
+        \item \textbf{RemoteCLIP} (TGRS 2024): CLIP retrained for remote sensing. Captioned satellite images are scarce, so detection boxes and segmentation masks are rewritten as captions; with drone images, the training set is 12$\times$ all earlier caption datasets combined. Zero-shot accuracy beats CLIP by up to 6.39\% on average over 12 datasets.
+        \item \textbf{GeoChat} (CVPR 2024): LLaVA-1.5 with LoRA on the language model, tuned on 306k remote-sensing instructions generated from labelled datasets. The CLIP encoder runs at 504 instead of 336 pixels for small objects; task tokens (\texttt{[grounding]}, \texttt{[refer]}, \texttt{[identify]}) choose the output, and boxes are text with a rotation angle, coordinates scaled to 0--100.
         \item \textbf{Damage mapping:} xBD pairs pre- and post-disaster images with 850{,}736 building polygons over 45{,}362\,$\mathrm{km}^2$; buildings are outlined in both images, and post-disaster outlines carry a four-level damage label. Comparing two co-registered dates is change detection.
       \end{itemize}
     \column{0.46\textwidth}
@@ -110,7 +110,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.54\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item Generative super-resolution (SR, above) fills missing detail from its prior. On a satellite image, an invented field edge or track becomes an error in every map built on it.
+        \item Generative super-resolution (SR) fills missing detail from its prior. On a satellite image, an invented field edge or track becomes an error in every map built on it.
         \item \textbf{OpenSR-test} (GRSL 2024) scores a result against its low-resolution (LR) input and a real high-resolution (HR) image from another sensor. Each pixel or patch is labelled:
         \begin{itemize}\scriptsize
           \item \textbf{improvement:} detail present in HR and absent in LR;
@@ -137,7 +137,7 @@
     \midrule
     TorchGeo & Python library: reprojects rasters to a common coordinate reference system (CRS) and resolution, and samples patches from images too large to load & MIT & library \\
     \addlinespace[0.25em]
-    samgeo & runs SAM (covered earlier) on GeoTIFF files (images that carry map coordinates) and saves the masks as map polygons & MIT & library \\
+    samgeo & runs SAM on GeoTIFF files (images that carry map coordinates) and saves the masks as map polygons & MIT & library \\
     \addlinespace[0.25em]
     Prithvi-EO-2.0 & multi-temporal encoder for Landsat and Sentinel-2 time series & Apache-2.0 & 300M or 600M parameters; 0.6\,GB for 300M \\
     \addlinespace[0.25em]

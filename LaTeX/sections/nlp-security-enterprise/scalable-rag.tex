@@ -37,7 +37,6 @@
   \begin{itemize}\footnotesize\itemsep0.3em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Metadata travels with every chunk:} the ACL (access control list: who may read the source) filters retrieval; source and version make citations checkable; the timestamp drives freshness; the embedding-model version says when to re-embed.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{A funnel:} Anthropic's tests fetch 150 candidates with embeddings and BM25, rerank them, and pass the top 20 to the model; 20 chunks did better than 5 or 10.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Covered elsewhere:} parsing (document intelligence section), query rewriting and retrieval metrics (covered earlier), citations (hallucination section).
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Anthropic, ``Introducing Contextual Retrieval,'' 19 Sept.\ 2024, \href{https://www.anthropic.com/news/contextual-retrieval}{anthropic.com/news/contextual-retrieval}.\par}
@@ -97,7 +96,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Contextual retrieval:} at ingestion an LLM (Claude 3 Haiku in the post) reads the whole document and writes 50--100 tokens that situate each chunk, prepended before embedding (Anthropic's \textbf{contextual embeddings}, unrelated to the contextual word vectors covered earlier) and before BM25 indexing (\textbf{contextual BM25}).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Contextual retrieval:} at ingestion an LLM (Claude 3 Haiku in the post) reads the whole document and writes 50--100 tokens that situate each chunk, prepended before embedding (Anthropic's \textbf{contextual embeddings}, unrelated to contextual word vectors) and before BM25 indexing (\textbf{contextual BM25}).
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Example:} ``The company's revenue grew by 3\% over the previous quarter.'' names no company and no date; the prefix adds ACME, Q2 2023 and the previous quarter's revenue.
       \end{itemize}
       \vspace{0.2em}
@@ -113,7 +112,7 @@
       \end{tabular}\par}
       \vspace{0.2em}
       \begin{itemize}\scriptsize
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost:} one LLM call per chunk, once. With the document in the prompt cache (prefix caching, covered earlier): \$1.02 per million document tokens, for 8k-token documents and 800-token chunks.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost:} one LLM call per chunk, once. With the document in the prompt cache (prefix caching): \$1.02 per million document tokens, for 8k-token documents and 800-token chunks.
       \end{itemize}
     \column{0.46\textwidth}
       \begin{itemize}\scriptsize
@@ -164,13 +163,13 @@
       {\scriptsize The ACL is copied at ingestion and applied as a filter inside retrieval, so the model never receives a chunk the user could not open.\par}\par}
       \vspace{0.3em}
       \begin{itemize}\scriptsize
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Oversharing:} trimming reproduces the source permissions, mistakes included. A file shared with everyone becomes retrievable by everyone, and the assistant will find it (the copilots section returns to oversharing).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Oversharing:} trimming reproduces the source permissions, mistakes included. A file shared with everyone becomes retrievable by everyone, and the assistant will find it.
       \end{itemize}
     \column{0.51\textwidth}
       \begin{itemize}\scriptsize\itemsep0.4em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{ACL} (access control list): the users and groups allowed to read a document, kept by its source system. Ingestion copies each document's ACL into the metadata of all its chunks.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Security trimming:} every query carries the user's identities as a filter, so a chunk the user cannot open never reaches the ranker or the prompt. In Azure AI Search's security-filter pattern, for setups that cannot use its built-in ACL support, the filter matches group IDs stored as strings, with ``no authentication or authorization through the security principal'': the application must authenticate the user and expand their groups.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Never ask the LLM to withhold} what is already in its context: a plain question or a prompt injection (covered earlier) can bring it out. Enforce the filter inside retrieval, and key caches the same way (end of this section).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Never ask the LLM to withhold} what is already in its context: a plain question or a prompt injection can bring it out. Enforce the filter inside retrieval, and key caches the same way.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Propagation:} a revoked share, a deleted file or a changed group membership must reach the index; until it does, the stale ACL decides. Sync permissions from the same change feed as content.
       \end{itemize}
   \end{columns}
@@ -198,12 +197,12 @@
       \vspace{0.3em}
       \begin{itemize}\scriptsize\itemsep0.4em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Shared statistics:} in a shared collection, BM25's $N$ and $n_t$ count every tenant, ``so a term's IDF no longer reflects its rarity within a specific tenant's data''. Scope them per tenant where the engine allows.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Selective filters:} a small tenant or a narrow ACL passes a tiny fraction of the index, the hard case for post-filtering (see the semantic search section). Measure recall under the tightest real filters.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Selective filters:} a small tenant or a narrow ACL passes a tiny fraction of the index, the hard case for post-filtering. Measure recall under the tightest real filters.
       \end{itemize}
     \column{0.48\textwidth}
       \begin{itemize}\scriptsize\itemsep0.4em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Incremental ingestion:} read each source's change feed (created, updated, deleted, re-permissioned), re-parse and re-embed only what changed, and stamp each chunk with the source version.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Deletes in graph indexes:} an HNSW node (covered in the CV course) lies on many search paths, and Faiss's HNSW index ``does not support removing vectors from the index''. FreshDiskANN keeps a deleted node in the graph to route searches, filters it out of results, and repairs the graph in batches once 1--10\% of the points are deleted. Until the repair, that result filter alone hides the deleted text.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Deletes in graph indexes:} an HNSW node lies on many search paths, and Faiss's HNSW index ``does not support removing vectors from the index''. FreshDiskANN keeps a deleted node in the graph to route searches, filters it out of results, and repairs the graph in batches once 1--10\% of the points are deleted. Until the repair, that result filter alone hides the deleted text.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Rebuilds are slow:} a good HNSW index over 100M points takes about 1.5--2 hours on a dedicated 48-core machine, so freshness by periodic rebuild is expensive.
       \end{itemize}
   \end{columns}
@@ -213,7 +212,7 @@
 
 \begin{frame}{Re-Embedding and Caching}
   \begin{itemize}\footnotesize
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{A new embedding model means a new index:} vectors from two models live in different spaces. Re-embed into a versioned index, switch once it passes the retrieval evaluation (covered earlier), and keep the old one for rollback.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{A new embedding model means a new index:} vectors from two models live in different spaces. Re-embed into a versioned index, switch once it passes the retrieval evaluation, and keep the old one for rollback.
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize
@@ -222,7 +221,7 @@
     \textbf{Cache} & \textbf{Key} & \textbf{Reused on} & \textbf{Main risk} \\
     \midrule
     exact response & query, permissions, index version & same request & stale after an update \\
-    prefix (covered earlier) & token prefix & same prefix & none to correctness \\
+    prefix & token prefix & same prefix & none to correctness \\
     semantic & query embedding, permissions & similar query & answers another question \\
     \bottomrule
   \end{tabular}\par}
@@ -230,7 +229,7 @@
   \begin{itemize}\footnotesize\itemsep0.3em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Semantic cache:} returns a stored answer when a new query's embedding is close to a cached one. GPTCache answers 2--10$\times$ faster on a hit, yet in its own test 39 of 876 hits (4.5\%) returned an answer cached for a dissimilar question.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Key on permissions:} an answer built from documents Alice can read must never reach Bob. Put the permission set and index version in every key; invalidate on document and ACL changes.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Retrieval or a long window} (covered earlier): by Anthropic's rule of thumb, a knowledge base under about 200K tokens can go straight into the prompt.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Retrieval or a long window:} by Anthropic's rule of thumb, a knowledge base under about 200K tokens can go straight into the prompt.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Fu and Feng, ``GPTCache,'' NLP-OSS 2023, \href{https://aclanthology.org/2023.nlposs-1.24/}{aclanthology.org/2023.nlposs-1.24}, Sections~4--5, Table~1; Anthropic (2024), contextual retrieval post.\par}

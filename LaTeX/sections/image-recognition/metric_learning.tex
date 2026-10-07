@@ -2,9 +2,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.56\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
-        \item \textbf{Goal:} learn an embedding $f:\mathcal{X}\to\mathbb{R}^d$ with $\lVert f(x)\rVert_2=1$, so that the distance $d(x,x')=\lVert f(x)-f(x')\rVert_2$ is small for two images of the same class and large otherwise. For unit vectors $d^2=2-2\cos\big(f(x),f(x')\big)$, so distance and cosine similarity rank neighbours identically (covered earlier).
-        \item \textbf{Why not a softmax head:} it has one output per training class and cannot name a class it never saw. Retrieval, face verification (same person or not) and re-identification (later in this lecture) meet new classes at test time, so they compare embeddings by $k$-NN search (covered earlier) or with a distance threshold.
-        \item \textbf{Zero-shot split:} train on the first half of the classes, test on the disjoint second half. CUB-200-2011 (earlier in this lecture): 100 + 100 species; Cars196 (Stanford Cars): 98 + 98 models; Stanford Online Products (SOP): 120{,}053 eBay images of 11{,}318 + 11{,}316 products.
+        \item \textbf{Goal:} learn an embedding $f:\mathcal{X}\to\mathbb{R}^d$ with $\lVert f(x)\rVert_2=1$, so that the distance $d(x,x')=\lVert f(x)-f(x')\rVert_2$ is small for two images of the same class and large otherwise. For unit vectors $d^2=2-2\cos\big(f(x),f(x')\big)$, so distance and cosine similarity rank neighbours identically.
+        \item \textbf{Why not a softmax head:} it has one output per training class and cannot name a class it never saw. Retrieval, face verification (same person or not) and re-identification meet new classes at test time, so they compare embeddings by $k$-NN search or with a distance threshold.
+        \item \textbf{Zero-shot split:} train on the first half of the classes, test on the disjoint second half. CUB-200-2011: 100 + 100 species; Cars196 (Stanford Cars): 98 + 98 models; Stanford Online Products (SOP): 120{,}053 eBay images of 11{,}318 + 11{,}316 products.
       \end{itemize}
     \column{0.42\textwidth}
       \centering
@@ -70,7 +70,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
-        \item \textbf{Contrastive loss} (Hadsell et al., CVPR 2006), a margin-based pair loss distinct from InfoNCE and NT-Xent (covered earlier), on a pair $(x_i,x_j)$ with $y_{ij}=1$ if both images share a class, else 0:
+        \item \textbf{Contrastive loss} (Hadsell et al., CVPR 2006), a margin-based pair loss distinct from InfoNCE and NT-Xent, on a pair $(x_i,x_j)$ with $y_{ij}=1$ if both images share a class, else 0:
         \[ \mathcal{L}_{\text{con}}=y_{ij}\,\tfrac{1}{2}\,d_{ij}^{2}+(1-y_{ij})\,\tfrac{1}{2}\,\big[m-d_{ij}\big]_+^{2} \]
         $d_{ij}=d(x_i,x_j)$; $[u]_+=\max(0,u)$; the \textbf{margin} $m>0$ is the gap the loss demands: a negative pair farther apart than $m$ adds no loss.
         \item \textbf{Triplet loss} (Schroff et al., FaceNet, CVPR 2015) on an anchor $a$, a positive $p$ (same class) and a negative $n$ (another class):
@@ -129,7 +129,7 @@
         \item \textbf{Semi-hard mining} (FaceNet): keep negatives with $d(a,p)^2<d(a,n)^2<d(a,p)^2+m$, found online inside batches of about 1{,}800 images (about 40 per identity).
         \item \textbf{Batch hard} (Hermans et al., 2017): sample $P$ classes with $S$ images each; every anchor uses its hardest positive and hardest negative in the batch:
         \[ \mathcal{L}_{\text{BH}}=\sum_{a}\Big[\,m+\max_{p:\,y_p=y_a}d(a,p)-\min_{n:\,y_n\neq y_a}d(a,n)\Big]_+ \]
-        with $a$ running over all $PS$ images. On a MARS validation split (video-based person re-identification, covered later in this lecture), $m=0.2$: random triplets 41.7 mAP, batch hard \textbf{65.3} mAP.
+        with $a$ running over all $PS$ images. On a MARS validation split (video-based person re-identification), $m=0.2$: random triplets 41.7 mAP, batch hard \textbf{65.3} mAP.
       \end{itemize}
     \column{0.44\textwidth}
       \centering
@@ -175,12 +175,12 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.22em
-        \item NT-Xent (covered earlier) gives each anchor one positive, its other augmented view. \textbf{SupCon} (Khosla et al., NeurIPS 2020) also treats every other batch image of the anchor's class as a positive:
+        \item NT-Xent gives each anchor one positive, its other augmented view. \textbf{SupCon} (Khosla et al., NeurIPS 2020) also treats every other batch image of the anchor's class as a positive:
         \[ \mathcal{L}^{\text{sup}}_{\text{out}}=\sum_{i\in I}\frac{-1}{|P(i)|}\sum_{p\in P(i)}\log\frac{\exp(z_i\cdot z_p/\tau)}{\sum_{a\in A(i)}\exp(z_i\cdot z_a/\tau)} \]
         $I$: the $2N$ augmented views of $N$ images; $A(i)=I\setminus\{i\}$; $P(i)\subseteq A(i)$: the views with the label of $i$; $z$: unit-norm projection-head output; $\tau$: temperature.
         \item \textbf{Where the average sits matters:} putting the sum over $P(i)$ and the $1/|P(i)|$ inside the log gives 67.4\% ImageNet top-1, against 78.7\% for the form above (ResNet-50, batch 6{,}144).
         \item Many positives and negatives per anchor weight hard examples through the gradient, so no explicit mining is needed.
-        \item Two stages: SupCon trains the encoder, then a linear probe (covered earlier) is fit on the frozen features.
+        \item Two stages: SupCon trains the encoder, then a linear probe is fit on the frozen features.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
@@ -297,7 +297,7 @@
     \toprule
     \textbf{Method} & \textbf{Idea} & \textbf{Backbone, pretraining} & \textbf{Dim} & \textbf{CUB} & \textbf{Cars} & \textbf{SOP} \\
     \midrule
-    Proxy Anchor (2020) & proxy loss (earlier) & BN-Inception, ImageNet-1k & 512 & 68.4 & 86.1 & 79.1 \\
+    Proxy Anchor (2020) & proxy loss & BN-Inception, ImageNet-1k & 512 & 68.4 & 86.1 & 79.1 \\
     No training & frozen features & ViT-S/16, ImageNet-21k & 384 & 83.1 & 47.8 & 62.1 \\
     Hyp-ViT (2022) & hyperbolic embeddings & ViT-S/16, ImageNet-21k & 384 & 85.6 & 86.5 & 85.9 \\
     Hyp-DINO (2022) & same, from DINO weights & ViT-S/16, DINO on ImageNet-1k & 384 & 80.9 & 89.2 & 85.1 \\
@@ -307,7 +307,7 @@
   \end{tabular}\par}
   \vspace{0.3em}
   \begin{itemize}\scriptsize\itemsep0.15em
-    \item \textbf{Hyp-ViT:} embeddings in a Poincar\'e ball, a hyperbolic space whose volume grows exponentially with radius (suited to tree-like hierarchies), trained with an NT-Xent-style loss on hyperbolic distances. \textbf{RS@k} (Recall@$k$ surrogate): sigmoids replace the step functions that count ranks; batches of 4{,}000 images (392 on Cars196); SiMix mixes the similarities of same-class pairs. \textbf{Unicom}: CLIP features (covered earlier) cluster LAION-400M into one million pseudo-classes.
+    \item \textbf{Hyp-ViT:} embeddings in a Poincar\'e ball, a hyperbolic space whose volume grows exponentially with radius (suited to tree-like hierarchies), trained with an NT-Xent-style loss on hyperbolic distances. \textbf{RS@k} (Recall@$k$ surrogate): sigmoids replace the step functions that count ranks; batches of 4{,}000 images (392 on Cars196); SiMix mixes the similarities of same-class pairs. \textbf{Unicom}: CLIP features cluster LAION-400M into one million pseudo-classes.
     \item \textbf{On CUB, the pretraining data did most of the work:} frozen ImageNet-21k ViT-S features beat every CNN method in Ermolov et al.'s table on CUB (best 69.0); the authors suspect ImageNet-21k's bird classes. On Cars and SOP frozen features lag far behind, so training still matters.
   \end{itemize}
   \vspace{0.1em}

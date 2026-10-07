@@ -1,6 +1,6 @@
 \begin{frame}{What Counts as a Hallucination}
   \begin{itemize}\footnotesize\itemsep0.25em
-    \item[\textcolor{red}{$\blacktriangleright$}] A \textbf{hallucination} is ``the generated content that is nonsensical or unfaithful to the provided source content'' (Ji et al.). Object hallucination in vision-language models was covered earlier.
+    \item[\textcolor{red}{$\blacktriangleright$}] A \textbf{hallucination} is ``the generated content that is nonsensical or unfaithful to the provided source content'' (Ji et al.).
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize
@@ -17,7 +17,7 @@
   \end{tabular}\par}
   \vspace{0.2em}
   \begin{itemize}\scriptsize\itemsep0.25em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Why the split matters:} intrinsic and faithfulness errors can be checked against text you hold, as RAG faithfulness metrics (covered earlier) do; factuality errors need outside evidence or a signal from the model.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Why the split matters:} intrinsic and faithfulness errors can be checked against text you hold, as RAG faithfulness metrics do; factuality errors need outside evidence or a signal from the model.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{A security consequence:} in 576{,}000 code samples from 16 LLMs, \textbf{19.7\%} of 2.23 million suggested package names did not exist (205{,}474 unique names). For 500 prompts asked 10 times each, 43\% of the fake names came back every time, so an attacker can publish malware under such a name and wait for installs (a package confusion attack).
   \end{itemize}
   \vspace{0.1em}
@@ -55,7 +55,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] A linear fit over all runs, with $N_{\mathrm{kn}}, N_{\mathrm{unk}}$ the Known and Unknown training examples the model fits and $|D|$ the training-set size:
           \[ \mathrm{Acc} = \beta_0 + \beta_{\mathrm{kn}}\,\frac{N_{\mathrm{kn}}}{|D|} + \beta_{\mathrm{unk}}\,\frac{N_{\mathrm{unk}}}{|D|} \]
           gives $\beta_{\mathrm{kn}} = 7.3$ and $\beta_{\mathrm{unk}} = -8.3$ ($R^2 = 0.86$): fitting Known examples raises test accuracy, fitting Unknown ones lowers it.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Practice:} stop early, or drop Unknown examples, which costs no accuracy. Trained on Unknown examples only, test accuracy falls from 37.5 at early stopping to 25.8 after 50 epochs. New facts belong in retrieval (covered earlier); the domain-specific LLMs section of this lecture returns to this.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Practice:} stop early, or drop Unknown examples, which costs no accuracy. Trained on Unknown examples only, test accuracy falls from 37.5 at early stopping to 25.8 after 50 epochs. New facts belong in retrieval.
       \end{itemize}
     \column{0.42\textwidth}
       \centering
@@ -83,7 +83,7 @@
   \end{columns}
   \begin{itemize}\scriptsize\itemsep0.2em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Worked example} (answers from Farquhar et al., Fig.~1a): ``Where is the Eiffel Tower?'' sampled six times gives Paris; It's Paris; France's capital Paris; Rome; It's Rome; Berlin. Cluster shares $\tfrac12, \tfrac13, \tfrac16$ give $\mathrm{SE} \approx 1.01$ nats; six rewordings of Paris give $\mathrm{SE} = 0$. Entropy over strings is $\ln 6 \approx 1.79$ in both cases.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost:} 10--20 extra generations per answer. Self-consistency (covered earlier) keeps the majority answer of such samples; semantic entropy measures how split the vote is.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost:} 10--20 extra generations per answer. Self-consistency keeps the majority answer of such samples; semantic entropy measures how split the vote is.
   \end{itemize}
   {\scriptsize Manakul et al., ``SelfCheckGPT,'' EMNLP 2023, \href{https://arxiv.org/abs/2303.08896v3}{arXiv:2303.08896v3}; Kuhn et al., ``Semantic Uncertainty,'' ICLR 2023, \href{https://arxiv.org/abs/2302.09664v3}{arXiv:2302.09664v3}; Farquhar et al., \textit{Nature} 630, 2024, \href{https://doi.org/10.1038/s41586-024-07421-0}{doi:10.1038/s41586-024-07421-0}.\par}
 \end{frame}
@@ -113,11 +113,11 @@
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Chain-of-Verification (CoVe):} one LLM drafts, plans verification questions, answers them, and revises. In the factored variant each question goes to its own prompt without the draft, so the model cannot copy its own error; factor+revise adds one cross-check prompt per question that compares its answer with the draft.
-        \item[\textcolor{red}{$\blacktriangleright$}] Llama 65B biographies: FActScore (covered earlier) rises from 55.9 to \textbf{71.4} with factor+revise. On Wikidata list questions, precision rises from 0.17 to 0.36 (two-step variant; factored: 0.32). No retrieval is involved: the model checks itself.
+        \item[\textcolor{red}{$\blacktriangleright$}] Llama 65B biographies: FActScore rises from 55.9 to \textbf{71.4} with factor+revise. On Wikidata list questions, precision rises from 0.17 to 0.36 (two-step variant; factored: 0.32). No retrieval is involved: the model checks itself.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Attributed generation:} answer from retrieved passages and cite one or more of them for each statement. ALCE (Automatic LLMs' Citation Evaluation) scores citation recall (citation support, covered earlier: do the cited passages entail the statement?) and citation precision (is any citation irrelevant?) with NLI.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Attributed generation:} answer from retrieved passages and cite one or more of them for each statement. ALCE (Automatic LLMs' Citation Evaluation) scores citation recall (citation support: do the cited passages entail the statement?) and citation precision (is any citation irrelevant?) with NLI.
         \item[\textcolor{red}{$\blacktriangleright$}] ChatGPT on ASQA reaches citation recall \textbf{73.6} with passages in its prompt, but 26.7 when it answers closed-book and a passage is attached afterwards. On ELI5 the best models ``lack complete citation support 50\% of the time.''
       \end{itemize}
   \end{columns}
@@ -137,7 +137,7 @@
         \scriptsize Answer only if you are $>t$ confident, since mistakes are penalized $t/(1-t)$ points, while correct answers receive 1 point, and an answer of ``I don't know'' receives 0 points.
       \end{tcolorbox}
       % Kalai et al. also print "t = 0.75 (penalty 2)", but t/(1-t) = 3 at t = 0.75; only values that agree with the formula are quoted.
-      {\scriptsize The instruction Kalai et al.\ propose adding to each question; $t = 0.9$ makes a wrong answer cost 9 points. SimpleQA's not-attempted grade (covered earlier) records the same behaviour.\par}
+      {\scriptsize The instruction Kalai et al.\ propose adding to each question; $t = 0.9$ makes a wrong answer cost 9 points. SimpleQA's not-attempted grade records the same behaviour.\par}
   \end{columns}
   \vspace{0.3em}
   {\centering\scriptsize

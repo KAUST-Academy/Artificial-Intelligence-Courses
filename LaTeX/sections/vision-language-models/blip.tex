@@ -3,7 +3,7 @@
     \column{0.55\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
         \item \textbf{BLIP} (Li et al., ICML 2022) addresses two weaknesses of vision-language pretraining at the time.
-        \item \textbf{Model:} encoder-based models (CLIP, covered earlier; ALBEF) are hard to transfer directly to captioning; encoder-decoder models had not been adopted successfully for retrieval.
+        \item \textbf{Model:} encoder-based models (CLIP, ALBEF) are hard to transfer directly to captioning; encoder-decoder models had not been adopted successfully for retrieval.
         \item \textbf{Data:} gains came largely from scaling up web alt-texts, which ``often do not accurately describe the visual content of the images'' (Sec.~3.3).
         \item \textbf{ALBEF} (Li et al., NeurIPS 2021), the predecessor: contrastive alignment of image and text features before cross-attention fusion, plus soft targets from a moving-average copy of the model.
         \item \textbf{BLIP's answers:} the multimodal mixture of encoder-decoder (\textbf{MED}) and captioning and filtering (\textbf{CapFilt}).
@@ -24,7 +24,7 @@
   \vspace{0.3em}
   \begin{itemize}\footnotesize\itemsep0.15em
     \item ViT-B/16 or ViT-L/16 image encoder; the text Transformer starts from BERT-base, a Transformer text encoder pretrained by predicting masked words. A task-specific first token, [CLS], [Encode] or [Decode], marks the mode.
-    \item The grounded encoder adds a cross-attention layer (covered earlier) between self-attention and feed-forward in every block; the decoder makes self-attention causal.
+    \item The grounded encoder adds a cross-attention layer between self-attention and feed-forward in every block; the decoder makes self-attention causal.
     \item \textbf{Sharing} all text layers except self-attention: 252M parameters against 361M unshared, at equal or better scores; sharing self-attention too lowers every score (Table~3).
   \end{itemize}
 \end{frame}
@@ -32,7 +32,7 @@
 \begin{frame}{Three Objectives per Image-Text Pair}
   \begin{itemize}\footnotesize\itemsep0.3em
     \item \textbf{Cost per pair:} one ViT forward pass and three text-Transformer passes, one per mode.
-    \item \textbf{ITC} (unimodal encoders): the contrastive loss (covered earlier) in ALBEF's form. As in MoCo (covered earlier), a momentum encoder, a moving average of the model's weights, fills a queue of extra negatives; it also supplies soft targets $q$:
+    \item \textbf{ITC} (unimodal encoders): the contrastive loss in ALBEF's form. As in MoCo, a momentum encoder, a moving average of the model's weights, fills a queue of extra negatives; it also supplies soft targets $q$:
     \[ \mathcal{L}_{\text{itc}} = (1-\alpha)\,H(y,p) + \alpha\,\mathrm{KL}(q\,\|\,p) \]
     $p$: softmax of the similarities $s/\tau$ over the batch and the queue; $y$: one-hot target; $q$: the same softmax from momentum features; $H$: cross-entropy; $\alpha$: mixing weight (0.4 in ALBEF). Averaged over both directions; $q$ gives partial credit to negatives that also fit.
     \item \textbf{ITM} (grounded encoder): a linear head on the [Encode] output classifies the pair as matched or not (cross-entropy). \textbf{Hard negatives:} each image gets one wrong in-batch caption, drawn with a probability that rises with its ITC similarity, and each caption one wrong image.
@@ -48,7 +48,7 @@
   {\scriptsize $I$: images, $T$: texts; subscripts $w$: web, $s$: synthetic, $h$: human-annotated; red: unfiltered, green: filtered or human. Li et al., \href{https://arxiv.org/abs/2201.12086v2}{arXiv:2201.12086v2}, Figure~3.\par}
   \vspace{0.3em}
   \begin{itemize}\footnotesize\itemsep0.15em
-    \item Two copies of the pretrained MED are each fine-tuned, lightly, on COCO captions (covered earlier).
+    \item Two copies of the pretrained MED are each fine-tuned, lightly, on COCO captions.
     \item \textbf{Captioner} (grounded decoder, LM): one synthetic caption $T_s$ per web image $I_w$, by \textbf{nucleus sampling}: each token comes from the top tokens whose probabilities sum to $p = 0.9$.
     \item \textbf{Filter} (grounded encoder, ITC and ITM): removes a web text $T_w$ or a synthetic text $T_s$ when its ITM head predicts ``unmatched''.
     \item The kept pairs plus the human pairs pretrain a \textbf{new} model. Data: 14M images (human-annotated COCO and Visual Genome; web caption sets CC3M and CC12M (Conceptual Captions) and SBU Captions) or 129M with 115M LAION images.
@@ -75,7 +75,7 @@
   \end{tabular}\par}
   \vspace{0.3em}
   \raggedright
-  {\scriptsize C / F: captioner / filter on ViT-B ($B$) or ViT-L ($L$); beam: beam search, which aims for the most probable caption, instead of nucleus sampling. Pretrained model: ViT-B/16 in every row. TR@1 / IR@1: Recall@1 (share of queries whose top result is correct) for image-to-text / text-to-image retrieval on COCO after fine-tuning; B@4: BLEU-4 (BLEU and CIDEr covered earlier); NoCaps: zero-shot captioning by the COCO-fine-tuned model. Li et al., \href{https://arxiv.org/abs/2201.12086v2}{arXiv:2201.12086v2}, Tables~1, 2 and~4.\par}
+  {\scriptsize C / F: captioner / filter on ViT-B ($B$) or ViT-L ($L$); beam: beam search, which aims for the most probable caption, instead of nucleus sampling. Pretrained model: ViT-B/16 in every row. TR@1 / IR@1: Recall@1 (share of queries whose top result is correct) for image-to-text / text-to-image retrieval on COCO after fine-tuning; B@4: BLEU-4; NoCaps: zero-shot captioning by the COCO-fine-tuned model. Li et al., \href{https://arxiv.org/abs/2201.12086v2}{arXiv:2201.12086v2}, Tables~1, 2 and~4.\par}
   \vspace{0.2em}
   \begin{itemize}\footnotesize\itemsep0.15em
     \item Each module helps alone; together they add 2.2 TR@1 and 2.9 NoCaps CIDEr at 14M. The gain holds at 129M, and ViT-L modules lift NoCaps CIDEr to 109.6.

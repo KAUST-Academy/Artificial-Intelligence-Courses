@@ -8,7 +8,7 @@
   {\centering\scriptsize
   \begin{tabular}{>{\raggedright\arraybackslash}p{1.8cm} >{\raggedright\arraybackslash}p{2.7cm} >{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.5cm}}
     \toprule
-     & \textbf{Visual odometry (VO)} & \textbf{Visual SLAM} & \textbf{SfM (defined above)} \\
+     & \textbf{Visual odometry (VO)} & \textbf{Visual SLAM} & \textbf{SfM} \\
     \midrule
     Input & ordered video stream & ordered video stream & unordered image set \\
     \addlinespace[0.1em]
@@ -59,13 +59,13 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.48\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
-        \item \textbf{Front-end:} data association (deciding which measurements show the same 3D point): extract features (ORB, defined above), match them to the local map, and estimate the pose from these 2D--3D matches (PnP, defined above), refined by motion-only BA (points fixed).
+        \item \textbf{Front-end:} data association (deciding which measurements show the same 3D point): extract features (ORB), match them to the local map, and estimate the pose from these 2D--3D matches (PnP), refined by motion-only BA (points fixed).
         \item \textbf{Keyframes:} only frames that add new views enter the back-end. BA cost grows with the number of keyframes, so redundant ones are culled.
       \end{itemize}
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.2em
-        \item \textbf{Back-end:} local BA (defined above) over nearby keyframes (covisible, i.e.\ sharing map points, or recent); after a loop closure, a pose graph: all keyframe poses, linked by relative-pose edges.
-        \item \textbf{Relocalization:} when tracking fails, retrieve similar keyframes and solve PnP in RANSAC (defined above); loop detection is the same long-term data association.
+        \item \textbf{Back-end:} local BA over nearby keyframes (covisible, i.e.\ sharing map points, or recent); after a loop closure, a pose graph: all keyframe poses, linked by relative-pose edges.
+        \item \textbf{Relocalization:} when tracking fails, retrieve similar keyframes and solve PnP in RANSAC; loop detection is the same long-term data association.
       \end{itemize}
   \end{columns}
 \end{frame}
@@ -74,9 +74,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.65\textwidth}
       \begin{itemize}\scriptsize\itemsep0.15em
-        \item \textbf{Drift:} each relative pose carries a small error, and chaining them makes the error grow without bound. One camera cannot observe scale, so the map drifts in all 7 gauge DoF (defined above): rotation, translation and scale.
-        \item \textbf{Detect the revisit} (place recognition): image retrieval with global descriptors and approximate nearest-neighbour search (covered earlier), or a \textbf{bag of binary words}. DBoW2 quantizes BRIEF descriptors (the descriptor inside ORB) with a vocabulary tree (hierarchical k-medians clustering, 10 branches, 6 levels; its $10^6$ leaves are the words), so an image becomes a histogram of words, weighted by tf-idf (term frequency times inverse document frequency: words rare across images count more). An inverted index (each word's list of images) returns the candidates.
-        \item \textbf{Verify:} RANSAC (defined above) on a fundamental matrix with at least 12 inliers (DBoW2), or on a 3D-to-3D similarity (ORB-SLAM, next slide).
+        \item \textbf{Drift:} each relative pose carries a small error, and chaining them makes the error grow without bound. One camera cannot observe scale, so the map drifts in all 7 gauge DoF: rotation, translation and scale.
+        \item \textbf{Detect the revisit} (place recognition): image retrieval with global descriptors and approximate nearest-neighbour search, or a \textbf{bag of binary words}. DBoW2 quantizes BRIEF descriptors (the descriptor inside ORB) with a vocabulary tree (hierarchical k-medians clustering, 10 branches, 6 levels; its $10^6$ leaves are the words), so an image becomes a histogram of words, weighted by tf-idf (term frequency times inverse document frequency: words rare across images count more). An inverted index (each word's list of images) returns the candidates.
+        \item \textbf{Verify:} RANSAC on a fundamental matrix with at least 12 inliers (DBoW2), or on a 3D-to-3D similarity (ORB-SLAM, next slide).
         \item \textbf{Correct:} add the loop edge and optimize a pose graph over similarities $S=\left[\begin{smallmatrix} sR & \mathbf{t}\\ \mathbf{0}^\top & 1\end{smallmatrix}\right]\in\mathrm{Sim}(3)$ with scale $s>0$:
         \[ \min_{\{S_i\}} \sum_{(i,j)\in\mathcal{E}} \mathbf{e}_{ij}^\top \Lambda_{ij}\,\mathbf{e}_{ij},\quad \mathbf{e}_{ij}=\log_{\mathrm{Sim}(3)}\!\big(S_{ij}S_jS_i^{-1}\big)\in\mathbb{R}^7 \]
         $S_i$: world-to-keyframe similarity; $S_{ij}$: measured relative similarity (odometry or loop edge); $\log$: the 7-vector of rotation, translation and log-scale; $\Lambda_{ij}$: information matrix, the inverse covariance of the edge (identity in ORB-SLAM); one keyframe is held fixed to remove the 7 gauge DoF.
@@ -105,11 +105,11 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item \textbf{ORB-SLAM} (Mur-Artal et al., T-RO 2015): monocular and keyframe-based; the same ORB features (defined above) serve tracking, mapping, relocalization and loop closing.
+        \item \textbf{ORB-SLAM} (Mur-Artal et al., T-RO 2015): monocular and keyframe-based; the same ORB features serve tracking, mapping, relocalization and loop closing.
         \item \textbf{Three parallel threads.} Tracking: match the previous frame, motion-only BA, match the local map, decide on keyframes. Local mapping: triangulate new points, local BA, cull points and redundant keyframes. Loop closing: DBoW2 candidates, a Sim(3) found by RANSAC, fusion of duplicate points, essential-graph optimization.
         \item \textbf{Covisibility graph:} a node per keyframe and an edge when two keyframes share at least 15 map points. \textbf{Essential graph:} a spanning tree (the fewest covisibility edges that still connect all keyframes), the covisibility edges with at least 100 shared points, and the loop edges; sparse enough for real-time pose-graph optimization.
         \item \textbf{ORB-SLAM2} (T-RO 2017) adds stereo and RGB-D (colour plus depth) input, so the map has metric scale.
-        \item \textbf{ORB-SLAM3} (T-RO 2021) adds visual-inertial SLAM with an IMU (defined above), maximum a posteriori (MAP) estimation even during IMU initialization, and the multi-map \textbf{Atlas}: after tracking loss a new map starts, and it is merged once a mapped place is seen again.
+        \item \textbf{ORB-SLAM3} (T-RO 2021) adds visual-inertial SLAM with an IMU, maximum a posteriori (MAP) estimation even during IMU initialization, and the multi-map \textbf{Atlas}: after tracking loss a new map starts, and it is merged once a mapped place is seen again.
       \end{itemize}
     \column{0.48\textwidth}
       \centering
@@ -126,7 +126,7 @@
   \end{itemize}
   \vspace{-0.6em}
   \[ E_{\text{photo}} = \sum_{i}\,\sum_{\mathbf{p}\in\mathcal{P}_i}\,\sum_{j\in\mathrm{obs}(\mathbf{p})} \Big\lVert I_j\big(\pi(T_{ji}\,\pi^{-1}(\mathbf{p},d_{\mathbf{p}}))\big) - I_i(\mathbf{p})\Big\rVert_\gamma \]
-  {\scriptsize $\mathcal{P}_i$: pixels selected in frame $i$; $\mathrm{obs}(\mathbf{p})$: frames that see $\mathbf{p}$; $d_{\mathbf{p}}=1/Z$: inverse depth; $\pi^{-1}(\mathbf{p},d_{\mathbf{p}}) = d_{\mathbf{p}}^{-1}K^{-1}\tilde{\mathbf{p}}$: back-projection (defined above); $T_{ji}=T_jT_i^{-1}$: camera $i$ to $j$; $\lVert r\rVert_\gamma$: Huber norm (robust loss, defined above), threshold $\gamma$.\par}
+  {\scriptsize $\mathcal{P}_i$: pixels selected in frame $i$; $\mathrm{obs}(\mathbf{p})$: frames that see $\mathbf{p}$; $d_{\mathbf{p}}=1/Z$: inverse depth; $\pi^{-1}(\mathbf{p},d_{\mathbf{p}}) = d_{\mathbf{p}}^{-1}K^{-1}\tilde{\mathbf{p}}$: back-projection; $T_{ji}=T_jT_i^{-1}$: camera $i$ to $j$; $\lVert r\rVert_\gamma$: Huber norm (robust loss), threshold $\gamma$.\par}
   \vspace{0.2em}
   \begin{columns}[T,onlytextwidth]
     \column{0.45\textwidth}
@@ -161,7 +161,7 @@
     \column{0.47\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
         \item \textbf{Monocular:} depth, and with it scale, is not observable: trajectory and map are known up to a similarity, and the scale drifts.
-        \item \textbf{Stereo and RGB-D:} the baseline $B$ (defined above) or the depth sensor fixes metric scale.
+        \item \textbf{Stereo and RGB-D:} the baseline $B$ or the depth sensor fixes metric scale.
         \item \textbf{Visual-inertial:} the IMU makes scale observable for a single camera; initialization also estimates the gravity direction and the IMU biases (ORB-SLAM3).
         \item \textbf{Absolute trajectory error} (ATE): align the estimated camera-to-world poses $\hat{Q}_i$ to the ground truth $Q_i$ ($\hat{Q}_i,Q_i\in SE(3)$, $i=1,\dots,n$) with the least-squares rigid transform $A$ (closed form), then
         \[ \mathrm{ATE} = \Big(\tfrac{1}{n}\textstyle\sum_{i=1}^{n}\lVert\operatorname{trans}(Q_i^{-1}A\hat{Q}_i)\rVert^2\Big)^{1/2}, \]
@@ -220,14 +220,14 @@
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
         \item \textbf{State:} a pose $T_t\in SE(3)$ and a dense inverse-depth map $\mathbf{d}_t$ per frame. A frame graph links covisible frames; edges to old frames are added when the camera returns, which closes loops.
-        \item \textbf{Update operator} (above): $\mathbf{p}_i$ is the pixel grid of frame $i$ and $T_{ji}=T_jT_i^{-1}$. A lookup $L_C$ in the correlation volume $C_{ij}$ around $\mathbf{p}_{ij}$ and a $3\times3$ convolutional GRU with hidden state $\mathbf{h}_{ij}$ (both as in RAFT, defined above) predict a flow revision $\mathbf{r}_{ij}$ and a confidence $\mathbf{w}_{ij}$.
+        \item \textbf{Update operator} (above): $\mathbf{p}_i$ is the pixel grid of frame $i$ and $T_{ji}=T_jT_i^{-1}$. A lookup $L_C$ in the correlation volume $C_{ij}$ around $\mathbf{p}_{ij}$ and a $3\times3$ convolutional GRU with hidden state $\mathbf{h}_{ij}$ (both as in RAFT) predict a flow revision $\mathbf{r}_{ij}$ and a confidence $\mathbf{w}_{ij}$.
         \item \textbf{Beyond RAFT:} RAFT revises the flow between two frames; here the updates act on any number of frames, and a dense bundle adjustment (DBA) layer refines all poses and depth maps jointly, which the authors call essential for low drift on long trajectories and for loop closure.
       \end{itemize}
     \column{0.48\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item \textbf{DBA layer:} Gauss--Newton steps on all poses and depths, solved with the Schur complement (defined above), toward the revised targets $\mathbf{p}^*_{ij}=\mathbf{p}_{ij}+\mathbf{r}_{ij}$:
+        \item \textbf{DBA layer:} Gauss--Newton steps on all poses and depths, solved with the Schur complement, toward the revised targets $\mathbf{p}^*_{ij}=\mathbf{p}_{ij}+\mathbf{r}_{ij}$:
         \[ E(T',\mathbf{d}')=\sum_{(i,j)\in\mathcal{E}}\mathbf{e}_{ij}^\top\,\mathrm{diag}(\mathbf{w}_{ij})\,\mathbf{e}_{ij} \]
-        with $\mathbf{e}_{ij}=\mathbf{p}^*_{ij}-\pi(T'_{ji}\,\pi^{-1}(\mathbf{p}_i,\mathbf{d}'_i))$. The confidences act as the information matrix ($\Lambda_{ij}$ above), so confident pixels count more.
+        with $\mathbf{e}_{ij}=\mathbf{p}^*_{ij}-\pi(T'_{ji}\,\pi^{-1}(\mathbf{p}_i,\mathbf{d}'_i))$. The confidences act as the information matrix ($\Lambda_{ij}$), so confident pixels count more.
         \item The layer is part of the computation graph, so training backpropagates through it end to end.
       \end{itemize}
   \end{columns}
@@ -293,7 +293,7 @@
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
         \item \textbf{NeRF} (neural radiance field; Mildenhall et al., ECCV 2020): an MLP maps a 3D position and viewing direction to density and colour; volume rendering sums the colours along each camera ray, weighted by density and by the transparency in front.
-        \item \textbf{3D Gaussian splatting} (Kerbl et al., ACM TOG 2023): the scene is a set of anisotropic 3D Gaussians (stretched differently along each axis), each with a mean, covariance $\Sigma=R\,\mathrm{diag}(\mathbf{s})^2R^\top$ ($R$ stored as a quaternion, defined above; $\mathbf{s}$ the 3D scale vector), opacity $\alpha$, and view-dependent colour from spherical harmonics (a basis of functions on the sphere). A differentiable tile-based rasterizer projects each Gaussian to a 2D ellipse, sorts them by depth and alpha-blends them front to back, at 30\,fps or more at 1080p.
+        \item \textbf{3D Gaussian splatting} (Kerbl et al., ACM TOG 2023): the scene is a set of anisotropic 3D Gaussians (stretched differently along each axis), each with a mean, covariance $\Sigma=R\,\mathrm{diag}(\mathbf{s})^2R^\top$ ($R$ stored as a quaternion; $\mathbf{s}$ the 3D scale vector), opacity $\alpha$, and view-dependent colour from spherical harmonics (a basis of functions on the sphere). A differentiable tile-based rasterizer projects each Gaussian to a 2D ellipse, sorts them by depth and alpha-blends them front to back, at 30\,fps or more at 1080p.
       \end{itemize}
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em

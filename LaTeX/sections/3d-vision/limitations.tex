@@ -1,6 +1,6 @@
 \begin{frame}{Limitations and Open Problems}
   \begin{itemize}\footnotesize\itemsep0.1em
-    \item \textbf{Surfaces that break the assumptions:} glass, mirrors and water break the Lambertian assumption (defined above), and large textureless walls lack the distinctive texture that matching, stereo, and photometric losses rely on.
+    \item \textbf{Surfaces that break the assumptions:} glass, mirrors and water break the Lambertian assumption, and large textureless walls lack the distinctive texture that matching, stereo, and photometric losses rely on.
     \item \textbf{Dynamic scenes:} most pipelines assume a static world. Moving people and vehicles corrupt poses and maps unless they are masked out or modelled explicitly.
     \item \textbf{Scale and unfamiliar cameras:} one camera recovers metric scale only through learned priors, an object of known size, or extra sensors, and a model that must infer the camera struggles with optics unlike its training data, such as fisheye or panoramic images.
     \item \textbf{Long-term operation:} lighting, season, and viewpoint changes degrade place recognition (at night, retrieve, match and solve localizes only 40.8\% of Aachen queries within 0.5\,m and $2^\circ$), and maps go stale as the world changes.

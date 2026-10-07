@@ -50,7 +50,7 @@
       {\scriptsize Redrawn after Isensee et al., \href{https://arxiv.org/abs/1904.08128v2}{arXiv:1904.08128v2}, Figure~2b.\par}
     \column{0.58\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item \textbf{nnU-Net} (Isensee et al., Nature Methods 2021) keeps the U-Net (covered earlier) plain and sets the data-dependent choices from the dataset itself.
+        \item \textbf{nnU-Net} (Isensee et al., Nature Methods 2021) keeps the U-Net plain and sets the data-dependent choices from the dataset itself.
         \item \textbf{2024 re-benchmark}: six 3D datasets, 5-fold cross-validation, every model trained from scratch on one 40\,GB A100. Mean Dice (\%) on kidney-tumour (KiTS) and abdominal-organ (AMOS) data:
       \end{itemize}
       {\centering\scriptsize
@@ -68,7 +68,7 @@
         \bottomrule
       \end{tabular}\par}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item Switching off the Mamba layers (defined above) changes almost nothing: the reported gain came from pairing them with a residual-encoder U-Net (the ResEnc design). Compare against a well-configured baseline at equal compute.
+        \item Switching off the Mamba layers changes almost nothing: the reported gain came from pairing them with a residual-encoder U-Net (the ResEnc design). Compare against a well-configured baseline at equal compute.
       \end{itemize}
   \end{columns}
   {\scriptsize Isensee et al., ``nnU-Net Revisited: A Call for Rigorous Validation in 3D Medical Image Segmentation,'' MICCAI 2024, \href{https://arxiv.org/abs/2404.09556v2}{arXiv:2404.09556v2}, Table~1 and Section~4; Gu and Dao, Mamba, \href{https://arxiv.org/abs/2312.00752v2}{arXiv:2312.00752v2}.\par}
@@ -95,8 +95,8 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.46\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item \textbf{MedSAM} (2024) fine-tuned SAM (covered earlier) on 1,570,263 image-mask pairs from 10 modalities; a box prompt segments one 2D slice at a time.
-        \item \textbf{MedSAM2} (2025) fine-tunes SAM2.1-Tiny on over 455,000 3D image-mask pairs and 76,000 video frames. It reads a volume like a video: a box on the middle slice, then SAM~2's memory attention (covered earlier) carries the mask to both ends. Over three annotation rounds, time per CT lesion fell from 525.9\,s by hand to 74.3\,s.
+        \item \textbf{MedSAM} (2024) fine-tuned SAM on 1,570,263 image-mask pairs from 10 modalities; a box prompt segments one 2D slice at a time.
+        \item \textbf{MedSAM2} (2025) fine-tunes SAM2.1-Tiny on over 455,000 3D image-mask pairs and 76,000 video frames. It reads a volume like a video: a box on the middle slice, then SAM~2's memory attention carries the mask to both ends. Over three annotation rounds, time per CT lesion fell from 525.9\,s by hand to 74.3\,s.
         \item \textbf{nnInteractive} (2025) keeps an nnU-Net ResEnc-L backbone and feeds points, boxes, scribbles or a lasso, drawn on any plane, as extra input channels; the output is a 3D mask. Trained on 64,518 volumes from over 120 datasets; plug-ins for napari, MITK and 3D Slicer.
         \item \textbf{BiomedParse} (2025; 2D, with CT and MRI as slices) prompts with text: one model segments, detects and labels 82 object types in 9 modalities, trained on over 6 million image-mask-description triples.
       \end{itemize}
@@ -112,7 +112,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item A WSI is cut into tiles and a self-supervised \textbf{tile encoder} embeds each one. Most pathology foundation models reuse DINOv2 (covered earlier) or the related iBOT.
+        \item A WSI is cut into tiles and a self-supervised \textbf{tile encoder} embeds each one. Most pathology foundation models reuse DINOv2 or the related iBOT.
       \end{itemize}
       {\centering\scriptsize
       \begin{tabular}{@{}>{\raggedright\arraybackslash}p{1.5cm} >{\raggedright\arraybackslash}p{1.95cm} >{\raggedright\arraybackslash}p{2.6cm}@{}}
@@ -120,7 +120,7 @@
         \textbf{Model} & \textbf{Encoder recipe} & \textbf{Pretraining data} \\
         \midrule
         UNI (2024) & ViT-L, DINOv2 & $>$100M tiles from $>$100k H\&E slides \\
-        CONCH (2024) & CoCa (covered earlier) & 1.17M image-caption pairs \\
+        CONCH (2024) & CoCa & 1.17M image-caption pairs \\
         Prov-GigaPath (2024) & DINOv2 tiles + LongNet slide encoder & 1.3B tiles from 171,189 slides \\
         Virchow2 (2024) & ViT-H (632M), modified DINOv2 & 3.1M slides \\
         UNI2-h (2025) & ViT-H & $>$200M tiles from $>$350k slides \\

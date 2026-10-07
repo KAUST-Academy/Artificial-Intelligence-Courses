@@ -22,7 +22,7 @@
   \begin{itemize}\scriptsize\itemsep0.2em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{On-premises:} the model runs on hardware you own, in your data centre. \textbf{Open-weight:} the trained weights are published, so anyone can run the model; closed models are usually reached through their provider's API.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Air-gapped:} on-premises with no network path to the outside. Weights, container images and packages arrive through an offline mirror, and outbound calls are switched off (\texttt{VLLM\_NO\_USAGE\_STATS=1}, \texttt{HF\_HUB\_OFFLINE=1}).
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Who sees the prompts:} OpenAI's abuse-monitoring logs, which can hold API prompts and responses, are ``retained for up to 30 days'' by default. Only the last two columns keep every prompt in-house (see the privacy section of this lecture).
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Who sees the prompts:} OpenAI's abuse-monitoring logs, which can hold API prompts and responses, are ``retained for up to 30 days'' by default. Only the last two columns keep every prompt in-house.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize OpenAI, ``Data controls in the OpenAI platform,'' accessed 6 Oct.\ 2026, \href{https://developers.openai.com/api/docs/guides/your-data}{developers.openai.com}; vLLM, ``Usage Stats Collection,'' \href{https://docs.vllm.ai/en/latest/usage/usage_stats/}{docs.vllm.ai}; Hugging Face, ``Environment variables,'' \href{https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables}{huggingface.co/docs}.\par}
@@ -75,7 +75,7 @@
   \begin{itemize}\scriptsize\itemsep0.2em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{The gap:} from January to May 2026 the most capable open-weight models trailed frontier closed models by four months on average, 8 points on Epoch AI's Epoch Capabilities Index (ECI, a composite of many benchmarks). Open models ``tend to perform worse on private benchmarks'', so this may understate the gap.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Language support differs by model:} on Arabic MMMLU (MMLU professionally translated into 14 languages), gpt-oss-120b scores 82.7 against 90.4 for OpenAI's closed o3. Llama 3.3 supports eight languages, Arabic not among them; the released ALLaM-7B was trained from scratch on English, then on Arabic and English.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Procedure:} shortlist on public benchmarks, decide on your own evaluation set (covered earlier), then check the columns below. For mixture-of-experts models (covered earlier), memory follows total parameters and per-token compute follows active ones.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Procedure:} shortlist on public benchmarks, decide on your own evaluation set, then check the columns below. For mixture-of-experts models, memory follows total parameters and per-token compute follows active ones.
   \end{itemize}
   \vspace{0.1em}
   {\centering\scriptsize\setlength{\tabcolsep}{3pt}
@@ -121,17 +121,17 @@
     \draw[->, dashed, black!50] (srv.south) -- (srv.south |- obs.north);
     \draw[->, dashed, black!50] (gpu.south) -- (gpu.south |- obs.north);
   \end{tikzpicture}\\[0.1em]
-  {\scriptsize Every request passes the gateway; weights reach the servers only from the model registry (covered earlier), through the evaluation gate.\par}\par}
+  {\scriptsize Every request passes the gateway; weights reach the servers only from the model registry, through the evaluation gate.\par}\par}
   \vspace{0.2em}
   \begin{columns}[T,onlytextwidth]
     \column{0.48\textwidth}
       \begin{itemize}\scriptsize\itemsep0.15em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{AI gateway:} the single entry point in front of every model (for example LiteLLM). It authenticates callers, enforces quotas, routes by model name, masks personally identifiable information (PII), runs the safety classifiers of the jailbreak-defenses section, and keeps logs for a set retention period. The governance practice covered earlier (review before release, incident reporting, a kill switch) is enforced here.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{AI gateway:} the single entry point in front of every model (for example LiteLLM). It authenticates callers, enforces quotas, routes by model name, masks personally identifiable information (PII), runs safety classifiers, and keeps logs for a set retention period. Governance practice (review before release, incident reporting, a kill switch) is enforced here.
       \end{itemize}
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.15em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{OpenAI-compatible API:} the HTTP interface of OpenAI's API (\texttt{/v1/chat/completions}). vLLM, SGLang and TensorRT-LLM all serve it, so engines and models change behind the gateway without client changes.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Model signing:} a signature over a manifest of every model file's SHA-256 hash, checked on import and at load, so tampered weights (data-poisoning section) are refused. OpenSSF Model Signing v1.0 also works with self-signed certificates or plain key pairs.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Model signing:} a signature over a manifest of every model file's SHA-256 hash, checked on import and at load, so tampered weights are refused. OpenSSF Model Signing v1.0 also works with self-signed certificates or plain key pairs.
       \end{itemize}
   \end{columns}
   \vspace{0.1em}
@@ -142,7 +142,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{The problem:} per-department LoRA adapters (covered earlier; see the domain-specific LLMs section) share one base model. Merging each into its own copy of the weights multiplies memory: on one 80\,GB A100, S-LoRA's merged-copies baseline served 5 Llama-7B adapters and ran out of memory at 100, the next count tested.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{The problem:} per-department LoRA adapters share one base model. Merging each into its own copy of the weights multiplies memory: on one 80\,GB A100, S-LoRA's merged-copies baseline served 5 Llama-7B adapters and ran out of memory at 100, the next count tested.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Multi-LoRA serving} keeps one copy of the base weights and batches requests that name different adapters:
           \[ y_i = x_i W + x_i A_i B_i , \]
           $x_i$: input of request $i$; $W$: shared base weight (one large product for the batch); $A_i, B_i$: the rank-$r$ factors of request $i$'s adapter (a small product per request).
@@ -166,14 +166,14 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.44\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] Plain rounding to 4-bit weights (weight-only quantization, covered earlier) loses accuracy. Two error-aware post-training methods, both supported by vLLM:
+        \item[\textcolor{red}{$\blacktriangleright$}] Plain rounding to 4-bit weights (weight-only quantization) loses accuracy. Two error-aware post-training methods, both supported by vLLM:
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{GPTQ} quantizes column by column and updates the remaining weights to absorb each error, using the inverse Hessian (second derivatives of the layer's squared output error) from 128 calibration sequences. It brought 175B-parameter models to 3--4 bits in about four GPU hours.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{AWQ} (activation-aware weight quantization) finds the 1\% salient weight channels from activation statistics and scales them up before rounding. It relies on no backpropagation or reconstruction (GPTQ's weight updates), so it does not overfit the calibration set.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Quality cost} (Llama-2-70B, 4 bits, groups of 128): WikiText-2 perplexity 3.32 in FP16, 3.46 with plain rounding, 3.42 with GPTQ, 3.41 with AWQ.
       \end{itemize}
     \column{0.54\textwidth}
       \begin{itemize}\scriptsize
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Worked example:} the 70B grouped-query-attention model of the earlier 4-GPU example ($L = 80$, $n_{kv} = 8$, $d_{\text{head}} = 128$) needs 2.68\,GB of \texttt{bf16} KV cache per 8,192-token session (covered earlier). On one 80\,GB GPU:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Worked example:} a 70B grouped-query-attention model ($L = 80$, $n_{kv} = 8$, $d_{\text{head}} = 128$) needs 2.68\,GB of \texttt{bf16} KV cache per 8,192-token session. On one 80\,GB GPU:
       \end{itemize}
       {\centering\scriptsize\setlength{\tabcolsep}{3pt}
       \begin{tabular}{>{\raggedright\arraybackslash}p{6.0cm} r}
@@ -184,13 +184,13 @@
         16-bit scale and 4-bit zero point per 128 weights & 1.3 \\
         embedding, output layer, norms in 16 bits (2.1B) & 4.2 \\
         \textbf{weights} (equal to the published AWQ checkpoint) & \textbf{39.8} \\
-        per-GPU workspace of the 4-GPU example (assumed) & 5.0 \\
+        per-GPU workspace (assumed) & 5.0 \\
         \textbf{KV budget} $= 80 - 39.8 - 5$ & \textbf{35.2} \\
         \bottomrule
       \end{tabular}\par}
       \begin{itemize}\scriptsize\itemsep0.2em
         \item[\textcolor{red}{$\blacktriangleright$}] $35.2 / 2.68 \approx \mathbf{13}$ concurrent 8k sessions; about 26 with an 8-bit KV cache.
-        \item[\textcolor{red}{$\blacktriangleright$}] Four such replicas on 4 GPUs hold about 52 sessions, against about 60 for one \texttt{bf16} replica sharded over 4 GPUs (covered earlier): a 4-bit copy (39.8\,GB) is larger than a quarter of the \texttt{bf16} weights (35\,GB). Four-bit weights buy a one-GPU entry point and replicas that fail independently.
+        \item[\textcolor{red}{$\blacktriangleright$}] Four such replicas on 4 GPUs hold about 52 sessions, against about 60 for one \texttt{bf16} replica sharded over 4 GPUs: a 4-bit copy (39.8\,GB) is larger than a quarter of the \texttt{bf16} weights (35\,GB). Four-bit weights buy a one-GPU entry point and replicas that fail independently.
       \end{itemize}
   \end{columns}
   \vspace{0.1em}

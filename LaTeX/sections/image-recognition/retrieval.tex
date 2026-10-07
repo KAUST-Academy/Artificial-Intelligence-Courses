@@ -26,10 +26,10 @@
   \end{center}
   \vspace{-0.2em}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item \textbf{Query and gallery:} the query is the image we search with; the gallery (also called the database) is the collection we rank. Both pass through the same embedding $f$ (earlier in this lecture), and similarity is the cosine of two L2-normalised embeddings.
-    \item \textbf{Instance-level} retrieval looks for the same object or place under a new viewpoint, lighting or occlusion; \textbf{category-level} retrieval looks for other members of a class. Landmark search and re-identification (later in this lecture) are instance-level.
+    \item \textbf{Query and gallery:} the query is the image we search with; the gallery (also called the database) is the collection we rank. Both pass through the same embedding $f$, and similarity is the cosine of two L2-normalised embeddings.
+    \item \textbf{Instance-level} retrieval looks for the same object or place under a new viewpoint, lighting or occlusion; \textbf{category-level} retrieval looks for other members of a class. Landmark search and re-identification are instance-level.
     \item \textbf{Two stages:} a \textbf{global descriptor} (one vector per image) ranks the whole gallery; a costlier score then re-ranks only the top $M$ (the systems in this section use $M = 400$ to 1{,}000).
-    \item \textbf{Scoring:} the AP of each query's ranked list (covered earlier), averaged over queries, gives mAP; mAP@$k$ computes AP on the top $k$ results only.
+    \item \textbf{Scoring:} the AP of each query's ranked list, averaged over queries, gives mAP; mAP@$k$ computes AP on the top $k$ results only.
   \end{itemize}
 \end{frame}
 
@@ -64,8 +64,8 @@
         \[ f_k = \Big( \frac{1}{|\mathcal{X}_k|} \sum_{x \in \mathcal{X}_k} x^{\,p_k} \Big)^{1/p_k}, \qquad k = 1, \dots, K, \]
         where $\mathcal{X}_k$ holds the $W \times H$ non-negative (post-ReLU) activations of channel $k$, $K$ is the number of channels (the descriptor length) and $p_k$ is the pooling exponent.
         \item $p_k = 1$ gives average pooling and $p_k \to \infty$ gives max pooling. GeM learns $p$ by backpropagation, and one $p$ shared by all channels worked better than one per channel. A larger $p$ concentrates the response on fewer, more localised regions (right). The vector $(f_1, \dots, f_K)$ is L2-normalised and compared by inner product.
-        \item \textbf{Whitening:} a linear map after pooling that decorrelates and rescales the dimensions. Learned from matching pairs, it lifts fine-tuned VGG with GeM on Oxford5k from 82.0 to 85.9 mAP; PCA whitening (PCA covered earlier) reaches 83.1.
-        \item \textbf{Update (2023):} trained with ArcFace (earlier in this lecture), a learnable $p$ drifts below the test-time optimum of 4.0, so SuperGlobal's GeM+ (Shao et al., ICCV 2023; later in this lecture) re-tunes $p$ after training.
+        \item \textbf{Whitening:} a linear map after pooling that decorrelates and rescales the dimensions. Learned from matching pairs, it lifts fine-tuned VGG with GeM on Oxford5k from 82.0 to 85.9 mAP; PCA whitening reaches 83.1.
+        \item \textbf{Update (2023):} trained with ArcFace, a learnable $p$ drifts below the test-time optimum of 4.0, so SuperGlobal's GeM+ (Shao et al., ICCV 2023) re-tunes $p$ after training.
       \end{itemize}
     \column{0.43\textwidth}
       \centering
@@ -117,9 +117,9 @@
     \column{0.43\textwidth}
       \begin{itemize}\scriptsize\itemsep0.25em
         \item \textbf{Protocol:} no training on the benchmark; one frozen global feature per image and the gallery ranked by cosine similarity. M and H are the Medium and Hard protocols; AmsterTime matches street-view photos of Amsterdam to archival photos of the same places.
-        \item On ROxford Hard, DINOv2 ViT-L/14 reaches 54.0 mAP, against 13.7 for the best earlier self-supervised feature (DINO) and 19.7 for OpenCLIP. Even ViT-S/14 beats OpenCLIP ViT-G/14 in every column. Masked-image-modelling features (MAE, covered earlier) score 2.2.
-        \item \textbf{Caveat:} LVD-142M (covered earlier) contains GLDv2-clean plus 6.3M web images retrieved around it, and 1M web images retrieved around each of the ROxford and RParis galleries. Near-duplicates of test images were removed, yet the training data includes GLDv2-clean with its landmarks that overlap ROxford and RParis queries (earlier in this lecture).
-        \item \textbf{Implication:} frozen DINOv2 features with cosine search beat every earlier off-the-shelf feature here, but these benchmarks sit inside DINOv2's training distribution. ILIAS (later in this lecture) tests outside it.
+        \item On ROxford Hard, DINOv2 ViT-L/14 reaches 54.0 mAP, against 13.7 for the best earlier self-supervised feature (DINO) and 19.7 for OpenCLIP. Even ViT-S/14 beats OpenCLIP ViT-G/14 in every column. Masked-image-modelling features (MAE) score 2.2.
+        \item \textbf{Caveat:} LVD-142M contains GLDv2-clean plus 6.3M web images retrieved around it, and 1M web images retrieved around each of the ROxford and RParis galleries. Near-duplicates of test images were removed, yet the training data includes GLDv2-clean with its landmarks that overlap ROxford and RParis queries.
+        \item \textbf{Implication:} frozen DINOv2 features with cosine search beat every earlier off-the-shelf feature here, but these benchmarks sit inside DINOv2's training distribution. ILIAS tests outside it.
       \end{itemize}
   \end{columns}
 \end{frame}
@@ -181,9 +181,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.47\textwidth}
       \begin{itemize}\scriptsize\itemsep0.22em
-        \item LPIPS (covered earlier) was fitted to human judgments of low-level distortions such as blur and noise. Retrieval and generation also need mid-level similarity: pose, layout, shape, colour, number of objects.
+        \item LPIPS was fitted to human judgments of low-level distortions such as blur and noise. Retrieval and generation also need mid-level similarity: pose, layout, shape, colour, number of objects.
         \item \textbf{NIGHTS} (Novel Image Generations with Human-Tested Similarity): the text-to-image model Stable Diffusion draws a reference and two variations from one prompt, and annotators make a two-alternative forced choice (\textbf{2AFC}): which variation is closer to the reference? Keeping only unanimous votes leaves 20{,}019 triplets.
-        \item \textbf{DreamSim} concatenates DINO, CLIP and OpenCLIP embeddings and fine-tunes them with LoRA (covered earlier) on the 2AFC labels. With $d_j = 1 - \cos\big(f(x), f(\tilde{x}_j)\big)$:
+        \item \textbf{DreamSim} concatenates DINO, CLIP and OpenCLIP embeddings and fine-tunes them with LoRA on the 2AFC labels. With $d_j = 1 - \cos\big(f(x), f(\tilde{x}_j)\big)$:
         \[ \mathcal{L} = \max\big(0,\; m - \bar{y}\,(d_0 - d_1)\big) \]
         $x$: reference; $\tilde{x}_0, \tilde{x}_1$: variations; $\bar{y} = +1$ if people chose $\tilde{x}_1$, else $-1$; $m = 0.05$: the margin of this triplet-style loss.
         \item Agreement with people on held-out triplets (chance 50\%): LPIPS 70.7\%, DINO ViT-B/16 90.1\%, untuned ensemble 90.8\%, DreamSim 96.2\%.
@@ -250,7 +250,7 @@
     \column{0.54\textwidth}
       \begin{itemize}\scriptsize\itemsep0.35em
         \item \textbf{Exact search} costs $O(Nd)$ per query. Worked example with $N = 10^{9}$ gallery vectors of $d = 768$ float32 values: $10^{9} \times 768 \times 4$\,B $= 3.07$\,TB to scan and $7.7 \times 10^{11}$ multiply-adds for every query.
-        \item \textbf{PQ} (product quantisation; J\'egou et al., TPAMI 2011) stores each of $m = 64$ sub-vectors as the index of its nearest of 256 $k$-means centroids (covered earlier): 64\,B per vector, so 64\,GB of codes for $10^{9}$ vectors, 48$\times$ less. \textbf{ADC} (asymmetric distance computation) keeps the query exact: one $64 \times 256$ table of sub-distances per query, then 64 look-ups and additions per gallery code.
+        \item \textbf{PQ} (product quantisation; J\'egou et al., TPAMI 2011) stores each of $m = 64$ sub-vectors as the index of its nearest of 256 $k$-means centroids: 64\,B per vector, so 64\,GB of codes for $10^{9}$ vectors, 48$\times$ less. \textbf{ADC} (asymmetric distance computation) keeps the query exact: one $64 \times 256$ table of sub-distances per query, then 64 look-ups and additions per gallery code.
         \item \textbf{IVF} (inverted file): $k$-means splits the gallery into $K$ lists, one per centroid, and a query scans only its $P$ nearest lists, $K + PN/K$ distances in all. With $K = 65{,}536$ and $P = 64$: $65{,}536 + 976{,}563 \approx 1.04 \times 10^{6}$ instead of $10^{9}$. In IVFADC the lists hold PQ codes of each vector's residual to its centroid.
         \item \textbf{HNSW} (hierarchical navigable small world; Malkov and Yashunin, TPAMI 2020) stacks proximity graphs (each vector linked to near neighbours) over nested subsets of the gallery and searches greedily from the sparse top layer down, with logarithmic scaling. \textbf{Faiss} (Douze et al., 2024) implements these indexes and advises graphs when memory is no constraint (typically below 1M vectors) and IVF when vectors must be compressed to fit in memory.
       \end{itemize}

@@ -148,7 +148,7 @@
     \item \textbf{Two properties a connector needs} (Honeybee, Cha et al., CVPR 2024): ``flexibility in managing the number of visual tokens'', which learned-query resamplers have, and ``preservation of local context from visual features'', which per-patch projectors have. $2 \times 2$ folding sits between them: a fixed $4\times$ cut that keeps each block's neighbours together.
   \end{itemize}
   \vspace{0.1em}
-  {\scriptsize Sources: Qwen-VL, \href{https://arxiv.org/abs/2308.12966v3}{arXiv:2308.12966v3}, Sec.~2.1, App.~E.2; InternVL 1.5, \href{https://arxiv.org/abs/2404.16821v2}{arXiv:2404.16821v2}, Sec.~3.1, and released code; Qwen2-VL, \href{https://arxiv.org/abs/2409.12191v2}{arXiv:2409.12191v2}, Sec.~2.1; Cha et al., ``Honeybee: Locality-enhanced Projector for Multimodal LLM,'' CVPR 2024, \href{https://arxiv.org/abs/2312.06742v2}{arXiv:2312.06742v2}, abstract and Fig.~2. Other rows: earlier in this lecture.\par}
+  {\scriptsize Sources: Qwen-VL, \href{https://arxiv.org/abs/2308.12966v3}{arXiv:2308.12966v3}, Sec.~2.1, App.~E.2; InternVL 1.5, \href{https://arxiv.org/abs/2404.16821v2}{arXiv:2404.16821v2}, Sec.~3.1, and released code; Qwen2-VL, \href{https://arxiv.org/abs/2409.12191v2}{arXiv:2409.12191v2}, Sec.~2.1; Cha et al., ``Honeybee: Locality-enhanced Projector for Multimodal LLM,'' CVPR 2024, \href{https://arxiv.org/abs/2312.06742v2}{arXiv:2312.06742v2}, abstract and Fig.~2.\par}
 \end{frame}
 
 \begin{frame}{What the Ablations Say: Encoder and Connector}
@@ -222,5 +222,5 @@
     \item \textbf{Cross-attention moves the cost.} In Llama 3's image training, an image has 2,308 tokens and its text 192 on average; the image tokens pass only through the image encoder and the cross-attention layers.
   \end{itemize}
   \vspace{0.1em}
-  {\scriptsize Counts leave out delimiter and row-end tokens. Sources: InternVL 1.5, \href{https://arxiv.org/abs/2404.16821v2}{arXiv:2404.16821v2}, Sec.~3.3, and released code; Qwen2-VL, \href{https://arxiv.org/abs/2409.12191v2}{arXiv:2409.12191v2}, Sec.~2.1; Llama 3, \href{https://arxiv.org/abs/2407.21783v3}{arXiv:2407.21783v3}, Sec.~7.3. AnyRes, Vicuna: LLaVA slides.\par}
+  {\scriptsize Counts leave out delimiter and row-end tokens. Sources: InternVL 1.5, \href{https://arxiv.org/abs/2404.16821v2}{arXiv:2404.16821v2}, Sec.~3.3, and released code; Qwen2-VL, \href{https://arxiv.org/abs/2409.12191v2}{arXiv:2409.12191v2}, Sec.~2.1; Llama 3, \href{https://arxiv.org/abs/2407.21783v3}{arXiv:2407.21783v3}, Sec.~7.3.\par}
 \end{frame}

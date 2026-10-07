@@ -37,7 +37,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
-        \item[\textcolor{red}{$\blacktriangleright$}] Liu et al. measured the edge bias noted earlier in the course under controlled conditions. Each prompt holds $p$ Wikipedia passages of at most 100 tokens: one answers a NaturalQuestions-Open question, and the other $p-1$ are the passages a retriever ranks highest among those without the answer. Only the position of the answering passage changes.
+        \item[\textcolor{red}{$\blacktriangleright$}] Liu et al. measured the edge bias under controlled conditions. Each prompt holds $p$ Wikipedia passages of at most 100 tokens: one answers a NaturalQuestions-Open question, and the other $p-1$ are the passages a retriever ranks highest among those without the answer. Only the position of the answering passage changes.
         \item[\textcolor{red}{$\blacktriangleright$}] GPT-3.5-Turbo with $p = 20$ is right 75.8\% of the time with the passage first, 63.2\% with it last, and 53.8\% at position 10: a U-shaped curve of primacy and recency.
         \item[\textcolor{red}{$\blacktriangleright$}] With no passages (closed book) it scores 56.1\%; with only the answering passage, 88.3\%. At position 10 it does worse than with no passages at all.
         \item[\textcolor{red}{$\blacktriangleright$}] A longer window does not change the curve. GPT-3.5-Turbo (16K) and Claude-1.3 (100K) score almost exactly like their 4K and 8K versions on inputs that fit in both.
@@ -101,7 +101,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] 20 tasks: fact chaining, induction, deduction, counting, lists and sets. QA1 needs one supporting fact, QA2 two and QA3 three; the story's other facts act as distractors. Ready-made splits go up to 10M tokens, and the generator extends to any length.
         \item[\textcolor{red}{$\blacktriangleright$}] Order matters. In the figure, F1 and F3 both mention Mary, and only the later one answers ``Where is Mary?''. Because the facts are generated, they cannot have leaked into pre-training data.
         \item[\textcolor{red}{$\blacktriangleright$}] Pass mark: 85\% accuracy. Of 34 LLMs tested without fine-tuning on BABILong, most pass QA1 only up to 4K tokens and the best hold to 64K; with background text none reaches 85\% on QA2, and the best QA3 score stays below 80\%.
-        \item[\textcolor{red}{$\blacktriangleright$}] The authors' summary: ``popular LLMs effectively utilize only 10--20\% of the context.'' BABILong returns later in this lecture as a test for memory-based models.
+        \item[\textcolor{red}{$\blacktriangleright$}] The authors' summary: ``popular LLMs effectively utilize only 10--20\% of the context.'' BABILong is also used to test memory-based models.
       \end{itemize}
     \column{0.40\textwidth}
       \centering
@@ -121,7 +121,7 @@
             \item One hop: ``Which character has been to Dresden?''
             \item Two hops: ``Which character has been to the state of Saxony?''
           \end{itemize}
-        \item[\textcolor{red}{$\blacktriangleright$}] Overlap as ROUGE-1 precision (ROUGE covered earlier), the share of the question's words that also occur in the needle: 0.905 for vanilla NIAH, 0.571 for RULER's single needle, 0.553 for BABILong, 0.069 for NoLiMa.
+        \item[\textcolor{red}{$\blacktriangleright$}] Overlap as ROUGE-1 precision, the share of the question's words that also occur in the needle: 0.905 for vanilla NIAH, 0.571 for RULER's single needle, 0.553 for BABILong, 0.069 for NoLiMa.
         \item[\textcolor{red}{$\blacktriangleright$}] Haystacks are snippets of 10 open-license books, filtered so that no other sentence answers the question. 58 question--needle pairs, 26 needle positions, lengths from 250 to 32K tokens.
         \item[\textcolor{red}{$\blacktriangleright$}] The pass mark is relative: 85\% of each model's own score at 250 to 1K tokens. Of 13 models claiming at least 128K, 11 score at most half of their short-context score at 32K. GPT-4o falls from 99.3\% to 69.7\% and is effective only to 8K.
       \end{itemize}
@@ -152,10 +152,10 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize\itemsep0.35em
-        \item[\textcolor{red}{$\blacktriangleright$}] Fu et al. take LLaMA-2 7B, pre-trained on 4K-token sequences, adjust the base that sets its RoPE rotation frequencies (RoPE rescaling, covered earlier) and continue pre-training the full model on 80K-token sequences in batches of 4M tokens.
+        \item[\textcolor{red}{$\blacktriangleright$}] Fu et al. take LLaMA-2 7B, pre-trained on 4K-token sequences, adjust the base that sets its RoPE rotation frequencies (RoPE rescaling) and continue pre-training the full model on 80K-token sequences in batches of 4M tokens.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Per-source length upsampling.} Keep each source's share of the SlimPajama corpus (67\% CommonCrawl, 15\% C4, 4.5\% each for GitHub, Wikipedia and books, \ldots) and, inside every source, raise the share of documents longer than 4K from about 30\% to about 70\%. Upsampling long domains such as books instead, a common earlier practice, did worse and could hurt other domains.
         \item[\textcolor{red}{$\blacktriangleright$}] 500M tokens recover most of the needle accuracy over lengths 1K to 128K, though not yet beyond the 80K training length; about 5B saturate it at 88.0, against 87.1 for GPT-4-Turbo 128K. The run takes about 5 days on 8 A100 GPUs.
-        \item[\textcolor{red}{$\blacktriangleright$}] LLaMA~3 also reached 128K by continued pre-training after an 8K main run (covered earlier).
+        \item[\textcolor{red}{$\blacktriangleright$}] LLaMA~3 also reached 128K by continued pre-training after an 8K main run.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
@@ -172,7 +172,7 @@
       \begin{itemize}\scriptsize\itemsep0.35em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{The gap.} On a 128K-token book question-answering benchmark the same 7B model scores 27.4, ahead of the open baselines (24.3 and 26.3) and well behind GPT-4-Turbo (37.4).
         \item[\textcolor{red}{$\blacktriangleright$}] Llama~3.1 70B, a 128K model, is effective to 64K on RULER, 16K on BABILong QA1 and 2K on NoLiMa, each by its own pass mark.
-        \item[\textcolor{red}{$\blacktriangleright$}] A few billion tokens buy a longer window. Making a model use that window, and making it affordable, is the subject of the rest of this lecture; each technique should be judged with the tests above, at the length it targets.
+        \item[\textcolor{red}{$\blacktriangleright$}] A few billion tokens buy a longer window. Each technique for making a model use that window, and making it affordable, should be judged with the tests above, at the length it targets.
       \end{itemize}
       \vspace{0.3em}
       {\scriptsize Fu et al., ``Data Engineering for Scaling Language Models to 128K Context,'' ICML 2024, \href{https://proceedings.mlr.press/v235/fu24d.html}{proceedings.mlr.press/v235/fu24d}, Sections~3--5, Figure~3, Tables~3 and~4. Effective lengths: RULER Table~3, BABILong Section~3.1, NoLiMa Table~3.\par}

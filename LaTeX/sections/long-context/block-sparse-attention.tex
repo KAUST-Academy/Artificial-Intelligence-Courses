@@ -3,9 +3,9 @@
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
         \item[\textcolor{red}{$\blacktriangleright$}] Split the $n$ cached keys into $n/b$ contiguous blocks of $b$ tokens. Give each block one cheap summary key: the mean of its keys, a trained landmark token, or a learned compressed token.
-        \item[\textcolor{red}{$\blacktriangleright$}] The query $q_t$ scores the summaries, keeps the top-$k$ blocks and runs exact softmax attention over their $kb$ keys. Unlike the fixed patterns earlier in this lecture, the choice depends on the query.
+        \item[\textcolor{red}{$\blacktriangleright$}] The query $q_t$ scores the summaries, keeps the top-$k$ blocks and runs exact softmax attention over their $kb$ keys. Unlike the fixed patterns, the choice depends on the query.
         \item[\textcolor{red}{$\blacktriangleright$}] Keys read per query: $n/b + kb$ instead of $n$. The sum is smallest at $b = \sqrt{n/k}$, where it equals $2\sqrt{nk}$. Over all $n$ queries: $n^2/b + nkb$ instead of $n^2$.
-        \item[\textcolor{red}{$\blacktriangleright$}] Contiguous blocks suit GPUs. A chosen block is one tile of the KV cache, copied from HBM to SRAM in one pass and multiplied on tensor cores like a FlashAttention tile (covered earlier). Scattered single tokens turn every load into a gather.
+        \item[\textcolor{red}{$\blacktriangleright$}] Contiguous blocks suit GPUs. A chosen block is one tile of the KV cache, copied from HBM to SRAM in one pass and multiplied on tensor cores like a FlashAttention tile. Scattered single tokens turn every load into a gather.
       \end{itemize}
     \column{0.48\textwidth}
       \centering
@@ -69,7 +69,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] Lu et al.\ (Moonshot AI) apply mixture-of-experts (MoE) top-$k$ gating (covered earlier) to attention: blocks of keys and values are the experts.
+        \item[\textcolor{red}{$\blacktriangleright$}] Lu et al.\ (Moonshot AI) apply mixture-of-experts (MoE) top-$k$ gating to attention: blocks of keys and values are the experts.
         \item[\textcolor{red}{$\blacktriangleright$}] The gate has no parameters. Query $t$ scores block $i$ by
           \[ r_i = \big\langle q_t,\ \operatorname{mean}(K_{[i]}) \big\rangle \]
           ($K_{[i]}$: the $b$ keys of block $i$) and attends to the $k$ highest-scoring blocks.
@@ -109,7 +109,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] A learned gate mixes the branches:
           \[ o_t = \sum_{c\,\in\,\{\mathrm{cmp},\,\mathrm{slc},\,\mathrm{win}\}} g_t^{c}\, \mathrm{Attn}\big(q_t, \tilde K_t^{c}, \tilde V_t^{c}\big), \]
           where $\tilde K_t^{c}, \tilde V_t^{c}$ are the keys and values branch $c$ gives query $t$, and $g_t^{c} \in [0,1]$ is an MLP with a sigmoid on the token's features.
-        \item[\textcolor{red}{$\blacktriangleright$}] Block scores come almost free: the compressed branch's probabilities $\mathrm{softmax}(q_t^{\top}\tilde K_t^{\mathrm{cmp}})$, summed over the heads of a GQA group (covered earlier).
+        \item[\textcolor{red}{$\blacktriangleright$}] Block scores come almost free: the compressed branch's probabilities $\mathrm{softmax}(q_t^{\top}\tilde K_t^{\mathrm{cmp}})$, summed over the heads of a GQA group.
       \end{itemize}
   \end{columns}
 \end{frame}
@@ -120,7 +120,7 @@
       \begin{itemize}\footnotesize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Kernel.} A kernel written in Triton, a Python-based GPU programming language, loads queries by GQA group. The group shares one block list, so each chosen block moves from HBM to SRAM once and serves every head in one dense matrix multiply.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Training.} No extra loss: the compressed branch that scores blocks is trained by the language-model loss through the gate.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Setup.} A 27B-parameter MoE (3B active) with GQA, pretrained on 270B tokens at 8k and adapted to 32k with YaRN (covered earlier), next to a full-attention twin.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Setup.} A 27B-parameter MoE (3B active) with GQA, pretrained on 270B tokens at 8k and adapted to 32k with YaRN, next to a full-attention twin.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Quality.} General benchmarks 0.456 against 0.443 (ahead on 7 of 9), LongBench long-document tasks 0.469 against 0.437, perfect needle retrieval at 64k.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Speed at 64k} on A100: forward 9.0$\times$ and backward 6.0$\times$ over Triton FlashAttention-2. A decoding step reads $n/16 + 16 \cdot 64 + 512 = 5{,}632$ tokens instead of 65,536, an expected 11.6$\times$.
       \end{itemize}
@@ -140,7 +140,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] A \textbf{lightning indexer} scores each earlier token $u$ for query token $t$:
           \[ I_{t,u} = \sum_{j=1}^{H^{I}} \alpha_{t,j}^{I}\, \mathrm{ReLU}\big(q_{t,j}^{I} \cdot k_{u}^{I}\big), \]
           with $H^{I}$ the small number of indexer heads, $q_{t,j}^{I}$ and the weight $\alpha_{t,j}^{I}$ from token $t$, and $k_u^{I}$ from token $u$. It can run in 8-bit floating point (FP8).
-        \item[\textcolor{red}{$\blacktriangleright$}] Each query keeps its $k = 2048$ top-scoring tokens and runs MLA (covered earlier) on them in multi-query form, so one entry serves all heads. Core attention drops from $O(n^2)$ to $O(nk)$; the indexer stays $O(n^2)$ but is far cheaper.
+        \item[\textcolor{red}{$\blacktriangleright$}] Each query keeps its $k = 2048$ top-scoring tokens and runs MLA on them in multi-query form, so one entry serves all heads. Core attention drops from $O(n^2)$ to $O(nk)$; the indexer stays $O(n^2)$ but is far cheaper.
       \end{itemize}
     \column{0.48\textwidth}
       \centering
@@ -174,6 +174,6 @@
   \vspace{0.6em}
   \begin{itemize}\footnotesize\itemsep0.3em
     \item[\textcolor{red}{$\blacktriangleright$}] All four cut compute and memory traffic per query, while the KV cache still grows with $n$ (Landmark can park it in CPU memory). The shared risk is a needed token outside the selected set; NSA's compressed branch and MoBA's dense last layers still see every position.
-    \item[\textcolor{red}{$\blacktriangleright$}] Recurrent memory, later in this lecture, replaces the growing cache with a fixed-size state.
+    \item[\textcolor{red}{$\blacktriangleright$}] Recurrent memory replaces the growing cache with a fixed-size state.
   \end{itemize}
 \end{frame}

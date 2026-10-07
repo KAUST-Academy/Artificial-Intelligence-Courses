@@ -5,8 +5,8 @@
         \item \textbf{Closed world:} a classifier trained on $K$ known classes assumes every test image is \textbf{in-distribution (ID)}; shown an unseen class, it still picks one of its $K$ labels.
         \item \textbf{Open-set recognition (OSR)} (Scheirer et al., TPAMI 2013): classify the known classes and reject the unknown ones; ``the classifier must also support rejection.''
         \item \textbf{Out-of-distribution (OOD) detection}: flag inputs whose class is outside the training label set (\textbf{semantic shift}). Yang et al.\ (IJCV 2024) treat it and OSR as one problem.
-        \item Related tasks: anomaly, novelty and outlier detection. Autoencoder reconstruction error (covered earlier) is an anomaly score.
-        \item \textbf{Unlike the distribution shift earlier in this lecture:} ImageNet-R and ImageNet-Sketch are covariate shift (covered earlier: same classes, new style), scored by accuracy; under semantic shift the right answer is \textit{unknown}.
+        \item Related tasks: anomaly, novelty and outlier detection. Autoencoder reconstruction error is an anomaly score.
+        \item \textbf{Unlike covariate shift:} ImageNet-R and ImageNet-Sketch are covariate shift (same classes, new style), scored by accuracy; under semantic shift the right answer is \textit{unknown}.
       \end{itemize}
     \column{0.40\textwidth}
       \centering
@@ -24,7 +24,7 @@
         \item \textbf{Cause} (Hein et al., CVPR 2019): a ReLU network is piecewise affine, and its outer linear regions extend to infinity. For almost every input $x$,
         \[ \lim_{\alpha\to\infty}\, \max_k \frac{e^{z_k(\alpha x)}}{\sum_{j=1}^{K} e^{z_j(\alpha x)}} = 1, \]
         where $z_k$ is the logit of class $k$ and $\alpha>0$ scales the input away from the data.
-        \item Softmax temperature (covered earlier) cannot undo this. Uniform noise scaled by a median $\alpha=8.1$ already gets 99.9\% confidence from their CIFAR-10 model.
+        \item Softmax temperature cannot undo this. Uniform noise scaled by a median $\alpha=8.1$ already gets 99.9\% confidence from their CIFAR-10 model.
       \end{itemize}
     \column{0.46\textwidth}
       \centering
@@ -55,7 +55,7 @@
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item \textbf{Detector:} score $s(x)$ (higher for ID), threshold $\lambda$: predict a class if $s(x)\geq\lambda$, else \textit{unknown}; $\lambda$ is set on ID data, e.g.\ to accept 95\% of ID images.
-        \item \textbf{Convention: ID is positive.} TPR is the share of ID images accepted, FPR of OOD images accepted (TPR and FPR covered earlier); the ROC curve plots TPR against FPR as $\lambda$ sweeps.
+        \item \textbf{Convention: ID is positive.} TPR is the share of ID images accepted, FPR of OOD images accepted; the ROC curve plots TPR against FPR as $\lambda$ sweeps.
         \item \textbf{AUROC:} area under the ROC curve: the probability that a random ID image outscores a random OOD image (50\% is chance).
         \item \textbf{FPR95:} the FPR at the $\lambda$ that accepts 95\% of ID images; lower is better.
         \item \textbf{AUPR-In/Out:} area under the precision-recall curve, ID or OOD positive; depends on the ID:OOD ratio.
@@ -122,7 +122,7 @@
         \[ s(x)=\max_{c}\, -\big(h(x)-\mu_c\big)^{\top}\Sigma^{-1}\big(h(x)-\mu_c\big). \]
         It assumes Gaussian classes: weak on ResNet-50 (table), AUROC 96.02 on ViT-B/16 (other OOD sets; Wang et al., CVPR 2022).
         \item \textbf{Deep $k$-NN} (Sun et al., ICML 2022): $s(x)=-\|u-u_{(k)}\|_2$, with $u=h(x)/\|h(x)\|_2$ and $u_{(k)}$ its $k$-th nearest normalised training feature. No distribution assumption; the threshold uses ID data only.
-        \item Approximate nearest-neighbour search (earlier in this lecture) keeps $k$-NN fast. On SupCon features (earlier in this lecture), which form compact classes, its FPR95 drops from 54.68 to 38.47.
+        \item Approximate nearest-neighbour search keeps $k$-NN fast. On SupCon features, which form compact classes, its FPR95 drops from 54.68 to 38.47.
       \end{itemize}
     \column{0.48\textwidth}
       \centering
@@ -151,7 +151,7 @@
       \begin{itemize}\footnotesize\itemsep0.3em
         \item Feature scores ignore class identity; logit scores miss feature directions outside the span of the class weights. \textbf{Virtual-logit Matching (ViM)} (Wang et al., CVPR 2022) uses both.
         \item Figure notation: $x$ is the penultimate feature, shifted so the logits $l_i=w_i^{\top}x$ need no bias; $C$ classes.
-        \item $P$: span of the top-$D$ eigenvectors of $X^{\top}X$ for training features $X$ (PCA-style, covered earlier); the residual $x^{P^\perp}$ is the part of $x$ outside $P$.
+        \item $P$: span of the top-$D$ eigenvectors of $X^{\top}X$ for training features $X$ (PCA-style); the residual $x^{P^\perp}$ is the part of $x$ outside $P$.
         \item Virtual logit $l_0=\alpha\|x^{P^\perp}\|$, with $\alpha$ set so its training mean equals the mean maximum logit:
         \[ \mathrm{ViM}(x)=\frac{e^{l_0}}{e^{l_0}+\sum_{i=1}^{C} e^{l_i}} \quad \text{(OOD if large)}. \]
         Ranking by ViM equals ranking by $l_0 + E(x)$: the energy plus the scaled residual norm.
@@ -204,7 +204,7 @@
       \vspace{0.4em}
       {\scriptsize ResNet-50 on ImageNet-1K, averaged over iNaturalist, SUN, Places365 and Textures. Xu et al., ``Scaling for Training Time and Post-hoc Out-of-distribution Detection Enhancement,'' ICLR 2024, \href{https://proceedings.iclr.cc/paper_files/paper/2024/hash/46d943bc6a15a57c923829efc0db7c7a-Abstract-Conference.html}{proceedings.iclr.cc}, Table~7.\par}
       \vspace{0.6em}
-      {\scriptsize On harder OOD classes that sit close to ImageNet's (covered later in this lecture), a ResNet-50 with SCALE still has FPR95 59.76 (their Table~2).\par}
+      {\scriptsize On harder OOD classes that sit close to ImageNet's, a ResNet-50 with SCALE still has FPR95 59.76 (their Table~2).\par}
   \end{columns}
 \end{frame}
 

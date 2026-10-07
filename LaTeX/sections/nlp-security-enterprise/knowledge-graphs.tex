@@ -44,7 +44,7 @@ RETURN s.name, c.id
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Roadmap} (Pan et al.): ``KG-enhanced LLMs'' (the graph feeds the model), ``LLM-augmented KGs'' (the model works on the graph, e.g.\ builds or completes it), and ``Synergized LLMs + KGs'' (each improves the other). Building a graph is the second; retrieving from it, the first.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Extraction:} per chunk, an LLM lists entities and relations of the schema's types; structured outputs (covered earlier) keep it parseable. \textbf{Coreference resolution} maps ``the chipmaker'' to NeoChip.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Extraction:} per chunk, an LLM lists entities and relations of the schema's types; structured outputs keep it parseable. \textbf{Coreference resolution} maps ``the chipmaker'' to NeoChip.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Entity resolution:} merging the names of one real entity (``NC'', ``NeoChip'') into one node. GraphRAG matches exact strings; HippoRAG links names whose embeddings have cosine similarity above 0.8.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Quality:} relations ``may not be explicitly stated in the text'' (GraphRAG). Recall drops with length: GPT-4 found almost twice as many entity references in 600- as in 2{,}400-token chunks; HippoRAG's extraction F1 falls from 71.8 (10 shortest passages) to 53.9 (10 longest). Keep each triple's source.
       \end{itemize}
@@ -114,7 +114,7 @@ RETURN s.name, c.id
         \bottomrule
       \end{tabular}\par}
       \vspace{0.4em}
-      {\scriptsize Recall@5: share of supporting passages ranked in the top five, on two multi-hop QA sets (2Wiki: 2WikiMultiHopQA). ColBERTv2: a late-interaction retriever (semantic search section of this lecture).\par}
+      {\scriptsize Recall@5: share of supporting passages ranked in the top five, on two multi-hop QA sets (2Wiki: 2WikiMultiHopQA). ColBERTv2: a late-interaction retriever.\par}
       \vspace{0.4em}
       {\scriptsize Guti\'errez et al., ``HippoRAG: Neurobiologically Inspired Long-Term Memory for Large Language Models,'' NeurIPS 2024, \href{https://arxiv.org/abs/2405.14831v3}{arXiv:2405.14831v3}, Figure~1, Secs.~2.2--2.3 and~3.4, Tables~1--5, App.~G. PPR: Haveliwala, WWW 2002. IRCoT: Trivedi et al., ACL 2023.\par}
   \end{columns}

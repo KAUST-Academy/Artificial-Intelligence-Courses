@@ -66,7 +66,7 @@
   {\scriptsize Tong et al., ``Eyes Wide Shut? Exploring the Visual Shortcomings of Multimodal LLMs,'' CVPR 2024, \href{https://arxiv.org/abs/2401.06209v2}{arXiv:2401.06209v2}, Figure~2; thresholds from Section~2.1.\par}}
   \vspace{0.3em}
   \begin{itemize}\footnotesize
-    \item \textbf{CLIP-blind pair:} two images with cosine similarity above 0.95 in CLIP ViT-L/14 but below 0.6 in DINOv2 ViT-L/14, a vision-only model (covered earlier) that keeps more detail.
+    \item \textbf{CLIP-blind pair:} two images with cosine similarity above 0.95 in CLIP ViT-L/14 but below 0.6 in DINOv2 ViT-L/14, a vision-only model that keeps more detail.
   \end{itemize}
 \end{frame}
 
@@ -74,7 +74,7 @@
   \begin{itemize}\itemsep0.6em
     \item \textbf{MMVP:} annotators wrote 300 two-option questions about the visible difference in 150 CLIP-blind pairs. A pair scores only if both answers are right, so guessing gives 25\%.
     \item \textbf{Results:} humans 95.7\%; Gemini 40.7\%, GPT-4V (GPT-4 with image input) 38.7\%; LLaVA-1.5 24.7\%, InstructBLIP 16.7\%, LLaVA (336 px) 6.0\%. Every other model tested is below chance.
-    \item \textbf{Nine failure patterns,} among them orientation, counting and viewpoint: CLIP features favor high-level semantics over detail, the image-side twin of the bag-of-words behavior seen earlier in this lecture.
+    \item \textbf{Nine failure patterns,} among them orientation, counting and viewpoint: CLIP features favor high-level semantics over detail, the image-side twin of the bag-of-words behavior.
   \end{itemize}
   \vspace{0.6em}
   {\scriptsize Tong et al., \href{https://arxiv.org/abs/2401.06209v2}{arXiv:2401.06209v2}, Sections~2.2, 2.3 and~3.1, Figure~4.\par}

@@ -10,7 +10,7 @@
           \item \textbf{a benchmark:} LLaVA-Bench, scored by a GPT-4 judge;
           \item open data, code, checkpoints and demo.
         \end{itemize}
-        \item This is the LLaVA-style recipe (covered earlier): frozen encoder, small projector, instruction tuning.
+        \item This is the LLaVA-style recipe: frozen encoder, small projector, instruction tuning.
       \end{itemize}
     \column{0.48\textwidth}
       {\scriptsize\raggedright \textbf{Prompt} (an example from the GPT-4 report; the photo shows a man ironing clothes on a board fixed to the back of a yellow taxi): ``What is unusual about this image?''\par}
@@ -29,7 +29,7 @@
         \bottomrule
       \end{tabular}\par}
       \vspace{0.4em}
-      {\scriptsize\raggedright BLIP-2 and OpenFlamingo (both earlier in this lecture) describe the scene; LLaVA answers the question. Liu et al., ``Visual Instruction Tuning,'' NeurIPS 2023, \href{https://arxiv.org/abs/2304.08485v2}{arXiv:2304.08485v2}, Table~3.\par}
+      {\scriptsize\raggedright BLIP-2 and OpenFlamingo describe the scene; LLaVA answers the question. Liu et al., ``Visual Instruction Tuning,'' NeurIPS 2023, \href{https://arxiv.org/abs/2304.08485v2}{arXiv:2304.08485v2}, Table~3.\par}
   \end{columns}
 \end{frame}
 
@@ -38,8 +38,8 @@
     \column{0.47\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
         \item \textbf{Cheap baseline:} make the caption $\mathbf{X}_c$ of an image $\mathbf{X}_v$ the answer to a request $\mathbf{X}_q$ such as ``Describe the image concisely.'' It ``lacks diversity and in-depth reasoning''.
-        \item \textbf{Symbolic image:} the teacher is language-only GPT-4, so each COCO image (covered earlier) is written out as text: its five captions and, for descriptions and reasoning, its object boxes (class name, four coordinates).
-        \item \textbf{Prompt} (conversation type): ``You are an AI visual assistant, and you are seeing a single image.'' A few hand-written examples per type serve as in-context examples (covered earlier), the only human annotations in the pipeline.
+        \item \textbf{Symbolic image:} the teacher is language-only GPT-4, so each COCO image is written out as text: its five captions and, for descriptions and reasoning, its object boxes (class name, four coordinates).
+        \item \textbf{Prompt} (conversation type): ``You are an AI visual assistant, and you are seeing a single image.'' A few hand-written examples per type serve as in-context examples, the only human annotations in the pipeline.
         \item In early tests GPT-4 wrote better data than ChatGPT, for example on spatial reasoning.
       \end{itemize}
     \column{0.51\textwidth}
@@ -101,7 +101,7 @@
       \raggedright $\mathbf{X}_v$: the image; $g$: the frozen CLIP image encoder; $\mathbf{Z}_v$: its grid of patch features; $\mathbf{W}$: a trainable projection matrix; $\mathbf{H}_v$: visual tokens as wide as the LLM's word embeddings; $\mathbf{H}_q$: the embedded instruction $\mathbf{X}_q$; $f_\phi$: the LLM (Vicuna) with weights $\phi$; $\mathbf{X}_a$: the answer.\par}
     \column{0.46\textwidth}
       \begin{itemize}\footnotesize\itemsep0.4em
-        \item \textbf{Encoder:} CLIP ViT-L/14 (covered earlier), the Large ViT on $14\times14$-pixel patches. LLaVA reads the grid features from before its last layer; in an ablation they beat the last layer's, which the authors attribute to more local detail.
+        \item \textbf{Encoder:} CLIP ViT-L/14, the Large ViT on $14\times14$-pixel patches. LLaVA reads the grid features from before its last layer; in an ablation they beat the last layer's, which the authors attribute to more local detail.
         \item \textbf{Projection:} one linear map, shared by all grid features, from 1,024 to 5,120 dimensions for the 13B LLM: about 5.2M weights.
         \item \textbf{Tokens:} a $224\times224$ image gives $(224/14)^2 = 16\times16 = 256$ visual tokens, placed before or after the first question.
         \item \textbf{Why so simple:} a light connector lets data experiments iterate fast; Flamingo's gated cross-attention and BLIP-2's Q-Former were left for future work.
@@ -143,7 +143,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.58\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Connector:} a two-layer MLP replaces the linear $\mathbf{W}$, the linear-to-MLP switch that helped SimCLR (covered earlier).
+        \item \textbf{Connector:} a two-layer MLP replaces the linear $\mathbf{W}$, the linear-to-MLP switch that helped SimCLR.
         \item \textbf{Encoder:} CLIP ViT-L/14 at 336 px, the highest resolution CLIP offers: $(336/14)^2 = 24\times24 = 576$ visual tokens.
         \item \textbf{Format prompt:} LLaVA ``tends to answer yes for yes/no questions'' and falls short on one-word-answer benchmarks. LLaVA-1.5 appends ``Answer the question using a single word or phrase.'' to short-answer visual question answering (VQA) data, so the answer format follows the prompt.
         \item \textbf{Data:} 558K BLIP-captioned pairs for alignment, then 665K instructions: LLaVA-Instruct-158K, 40K text-only ChatGPT conversations (ShareGPT), and eight VQA, region and OCR (text-reading) sets such as VQAv2 and RefCOCO (referring expressions: phrases that each pick out one object in a COCO image); about 1.2M public samples.

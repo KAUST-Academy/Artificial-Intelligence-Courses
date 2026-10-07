@@ -29,9 +29,9 @@
   {\scriptsize One request runs along the top row. The dashed arrow is the slow loop: logged outcomes feed evaluation and later updates.\par}\par}
   \vspace{0.2em}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Copilot:} an assistant inside a tool the person already uses. It proposes a draft, an answer or an edit; the person accepts, edits or rejects it and stays responsible for the result. An agent (covered earlier) carries out multi-step actions itself.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Orchestrator:} the service between the app and the model. It builds the prompt, calls the model, executes the tool calls the model emits, and filters the output. GitHub Copilot's prompt assembly for code completion (covered earlier) is a small instance.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Grounding:} adding retrieved organisational content to the prompt at request time, so the answer can cite it. Retrieval runs with the asking user's permissions (see the scalable RAG section of this lecture).
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Copilot:} an assistant inside a tool the person already uses. It proposes a draft, an answer or an edit; the person accepts, edits or rejects it and stays responsible for the result. An agent carries out multi-step actions itself.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Orchestrator:} the service between the app and the model. It builds the prompt, calls the model, executes the tool calls the model emits, and filters the output. GitHub Copilot's prompt assembly for code completion is a small instance.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Grounding:} adding retrieved organisational content to the prompt at request time, so the answer can cite it. Retrieval runs with the asking user's permissions.
   \end{itemize}
 \end{frame}
 
@@ -42,7 +42,7 @@
     \toprule
     \textbf{Study} & \textbf{Setting and design} & \textbf{Measured effect} \\
     \midrule
-    Peng et al.\ 2023 (covered earlier) & one timed task (an HTTP server in JavaScript), randomised & 55.8\% faster \\
+    Peng et al.\ 2023 & one timed task (an HTTP server in JavaScript), randomised & 55.8\% faster \\
     \addlinespace[0.2em]
     Brynjolfsson, Li, Raymond, QJE 2025 & 5{,}172 customer-support agents; GPT-based reply suggestions; staggered roll-out & +15\% issues resolved per hour; about +30\% for less skilled and less experienced agents; small quality losses for the most skilled \\
     \addlinespace[0.2em]
@@ -66,7 +66,7 @@
       \begin{itemize}\scriptsize\itemsep0.35em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Forecasts and self-reports missed the sign.} METR's developers forecast that AI would cut their completion time by 24\%, and afterwards believed it had cut it by 20\%; measured, it rose by 19\%. Economics and ML experts had predicted cuts of 39\% and 38\%.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Acceptance rate:} the fraction of shown completions that the developer accepts. Over 2{,}631 survey responses from GitHub Copilot users, it predicted perceived productivity (Pearson 0.24) better than whether accepted code persisted; Copilot's rate was 27\%.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{It can be gamed.} The authors note that splitting each suggestion in two would likely raise the rate without helping the user (Goodhart's law, covered earlier).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{It can be gamed.} The authors note that splitting each suggestion in two would likely raise the rate without helping the user (Goodhart's law).
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Rule:} monitor with telemetry; decide with a randomised control group on your own tasks.
       \end{itemize}
     \column{0.48\textwidth}
@@ -83,7 +83,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.55\textwidth}
       \begin{itemize}\scriptsize\itemsep0.45em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Oversharing:} access that is broader than the content's owner intends, such as a site shared with the whole organisation or a link anyone can open. Permission-aware retrieval (see the scalable RAG section of this lecture) enforces the permissions it is given, careless ones included.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Oversharing:} access that is broader than the content's owner intends, such as a site shared with the whole organisation or a link anyone can open. Permission-aware retrieval enforces the permissions it is given, careless ones included.
         \item[\textcolor{red}{$\blacktriangleright$}] An overshared file used to stay unseen because nobody searched for it. A copilot searches everything the user can open, so one ordinary question can surface it, with a citation.
         \item[\textcolor{red}{$\blacktriangleright$}] Microsoft's documentation states both halves: ``Microsoft Copilot only surfaces organizational data to which individual users have at least view permissions'' and ``By default, SharePoint sets sharing settings to the most permissive option''.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Clean up before the roll-out:} report sites shared organisation-wide or through broad links; review access per site and per user; hide high-risk sites from copilot retrieval while they are fixed, leaving permissions unchanged; make new links narrow and expiring.
@@ -130,8 +130,8 @@
   \vspace{0.1em}
   \begin{itemize}\scriptsize\itemsep0.25em
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{EchoLeak} (tracked as CVE-2025-32711) was \textbf{zero-click}: the victim does nothing beyond normal use, and ``an adversary simply needs to send an email to the victim''. Microsoft rated it critical (9.3 of 10) and had fixed it server-side when Aim Security disclosed it on 11 June 2025.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{All three legs of the lethal trifecta} (covered earlier): private data in context, an untrusted email retrieved like any internal file, and an outbound channel the client opens by itself. Aim Security calls this an LLM scope violation: untrusted input steers the model to trusted data without the user's consent.
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Defenses named in the sources:} leave external email out of answers about internal data unless the user asks (Microsoft's label-based exclusions, at a cost in capability); render only an allowlisted Markdown subset, stripping external links and images in every syntax; allow only the origins the page needs, with no wildcards; treat injection classifiers as one layer (jailbreak defenses section).
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{All three legs of the lethal trifecta:} private data in context, an untrusted email retrieved like any internal file, and an outbound channel the client opens by itself. Aim Security calls this an LLM scope violation: untrusted input steers the model to trusted data without the user's consent.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Defenses named in the sources:} leave external email out of answers about internal data unless the user asks (Microsoft's label-based exclusions, at a cost in capability); render only an allowlisted Markdown subset, stripping external links and images in every syntax; allow only the origins the page needs, with no wildcards; treat injection classifiers as one layer.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Chain as described in Aim Security's EchoLeak write-up, 11 June 2025, \href{https://web.archive.org/web/20250612074812/https://www.aim.security/lp/aim-labs-echoleak-blogpost}{aim.security (archived)}; Microsoft Security Response Center, \href{https://msrc.microsoft.com/update-guide/vulnerability/CVE-2025-32711}{CVE-2025-32711}; Reddy and Gujral, AAAI Fall Symposium 2025, \href{https://arxiv.org/abs/2509.10540v1}{arXiv:2509.10540v1}.}

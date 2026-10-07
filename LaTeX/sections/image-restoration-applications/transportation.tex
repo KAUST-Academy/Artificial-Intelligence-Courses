@@ -2,9 +2,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.55\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Pipeline:} counts, speeds and queues follow each vehicle across frames, so a detector (YOLO, covered earlier) is followed by a tracker that links boxes into identities. A homography $H$, a $3\times3$ matrix fitted from four or more road points with known map positions, maps the road plane in the image to metres.
+        \item \textbf{Pipeline:} counts, speeds and queues follow each vehicle across frames, so a detector (YOLO) is followed by a tracker that links boxes into identities. A homography $H$, a $3\times3$ matrix fitted from four or more road points with known map positions, maps the road plane in the image to metres.
         \item \textbf{Speed:} map the ground-contact point $p_t$ of a track (bottom centre of its box) with $H$, then $v \approx f\,\lVert H(p_t) - H(p_{t-k})\rVert / k$, with $f$ the frame rate and $k$ the frame gap. \textbf{Counts:} tracks that cross a virtual line or enter a polygon zone.
-        \item \textbf{Across cameras:} re-identification (covered earlier) matches a vehicle by appearance; a licence plate adds a near-unique key, which can be hashed on the camera when only the match is needed.
+        \item \textbf{Across cameras:} re-identification matches a vehicle by appearance; a licence plate adds a near-unique key, which can be hashed on the camera when only the match is needed.
         \item \textbf{AI City Challenge 2024} (CVPR workshop): 726 teams from 47 countries and regions; tracks included traffic-safety video captioning and fisheye road-object detection.
       \end{itemize}
     \column{0.43\textwidth}
@@ -159,7 +159,7 @@
 \end{frame}
 
 \begin{frame}{Driving Policies Since 2025: Diffusion and VLA}
-  \footnotesize A \textbf{vision-language-action (VLA)} model is a vision-language model (covered earlier) that also outputs actions.\par
+  \footnotesize A \textbf{vision-language-action (VLA)} model is a vision-language model that also outputs actions.\par
   \vspace{0.1em}
   {\centering\scriptsize
   \begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm} >{\raggedright\arraybackslash}p{5.5cm} >{\raggedright\arraybackslash}p{4.9cm}}
@@ -176,7 +176,7 @@
   \vspace{0.1em}
   \begin{itemize}\footnotesize\itemsep0.2em
     \item \textbf{Night:} the gap between camera-only LSS and a LiDAR-based PointPillars model widens at night (car IoU about 0.31 against 0.45); restoration before perception is one remedy to test, judged by the driving score.
-    \item \textbf{Open weights:} Alpamayo-R1 (8.2B + 2.3B parameters; weights under the OpenMDW-1.1 licence) needs a GPU with 24\,GB or more; openpilot (MIT) upgrades driver assistance on 300+ supported cars. Driving world models are covered later.
+    \item \textbf{Open weights:} Alpamayo-R1 (8.2B + 2.3B parameters; weights under the OpenMDW-1.1 licence) needs a GPU with 24\,GB or more; openpilot (MIT) upgrades driver assistance on 300+ supported cars.
   \end{itemize}
   \vspace{0.1em}
   {\scriptsize Liao et al., \href{https://arxiv.org/abs/2411.15139v3}{arXiv:2411.15139v3}, Tables~1--2; Hwang et al., \href{https://arxiv.org/abs/2410.23262v3}{arXiv:2410.23262v3}; NVIDIA, \href{https://arxiv.org/abs/2511.00088v2}{arXiv:2511.00088v2}; Philion and Fidler, Sec.~5.5; \href{https://huggingface.co/nvidia/Alpamayo-R1-10B}{Alpamayo-R1 model card}; \href{https://github.com/commaai/openpilot}{openpilot repository}.\par}

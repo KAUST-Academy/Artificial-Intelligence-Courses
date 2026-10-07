@@ -2,9 +2,9 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.50\textwidth}
       \begin{itemize}\footnotesize\itemsep0.35em
-        \item[\textcolor{red}{$\blacktriangleright$}] The cache size from earlier in this lecture, $2 \cdot L \cdot h_{kv} \cdot d_h \cdot (\text{bytes per value}) \cdot n$, is a product, and each factor can be attacked separately.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fewer numbers per token:} GQA and MQA share key/value heads, and MLA caches one low-rank latent per token (covered earlier).
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fewer bits per number:} KV-cache quantization such as TurboQuant (covered earlier).
+        \item[\textcolor{red}{$\blacktriangleright$}] The cache size, $2 \cdot L \cdot h_{kv} \cdot d_h \cdot (\text{bytes per value}) \cdot n$, is a product, and each factor can be attacked separately.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fewer numbers per token:} GQA and MQA share key/value heads, and MLA caches one low-rank latent per token.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fewer bits per number:} KV-cache quantization such as TurboQuant.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Fewer tokens:} \textbf{eviction} keeps a budget of $B < n$ tokens per head and layer and drops the rest, so memory and the attention cost of each decoding step scale with $B$.
         \item[\textcolor{red}{$\blacktriangleright$}] Each eviction method fixes which tokens to keep, when to decide (once after the prompt, or at every decoding step), and from which signal (position or attention). An evicted entry cannot come back later.
       \end{itemize}
@@ -39,7 +39,7 @@
         \draw[->, black!55] (quant.south) -- (3.9,1.66);
         \node[lever] at (2.16,-1.05) {\textbf{eviction}: keep $B$ of $n$ tokens per head};
       \end{tikzpicture}\\[0.5em]
-      {\scriptsize One layer's cache. Each of the 4 heads keeps its own $B = 6$ of the $n = 12$ tokens (blue); the grey boxes are the two levers covered earlier.}
+      {\scriptsize One layer's cache. Each of the 4 heads keeps its own $B = 6$ of the $n = 12$ tokens (blue); the grey boxes are the other two levers.}
   \end{columns}
 \end{frame}
 
@@ -154,7 +154,7 @@
     \addlinespace[0.15em]
     Easy needles flatter eviction & H\textsubscript{2}O at 4$\times$ compression (Llama-3-8B-Instruct) on passkey retrieval, recalling a number hidden in filler text: 100\% for a 7-digit key, 35.0\% for a 64-digit key; H\textsubscript{2}O never evicts during prefill, so the first digits come free. 2-bit KIVI quantization: 100\% to 91.0\% & Yuan et al., Section~3.3 \\
     \addlinespace[0.15em]
-    Kernel support & Accumulated scores need the attention matrix that FlashAttention (covered earlier) never writes out; H\textsubscript{2}O has no FlashAttention-compatible kernel & Yuan et al., Table~1 and Section~4 \\
+    Kernel support & Accumulated scores need the attention matrix that FlashAttention never writes out; H\textsubscript{2}O has no FlashAttention-compatible kernel & Yuan et al., Table~1 and Section~4 \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.2em}

@@ -68,7 +68,7 @@
 
 \begin{frame}{Membership Inference and Its Limits}
   \begin{itemize}\footnotesize\itemsep0.2em
-    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Membership inference attack (MIA):} given a record $x$ and query access to a model $M$, decide whether $x$ was in $M$'s training set by thresholding a score $f(x;M)$. The contamination tests covered earlier ask the same question of a whole benchmark.
+    \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Membership inference attack (MIA):} given a record $x$ and query access to a model $M$, decide whether $x$ was in $M$'s training set by thresholding a score $f(x;M)$. Contamination tests ask the same question of a whole benchmark.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Loss attack} (Yeom et al.): predict ``member'' when the loss of $M$ on $x$ is low. If the loss is at most $B$ and the attack says ``non-member'' with probability equal to the loss divided by $B$, its membership advantage (true-positive minus false-positive rate) is the generalization gap over $B$: overfitting leaks membership.
     \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Min-K\% Prob} (Shi et al.): unseen text tends to contain a few outlier tokens of very low probability, so score $x$ by its least likely tokens:
       \[ \text{Min-}K\%\,\text{Prob}(x) = \frac{1}{E} \sum_{x_i \in \text{Min-}K\%(x)} \log p(x_i \mid x_1, \ldots, x_{i-1}) \]
@@ -116,7 +116,7 @@
     \addlinespace[0.2em]
     Deletion & Machine unlearning: fine-tune the model to forget a set of examples, without retraining & TOFU (200 fictitious authors): no baseline matched a model never trained on the forget set ($p < 0.01$ even for a 1\% forget set) \\
     \addlinespace[0.2em]
-    Inference & Redact PII before external APIs; filter outputs for PII; retention rules for prompt logs (covered earlier) & Keeping prompts in-house: see the on-premises section of this lecture \\
+    Inference & Redact PII before external APIs; filter outputs for PII; retention rules for prompt logs & Keeping prompts in-house: on-premises deployment \\
     \bottomrule
   \end{tabular}\par}
   \vspace{0.3em}

@@ -1,7 +1,7 @@
 \begin{frame}{Flamingo: Few-Shot Prompting with Images}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item \textbf{Flamingo} (Alayrac et al., DeepMind, NeurIPS 2022) reads text interleaved with images or videos and writes text; CLIP-style dual encoders (covered earlier) only score image-text pairs.
-    \item \textbf{Goal:} in-context learning (covered earlier) with images, as GPT-3, a 175B-parameter text-only language model, does with text. The prompt holds a few (image, text) examples and then the query image; the model completes the text, with no weight update.
+    \item \textbf{Flamingo} (Alayrac et al., DeepMind, NeurIPS 2022) reads text interleaved with images or videos and writes text; CLIP-style dual encoders only score image-text pairs.
+    \item \textbf{Goal:} in-context learning with images, as GPT-3, a 175B-parameter text-only language model, does with text. The prompt holds a few (image, text) examples and then the query image; the model completes the text, with no weight update.
     \item \textbf{Answers:} open-ended tasks such as captioning or visual question answering (VQA) use the generated text; multiple-choice tasks rank the candidates by their log-likelihood under the model.
   \end{itemize}
   \centering
@@ -17,7 +17,7 @@
       {\scriptsize Alayrac et al., \href{https://arxiv.org/abs/2204.14198v2}{arXiv:2204.14198v2}, Figure~3.\par}
     \column{0.42\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item \textbf{Frozen vision encoder:} NFNet-F6, a ResNet with no normalization layers, which the authors pretrained with CLIP's contrastive loss (covered earlier).
+        \item \textbf{Frozen vision encoder:} NFNet-F6, a ResNet with no normalization layers, which the authors pretrained with CLIP's contrastive loss.
         \item \textbf{Frozen language model (LM):} Chinchilla, DeepMind's text-only LLM.
         \item \textbf{Trained from scratch:} the Perceiver Resampler and the GATED XATTN-DENSE layers (gated cross-attention plus a feed-forward layer) between frozen LM blocks.
       \end{itemize}
@@ -43,7 +43,7 @@
         \item \textbf{Input:} each frame's feature grid from the frozen encoder, plus a learned time embedding per frame, flattened into one sequence $X_f$ (an image is a one-frame video).
         \item \textbf{Latents:} 64 learned queries $X$ attend to keys and values $[X_f, X]$ (features and latents concatenated), then pass a feed-forward layer; 6 such layers.
         \item \textbf{Output:} always 64 visual tokens, whatever the image resolution or the number of video frames, so the LM's cross-attention cost does not grow with either.
-        \item \textbf{Origin:} the Perceiver (Jaegle et al., ICML 2021) passes large inputs through a small learned latent array to avoid quadratic attention over the input. BLIP-2's Q-Former (earlier in this lecture) later used 32 such queries.
+        \item \textbf{Origin:} the Perceiver (Jaegle et al., ICML 2021) passes large inputs through a small learned latent array to avoid quadratic attention over the input. BLIP-2's Q-Former later used 32 such queries.
         \item \textbf{Ablation} (Flamingo-3B, 4 shots; score: each result as a percentage of the state of the art, averaged over five benchmarks): Resampler 70.7; MLP 66.6 and plain Transformer 66.7, both slower.
       \end{itemize}
     \column{0.40\textwidth}
@@ -104,7 +104,7 @@
     \textbf{Dataset} & \textbf{Content} & \textbf{Size} & $\lambda_m$ \\
     \midrule
     M3W & MultiModal MassiveWeb: web pages with their images kept in place & about 43M pages & 1.0 \\
-    ALIGN & images with their alt-text (earlier in this lecture) & 1.8B pairs & 0.2 \\
+    ALIGN & images with their alt-text & 1.8B pairs & 0.2 \\
     LTIP & Long Text \& Image Pairs: 20.5-token captions on average (ALIGN: 12.4) & 312M pairs & 0.2 \\
     VTP & Video \& Text Pairs: short videos (about 22\,s) with one sentence each & 27M videos & 0.03 \\
     \bottomrule
@@ -127,7 +127,7 @@
   \begin{itemize}\footnotesize\itemsep0.3em
     \item \textbf{Results:} one set of weights, 16 benchmarks. With 32 shots Flamingo-80B beats the fine-tuned state of the art on 6 (bars above the dashed line), using about 1000 times less task-specific data.
     \item \textbf{Open versions:} OpenFlamingo (Awadalla et al., 2023), five 3B to 9B models averaging 80--89\% of the matching Flamingo on seven datasets; IDEFICS (9B, 80B), trained with OBELICS (141M open web pages, 353M images; Lauren\c{c}on et al., 2023), is often on par with Flamingo.
-    \item \textbf{Still in use:} cross-attention layers inside a frozen LLM, as in Flamingo, are one of the two ways of adding vision compared later in this lecture.
+    \item \textbf{Still in use:} cross-attention layers inside a frozen LLM, as in Flamingo, are one of the two ways of adding vision to an LLM.
   \end{itemize}
   {\scriptsize Sources: Awadalla et al., ``OpenFlamingo: An Open-Source Framework for Training Large Autoregressive Vision-Language Models,'' 2023, \href{https://arxiv.org/abs/2308.01390v2}{arXiv:2308.01390v2}; Lauren\c{c}on et al., ``OBELICS: An Open Web-Scale Filtered Dataset of Interleaved Image-Text Documents,'' 2023, \href{https://arxiv.org/abs/2306.16527v2}{arXiv:2306.16527v2}.\par}
 \end{frame}

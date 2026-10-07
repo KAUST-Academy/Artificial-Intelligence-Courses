@@ -8,7 +8,7 @@
     \column{0.55\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Inverted index:} each term points to a posting list, the documents that contain it with a count each. A query reads only its own terms' lists, so documents sharing no term are never scored.
-        \item[\textcolor{red}{$\blacktriangleright$}] The log factor is the \textbf{IDF} (inverse document frequency) weight, as in TF-IDF (covered earlier). The $tf$ factor saturates: ``any one term's contribution to the document score cannot exceed a saturation point''. $k_1$ sets how fast, $b \in [0,1]$ how much long documents are discounted; $1.2 < k_1 < 2$ and $0.5 < b < 0.8$ suit many collections.
+        \item[\textcolor{red}{$\blacktriangleright$}] The log factor is the \textbf{IDF} (inverse document frequency) weight, as in TF-IDF. The $tf$ factor saturates: ``any one term's contribution to the document score cannot exceed a saturation point''. $k_1$ sets how fast, $b \in [0,1]$ how much long documents are discounted; $1.2 < k_1 < 2$ and $0.5 < b < 0.8$ suit many collections.
       \end{itemize}
     \column{0.43\textwidth}
       {\centering
@@ -47,11 +47,11 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\footnotesize\itemsep0.3em
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Bi-encoder:} a dual encoder (covered earlier) for text: question and passage are embedded separately and compared by a dot product. DPR (dense passage retriever) uses two BERT-base encoders and their [CLS] vectors, $d = 768$:
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Bi-encoder:} a dual encoder for text: question and passage are embedded separately and compared by a dot product. DPR (dense passage retriever) uses two BERT-base encoders and their [CLS] vectors, $d = 768$:
           \[ \text{sim}(q,p) = E_Q(q)^{\top} E_P(p) \]
           {\scriptsize $E_Q$, $E_P$: question and passage encoders.}
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Dense retrieval:} passages are embedded once, offline, into an approximate nearest-neighbour (ANN) index (covered in the CV course). ``Bad guy'' can now find ``the villain Sauron''.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Training:} the contrastive softmax (covered in the CV course) with in-batch negatives, the batch's other gold passages, plus one hard negative per question: a top BM25 passage without the answer. It lifts top-20 accuracy from 70.8 to 77.3 (NQ dev, batch 32).
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Dense retrieval:} passages are embedded once, offline, into an approximate nearest-neighbour (ANN) index. ``Bad guy'' can now find ``the villain Sauron''.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Training:} the contrastive softmax with in-batch negatives, the batch's other gold passages, plus one hard negative per question: a top BM25 passage without the answer. It lifts top-20 accuracy from 70.8 to 77.3 (NQ dev, batch 32).
       \end{itemize}
     \column{0.46\textwidth}
       {\centering
@@ -106,7 +106,7 @@
     \column{0.49\textwidth}
       \begin{itemize}\scriptsize\itemsep0.3em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Cost:} one forward pass per candidate: 10.7\,s per query for 1{,}000 passages with BERT-base, 32.9\,s with BERT-large (V100 GPU). Shortlists stay short: BEIR (two slides on) reranks BM25's top 100.
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Retrieve, then rerank} (two-stage retrieval, covered in the CV course): tune the first stage (BM25, a bi-encoder, or both) for recall over 100 to 1{,}000 candidates, and the reranker for precision in the few chunks that reach the LLM.
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Retrieve, then rerank} (two-stage retrieval): tune the first stage (BM25, a bi-encoder, or both) for recall over 100 to 1{,}000 candidates, and the reranker for precision in the few chunks that reach the LLM.
       \end{itemize}
   \end{columns}
   \vspace{0.1em}
@@ -121,7 +121,7 @@
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{MaxSim} score:
           \[ S_{q,d} = \sum_{i=1}^{|E_q|} \max_{j = 1,\dots,|E_d|} E_{q_i} \cdot E_{d_j}^{\top} \]
           {\scriptsize $E_q$: query token vectors, padded with [mask] to 32; $E_d$: document token vectors. Each query token keeps its best match.}
-        \item[\textcolor{red}{$\blacktriangleright$}] Documents are encoded offline: reranking BM25's top 1{,}000 takes 61\,ms against 10{,}700\,ms for a BERT-base cross-encoder, at MRR@10 34.9 against 34.7. ColPali (covered earlier) applies MaxSim to page images.
+        \item[\textcolor{red}{$\blacktriangleright$}] Documents are encoded offline: reranking BM25's top 1{,}000 takes 61\,ms against 10{,}700\,ms for a BERT-base cross-encoder, at MRR@10 34.9 against 34.7. ColPali applies MaxSim to page images.
       \end{itemize}
     \column{0.45\textwidth}
       \centering
@@ -167,7 +167,7 @@
   \begin{columns}[T,onlytextwidth]
     \column{0.52\textwidth}
       \begin{itemize}\scriptsize
-        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{BEIR:} 18 public datasets from 9 retrieval tasks (fact checking, question answering, argument retrieval, and more), used zero-shot: models trained on MS MARCO (DPR: on NQ and three other QA sets) are scored on unseen domains. nDCG@10 (covered earlier):
+        \item[\textcolor{red}{$\blacktriangleright$}] \textbf{BEIR:} 18 public datasets from 9 retrieval tasks (fact checking, question answering, argument retrieval, and more), used zero-shot: models trained on MS MARCO (DPR: on NQ and three other QA sets) are scored on unseen domains. nDCG@10:
       \end{itemize}
       \vspace{0.2em}
       {\centering\scriptsize\setlength{\tabcolsep}{3pt}
@@ -206,7 +206,7 @@
       \begin{itemize}\scriptsize\itemsep0.35em
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{MTEB} (Massive Text Embedding Benchmark): 58 datasets, 112 languages, 8 task types; ``no particular text embedding method dominates across all tasks''. The model with the best English average (ST5-XXL) was not the best retriever (SGPT-5.8B-msmarco: nDCG@10 50.25 against 42.24). Choose on retrieval, then test on your own queries.
         \item[\textcolor{red}{$\blacktriangleright$}] \textbf{Matryoshka embeddings} (MRL): the training loss is summed over nested prefixes $z_{1:m}$ of the embedding, $m \in \{8, 16, \dots, d\}$, so every prefix is a usable embedding and a store can truncate vectors without re-encoding. On ImageNet-1K retrieval, a 16-dimension shortlist reranked at 2{,}048 dimensions matched full-size search, about 14$\times$ faster.
-        \item[\textcolor{red}{$\blacktriangleright$}] ANN indexes (IVF, product quantization, HNSW) are covered in the CV course. Their \textbf{knob} is search breadth (graph candidates kept, IVF lists probed): wider search raises recall and latency together. Tune it on recall@$k$ measured after any filter.
+        \item[\textcolor{red}{$\blacktriangleright$}] The \textbf{knob} of ANN indexes (IVF, product quantization, HNSW) is search breadth (graph candidates kept, IVF lists probed): wider search raises recall and latency together. Tune it on recall@$k$ measured after any filter.
       \end{itemize}
     \column{0.48\textwidth}
       {\centering

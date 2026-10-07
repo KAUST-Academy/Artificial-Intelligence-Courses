@@ -1,6 +1,6 @@
 \begin{frame}{What a Vision-Language Model Does}
   \begin{itemize}\footnotesize\itemsep0.3em
-    \item A \textbf{vision-language model (VLM)} takes one or more images together with text and returns either a \textbf{match score or embedding}, as CLIP does, or \textbf{new text}, as the LLaVA-style assistant built on a large language model (LLM) does. CLIP was covered earlier; the LLaVA-style assistant is built up in this lecture.
+    \item A \textbf{vision-language model (VLM)} takes one or more images together with text and returns either a \textbf{match score or embedding}, as CLIP does, or \textbf{new text}, as the LLaVA-style assistant built on a large language model (LLM) does.
   \end{itemize}
 
   {\centering
@@ -57,7 +57,7 @@
     \bottomrule
   \end{tabular}\par}
   \vspace{0.3em}
-  {\scriptsize Recall@$K$, top-1 accuracy and CIDEr were covered earlier; Flickr30K has 31K images with 5 captions each. \textbf{VQA accuracy:} after averaging, an answer given by 1, 2, 3 or $\geq 4$ of the 10 annotators scores 0.3, 0.6, 0.9 or 1. \textbf{ANLS} (average normalized Levenshtein similarity) averages the best $s$ over all questions; $o$ is the model's answer and NL the edit distance (fewest character insertions, deletions and substitutions) scaled to $[0,1]$, so a few misread characters keep most of the credit.\par}
+  {\scriptsize Flickr30K has 31K images with 5 captions each. \textbf{VQA accuracy:} after averaging, an answer given by 1, 2, 3 or $\geq 4$ of the 10 annotators scores 0.3, 0.6, 0.9 or 1. \textbf{ANLS} (average normalized Levenshtein similarity) averages the best $s$ over all questions; $o$ is the model's answer and NL the edit distance (fewest character insertions, deletions and substitutions) scaled to $[0,1]$, so a few misread characters keep most of the credit.\par}
   \vspace{0.3em}
   {\scriptsize Karpathy and Fei-Fei, ``Deep Visual-Semantic Alignments for Generating Image Descriptions,'' CVPR 2015, \href{https://openaccess.thecvf.com/content_cvpr_2015/papers/Karpathy_Deep_Visual-Semantic_Alignments_2015_CVPR_paper.pdf}{OpenAccess}, Sec.~4. Antol et al., ``VQA: Visual Question Answering,'' ICCV 2015, \href{https://openaccess.thecvf.com/content_iccv_2015/papers/Antol_VQA_Visual_Question_ICCV_2015_paper.pdf}{OpenAccess}, Sec.~3 and footnote~2; scores from the official code, \href{https://visualqa.org/evaluation.html}{visualqa.org/evaluation.html}. Biten et al., ``Scene Text Visual Question Answering,'' ICCV 2019, \href{https://arxiv.org/abs/1905.13648v2}{arXiv:1905.13648v2}, Sec.~3.4. Mathew et al., ``DocVQA: A Dataset for VQA on Document Images,'' WACV 2021, \href{https://arxiv.org/abs/2007.00398v3}{arXiv:2007.00398v3}, Secs.~1 and~5.1.\par}
 \end{frame}
@@ -142,7 +142,7 @@
   \vspace{0.2em}
   \begin{itemize}\footnotesize\itemsep0.3em
     \item \textbf{Tokenizer:} cuts text into subword tokens from a fixed vocabulary (Qwen2: 151,643 regular tokens); an embedding table maps each token id to a vector. LLaVA-style models add visual tokens here.
-    \item \textbf{Pretraining:} next-token prediction on large text corpora, the autoregressive likelihood (covered earlier); the causal mask lets position $t$ see only $x_{\leq t}$:
+    \item \textbf{Pretraining:} next-token prediction on large text corpora, the autoregressive likelihood; the causal mask lets position $t$ see only $x_{\leq t}$:
     \[ \mathcal{L}(\theta) = -\textstyle\sum_{t=1}^{T} \log p_\theta(x_t \mid x_{<t}) \]
     $x_t$: the $t$-th token; $x_{<t}$: the tokens before it; $T$: sequence length; $\theta$: the model's weights.
     \item \textbf{Instruction tuning:} ``finetuning language models on a collection of datasets described via instructions'' (FLAN), which ``substantially improves zero-shot performance on unseen tasks''. Chat models such as Vicuna compute the loss on the response tokens only; the instruction serves as context.
