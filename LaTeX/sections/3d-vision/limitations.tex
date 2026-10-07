@@ -1,0 +1,10 @@
+\begin{frame}{Limitations and Open Problems}
+  \begin{itemize}\footnotesize\itemsep0.1em
+    \item \textbf{Surfaces that break the assumptions:} glass, mirrors and water break the Lambertian assumption (defined above), and large textureless walls lack the distinctive texture that matching, stereo, and photometric losses rely on.
+    \item \textbf{Dynamic scenes:} most pipelines assume a static world. Moving people and vehicles corrupt poses and maps unless they are masked out or modelled explicitly.
+    \item \textbf{Scale and unfamiliar cameras:} one camera recovers metric scale only through learned priors, an object of known size, or extra sensors, and a model that must infer the camera struggles with optics unlike its training data, such as fisheye or panoramic images.
+    \item \textbf{Long-term operation:} lighting, season, and viewpoint changes degrade place recognition (at night, retrieve, match and solve localizes only 40.8\% of Aachen queries within 0.5\,m and $2^\circ$), and maps go stale as the world changes.
+    \item \textbf{Cost of global attention:} multi-view transformers such as VGGT attend across the tokens of all views, so attention cost grows quadratically with the number of images; VGGT's backbone takes 3.12\,s for 100 frames and 8.75\,s for 200 on one H100 (\href{https://arxiv.org/abs/2503.11651v1}{arXiv:2503.11651v1}, Table~9). Recurrent models such as CUT3R avoid this but can drift on long sequences, so large scenes still need chunking, SfM, or a SLAM back-end.
+    \item \textbf{Uncertainty and evaluation:} few learned models report calibrated uncertainty, and protocols that align predictions before scoring (median or scale-and-shift) hide the scale errors that matter to a robot.
+  \end{itemize}
+\end{frame}

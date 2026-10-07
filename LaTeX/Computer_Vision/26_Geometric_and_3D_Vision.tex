@@ -1,0 +1,33 @@
+% 90-120 minute graduate lecture: camera geometry, two-view geometry and stereo, monocular depth, camera pose and SfM, SLAM, and feed-forward 3D reconstruction.
+% Narrative thread: the projection model comes first because every later method either inverts it (depth, stereo, pose) or optimises it over many views (SfM, SLAM, feed-forward models).
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc, shapes.geometric, fit, backgrounds, decorations.pathreplacing, patterns}
+
+\input{preamble/packages}
+\input{preamble/commands}
+\input{preamble/beamer_settings}
+
+\title[Geometric and 3D Vision]{Geometric and 3D Vision}
+\subtitle{Depth Estimation, Stereo, Camera Pose, and SLAM}
+
+\begin{document}
+
+\input{sections/cover}
+\input{sections/3d-vision/toc}
+\input{sections/3d-vision/recap_bridge}
+\input{sections/3d-vision/learning_outcomes}
+\input{sections/3d-vision/introduction}
+\input{sections/3d-vision/camera_geometry}
+\input{sections/3d-vision/two_view_geometry}
+\input{sections/3d-vision/stereo}
+\input{sections/3d-vision/monocular_depth}
+\input{sections/3d-vision/camera_pose_sfm}
+\input{sections/3d-vision/slam}
+\input{sections/3d-vision/feedforward_3d}
+\input{sections/3d-vision/limitations}
+\input{sections/3d-vision/summary}
+\input{sections/3d-vision/references}
+
+\end{document}

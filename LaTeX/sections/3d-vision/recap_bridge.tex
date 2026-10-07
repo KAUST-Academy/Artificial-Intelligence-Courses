@@ -1,0 +1,8 @@
+\begin{frame}{Recap: Where 3D Has Already Appeared}
+  \begin{itemize}\itemsep0.3em
+    \item \textbf{Covered earlier:} Depth Anything predicts a depth map from a single image, and SuperGlue matches keypoints between two images. Both were used as pretrained components. This lecture supplies the geometry that turns such outputs into cameras, depths, and maps.
+    \item \textbf{Also covered earlier:} optical flow as a dense motion field, RGB-D cameras and LiDAR as depth sensors, and image retrieval with global descriptors. Each returns here as one stage of a 3D pipeline.
+    \item \textbf{Backbones we reuse:} ViT and cross-attention, DINOv2 features, masked autoencoders, and Stable Diffusion. The learned depth and 3D models later in the lecture are assembled from these parts.
+    \item \textbf{Route:} camera model $\rightarrow$ two views $\rightarrow$ stereo $\rightarrow$ single-image depth $\rightarrow$ pose and structure from motion $\rightarrow$ SLAM $\rightarrow$ feed-forward 3D models.
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,16 @@
+\begin{frame}{Summary: Geometry, Stereo, and Depth}
+  \begin{itemize}\footnotesize\itemsep0.45em
+    \item \textbf{One projection model underlies every method.} $\lambda\tilde{\mathbf{x}}=K[R\mid\mathbf{t}]\,\tilde{\mathbf{X}}$ has 5 intrinsic and 6 extrinsic DoF. Back-projection $\mathbf{X}_c=Z\,K^{-1}\tilde{\mathbf{x}}$ needs the depth $Z$, and without a baseline, a known size or an IMU the scene is fixed only up to scale. Distortion is removed first; Zhang's method calibrates $K$ from the homographies of a planar pattern.
+    \item \textbf{Two views constrain each other through $E$ and $F$.} $\hat{\mathbf{x}}_2^\top E\,\hat{\mathbf{x}}_1=0$ with $E=[\mathbf{t}]_\times R$ (5 DoF) and $F=K_2^{-\top}E\,K_1^{-1}$ (7 DoF). Minimal solvers run inside RANSAC, whose sample count $\log(1-p)/\log(1-w^s)$ grows exponentially with $s$; decomposing $E$ gives the relative pose up to scale, and triangulation gives the points.
+    \item \textbf{Stereo turns a match into depth: $Z=fB/d$.} Rectification reduces the search to one row, and the depth error per pixel of disparity error grows as $Z^2/(fB)$. A cost volume scores every candidate disparity; semi-global matching regularizes it along image paths, and learned stereo learns both the cost and its refinement.
+    \item \textbf{One image does not fix depth: learned priors recover it up to scale, and the camera or familiar sizes supply the scale.} Scale-invariant losses (Eigen et al.), photometric self-supervision from video or stereo (Monodepth2), affine-invariant training on mixed data (MiDaS, DPT), camera-aware metric models (Metric3D, UniDepth, Depth Pro) and diffusion priors (Marigold) differ in their training signal; compare AbsRel and $\delta_1$ only within one alignment protocol.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Summary: Pose, SLAM, and Feed-Forward Models}
+  \begin{itemize}\footnotesize\itemsep0.45em
+    \item \textbf{Absolute pose comes from 2D--3D matches: PnP inside RANSAC.} Visual localization retrieves, matches and solves. Pose regression behaves like image retrieval, while scene coordinate regression keeps the geometry in the solver. Incremental SfM interleaves registration, triangulation and bundle adjustment (Levenberg--Marquardt with the Schur complement); GLOMAP positions all cameras and points at once.
+    \item \textbf{SLAM adds time and loop closure.} A front-end tracks features or pixels, a back-end optimizes keyframes, and loop closure with a Sim(3) pose graph removes drift. ORB-SLAM matches features, DSO aligns pixel intensities, DROID-SLAM learns its updates under a dense bundle adjustment layer, and Gaussian Splatting SLAM tracks against a rendered map.
+    \item \textbf{Feed-forward models predict the geometry directly.} Pointmap networks (DUSt3R, MASt3R) predict pointmaps for an image pair, from which cameras and depth are read out, and need global alignment for more views; multi-view transformers (VGGT, then $\pi^3$, MapAnything, Depth Anything 3 and VGGT-$\Omega$) output cameras and depth for all views in one pass. The most accurate results still come from refining them with bundle adjustment or a SLAM back-end.
+  \end{itemize}
+\end{frame}
