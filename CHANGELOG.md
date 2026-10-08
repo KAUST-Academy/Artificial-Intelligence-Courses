@@ -1,4 +1,4 @@
-##  (2026-10-07)
+##  (2026-10-08)
 
 
 ### Features
@@ -34,6 +34,7 @@
 * **Labs:** add CV Noise2Noise Denoising Without Clean Images lab ([bc7632d](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/bc7632d79c20c204127ff6096542364490b0f5ed))
 * **Labs:** add CV Out-of-Distribution Detection lab ([5862e26](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/5862e26a69a0172dde77c846c325151ae4a8dcc3))
 * **Labs:** add CV Stereo Matching with a Learned Cost Volume lab ([3df11a5](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/3df11a59f2d5565e86bc45f42d59b647b2a46cb7))
+* **Labs:** add NLP Backdoor Poisoning During Pretraining lab ([ce835a3](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/ce835a34a67defd4ccbafd7ad641a89ad4dbde73))
 * **Labs:** Added multiple new labs for ML ([b5d4628](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b5d4628d7cd10318afa26c89566ad134576c05ea))
 * **Labs:** Added several CV Labs ([0fe023c](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/0fe023ccf8ba8f83f4879e456ab8b718448fa4e5))
 * **Labs:** Added several GenAI Labs ([d1c1f1f](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/d1c1f1f898d84724ced2d6d6ab0fe6b1b0ea4d03))
