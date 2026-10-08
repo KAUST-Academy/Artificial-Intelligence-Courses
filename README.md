@@ -8,7 +8,7 @@ lecture decks, their built PDFs, and the accompanying Jupyter lab notebooks, hom
 | **Courses** | 5 |
 | **Lecture decks** | 74 (`.tex` sources + built PDFs) |
 | **Slides** | ~5,700 pages |
-| **Notebooks** | 295 (labs, homeworks, exams) |
+| **Notebooks** | 296 (labs, homeworks, exams) |
 | **License** | GPL-3.0 |
 
 ---
@@ -23,7 +23,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | Course | Decks | Pages | Slides | Notebooks |
 |---|---:|---:|---|---|
 | Computer Vision | 28 | 2,264 | [`Lectures/Computer_Vision`](Lectures/Computer_Vision) | [59](Labs/Computer_Vision) |
-| Natural Language Processing | 25 | 1,922 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [47](Labs/Natural_Language_Processing) |
+| Natural Language Processing | 25 | 1,922 | [`Lectures/Natural_Language_Processing`](Lectures/Natural_Language_Processing) | [48](Labs/Natural_Language_Processing) |
 | Reinforcement Learning | 10 | 710 | [`Lectures/Reinforcement_Learning`](Lectures/Reinforcement_Learning) | [36](Labs/Reinforcement_Learning) |
 | Introduction to AI | 10 | 696 | [`Lectures/Introduction_To_AI`](Lectures/Introduction_To_AI) | [24](Labs/Introduction_To_AI) |
 | Generative AI | 1 | 92 | [`Lectures/Generative_AI`](Lectures/Generative_AI) | — |
@@ -144,7 +144,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 
 ## Labs
 
-295 Jupyter notebooks. Course folders mirror the lecture tracks; the rest are cross-cutting.
+296 Jupyter notebooks. Course folders mirror the lecture tracks; the rest are cross-cutting.
 
 | Folder | Notebooks | What it is |
 |---|---:|---|
@@ -152,7 +152,7 @@ Built PDFs live in `Lectures/<Course>/`; the LaTeX sources that produce them liv
 | [`Labs/Incomplete_Labs`](Labs/Incomplete_Labs) | 51 | Mixed — see the note below |
 | [`Labs/Homeworks`](Labs/Homeworks) | 54 | 27 assignment/solution pairs — CV 14, NLP 6, ML 5, RL 2 |
 | [`Labs/Reinforcement_Learning`](Labs/Reinforcement_Learning) | 36 | 15 exercise/solution pairs, in course order |
-| [`Labs/Natural_Language_Processing`](Labs/Natural_Language_Processing) | 47 | Classical text through agents and RAG |
+| [`Labs/Natural_Language_Processing`](Labs/Natural_Language_Processing) | 48 | Classical text through agents and RAG |
 | [`Labs/Introduction_To_AI`](Labs/Introduction_To_AI) | 24 | Classical ML and DL foundations |
 | [`Labs/Exams`](Labs/Exams) | 20 | 10 question/solution pairs across 2025 and 2026 cohorts |
 | [`Labs/Archive`](Labs/Archive) | 4 | Superseded material |
@@ -223,7 +223,7 @@ non-zero if any deck failed.
 ├── VERSION  CHANGELOG.md     # both maintained by CI, not by hand
 ├── CONFIGURE.md              # environment setup notes
 ├── Lectures/<Course>/        # built PDFs, committed
-├── Labs/                     # 295 notebooks
+├── Labs/                     # 296 notebooks
 └── LaTeX/
     ├── Computer_Vision/            # 28 deck main files
     ├── Natural_Language_Processing/#  25
