@@ -1,0 +1,169 @@
+\section{Open Research Challenges}
+
+\begin{frame}{}
+    \LARGE Research Frontiers: \textbf{Open Research Challenges}
+
+    \vspace{1em}
+    \normalsize What is still unsolved, and how do you choose a problem worth your time?
+\end{frame}
+
+\begin{frame}{One Theme: Measurement Breaks When Optimised}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.08}
+    \setlength{\tabcolsep}{4pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
+        \toprule
+        \textbf{Instrument} & \textbf{What happened once it became a target} & \textbf{Where} \\
+        \midrule
+        Binary-graded benchmark & models learn to guess instead of abstaining & Hallucination \\
+        LLM judge & a lone ``:'' is accepted as a correct answer & Judges \\
+        Rubric reward & the training score rises while the gold score falls & Judges \\
+        Public leaderboard & private variants lift the rank, not the ability & Judges \\
+        SAE reconstruction loss & better proxies, no better downstream use & Interpretability \\
+        Speedup at batch size 1 & gains shrink or reverse under real load & Efficiency \\
+        \rowcolor{KAUSTcyan!12} Chain-of-thought monitor & trained against, the model hides the hack & Days 2 and 3 \\
+        \rowcolor{KAUSTcyan!12} Jailbreak defence & 12 defences broken by adaptive attacks & Day 4 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \takeaway{The opportunities sit at the \textbf{measurement layer}: scoring that pays for abstention, adaptive attackers, validated judges.}
+    \src{Baker et al., ``Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation'' (OpenAI), \href{https://arxiv.org/abs/2503.11926}{arXiv:2503.11926}. Nasr, Carlini, Sitawarin et al., ``The Attacker Moves Second,'' \href{https://arxiv.org/abs/2510.09023}{arXiv:2510.09023}. Other rows: earlier slides.}
+\end{frame}
+
+\begin{frame}{Capabilities Are Jagged, and Benchmarks Miss It}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.4\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=5.6cm, height=5.0cm, bar width=0.6cm,
+                ymin=-30, ymax=38, ylabel={\scriptsize change in developer speed (\%)},
+                symbolic x coords={A,B,C}, xtick=data,
+                xticklabels={forecast before, belief after, measured},
+                x tick label style={font=\tiny, text width=1.5cm, align=center},
+                y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\scriptsize},
+                extra y ticks={0}, extra y tick style={grid=major},
+                axis lines=left, enlarge x limits=0.3]
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,24) (B,20) (C,-19)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize METR trial: 16 experienced open-source developers, 246 tasks, early-2025 tools.}
+        \column{0.58\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Saturation.} Humanity's Last Exam gained 30 points in one year.
+            \item \textbf{Jaggedness.} Models at Olympiad gold level read an analogue clock correctly about 50\% of the time. Humans: 90.1\%.
+            \item \textbf{Broken items.} Invalid-question rates run from 2\% (MMLU Math) to 42\% (GSM8K).
+            \item \textbf{Whose knowledge?} 28\% of MMLU questions need culturally specific knowledge.
+            \item \textbf{Benchmarks against the world} (left). Developers were 19\% slower with AI tools, and still believed they had been faster.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Stanford HAI, ``AI Index 2026,'' technical performance chapter (clock accuracy 50.6\% there, 50.1\% on its overview page). Becker, Rush, Barnes, Rein (METR), \href{https://arxiv.org/abs/2507.09089}{arXiv:2507.09089}. Singh et al., ``Global MMLU,'' \href{https://arxiv.org/abs/2412.03304}{arXiv:2412.03304}.}
+\end{frame}
+
+\begin{frame}{Long-Horizon Agency: How Fast, Really?}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[width=7.0cm, height=5.4cm,
+                ymode=log, xmin=2023, xmax=2026.6, ymin=0.04, ymax=40,
+                xlabel={\scriptsize model release date}, ylabel={\scriptsize 50\% time horizon (hours)},
+                xtick={2023,2024,2025,2026}, xticklabels={2023,2024,2025,2026},
+                ytick={0.1,1,10}, yticklabels={0.1,1,10},
+                tick label style={font=\scriptsize},
+                axis lines=left]
+                \addplot[only marks, mark=*, mark size=1.8pt, KAUSTblue] coordinates {(2023.20,0.067) (2024.70,0.34) (2024.93,0.65) (2025.15,1.01) (2025.29,2.0) (2025.60,3.4) (2025.88,3.7) (2025.90,4.9) (2025.94,5.9) (2026.13,6.4) (2026.17,5.7)};
+                \addplot[only marks, mark=square*, mark size=2pt, KAred] coordinates {(2026.10,12.0) (2026.27,17.4)};
+                \addplot[dashed, gray] coordinates {(2023,16) (2026.6,16)};
+                \node[font=\tiny, gray, anchor=south west] at (axis cs:2023.05,16) {above 16 h: unreliable};
+                \node[font=\tiny, anchor=west] at (axis cs:2023.25,0.067) {GPT-4};
+                \node[font=\tiny, anchor=east, KAred] at (axis cs:2026.2,24) {Mythos Preview};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+        \column{0.48\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item METR measures the length of task, in human time, that a model completes half the time. GPT-4: 4 minutes. Claude Mythos Preview (April 2026): 17.4 hours.
+            \item \textbf{Which doubling time?} About 7 months, fitted since 2019. \alert{128.7 days}, fitted since 2023.
+            \item \textbf{External validity} is the key limitation. The newest points pass the suite's reliable range.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \takeaway{For Day 4's agents: does a longer benchmark horizon mean a longer \emph{useful} horizon? The developer trial says not yet.}
+    \src{Chart drawn from METR, Time Horizon 1.1 data file (suite updated 2026-05-08). Red squares: Claude Opus 4.6 and Mythos Preview. Kwa et al., ``Measuring AI Ability to Complete Long Software Tasks,'' \href{https://arxiv.org/abs/2503.14499}{arXiv:2503.14499}.}
+\end{frame}
+
+\begin{frame}{Can Scaling Continue? Compute, Data and Energy}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.47\textwidth}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.2}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
+            \toprule
+            \textbf{Constraint} & \textbf{Largest run, 2030} \\
+            \midrule
+            Power & $2\times10^{28}$ to $2\times10^{30}$ \\
+            Chips & $10^{29}$ to $5\times10^{30}$ \\
+            Data & $6\times10^{28}$ to $2\times10^{32}$ \\
+            Latency & $3\times10^{30}$ to $10^{32}$ \\
+            \midrule
+            GPT-6 Astra (est.) & about $10^{27}$ \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.4em}
+        {\scriptsize In FLOP. Epoch AI, 2024 analysis and 2026 estimate. Feasibility, not a forecast.}
+        \column{0.51\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item Runs of about $2\times10^{29}$ FLOP look feasible by 2030. \textbf{Power binds first}, then chips.
+            \item \textbf{Energy.} Data centres used about 415 TWh in 2024, projected at about 945 TWh by 2030.
+            \item \textbf{Human text runs out.} About 300T usable tokens, fully used between 2026 and 2032.
+            \item \textbf{Synthetic data is not a free refill.} Training on generated text erases the tails of the distribution.
+            \item What is left is \textbf{experience}: interaction, rewards, continual learning.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Sevilla et al., ``Can AI Scaling Continue Through 2030?'' and Villalobos et al., ``Will We Run Out of Data?'' (Epoch AI, 2024). IEA, ``Energy and AI.'' Shumailov et al., \href{https://arxiv.org/abs/2305.17493}{arXiv:2305.17493}. Silver, Sutton, ``Welcome to the Era of Experience.''}
+\end{frame}
+
+\begin{frame}{The Arabic Frontier: Standard Arabic Is Close. The Rest Is Open.}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.18}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{9.4cm}}
+        \toprule
+        \textbf{Evidence (date)} & \textbf{Finding} \\
+        \midrule
+        Open Arabic LLM Leaderboard v2 (2025) & v1 had machine-translated data and a silent scoring bug worth up to 20 points \\
+        QuranicMMLU (Sep 2026) & 12 systems average 84\% on multiple choice, and 60\% on open-ended answers \\
+        Mizan (Sep 2026) & each of 27 systems drops 14 to 18 points from Standard Arabic to Iraqi dialect \\
+        \rowcolor{KAUSTcyan!12} Medical knowledge study (2026) & Arabic medical knowledge is \emph{present in intermediate layers} and fails to reach the output \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item The highlighted row uses today's tools: a tuned lens and activation patching.
+    \end{itemize}
+    \src{El Filali et al., ``The Open Arabic LLM Leaderboard 2'' (2025). El Ghali et al., ``QuranicMMLU,'' \href{https://arxiv.org/abs/2609.22038}{arXiv:2609.22038}. Alseelawi, Aljumaily, ``Mizan,'' \href{https://arxiv.org/abs/2609.13980}{arXiv:2609.13980}. Abouzahir et al., Findings of EMNLP 2026, \href{https://arxiv.org/abs/2608.00207}{arXiv:2608.00207}.}
+\end{frame}
+
+\begin{frame}{What Is Missing? Leading Researchers Disagree}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{5.0cm}}
+        \toprule
+        \textbf{Who (opinion)} & \textbf{What they say is missing} & \textbf{A test it suggests} \\
+        \midrule
+        Karpathy (2025) & continual learning. Outcome RL is ``sucking supervision through a straw'' & diversity loss over rounds of self-training \\
+        Sutskever (2025) & generalisation, despite high benchmark scores & transfer from RL benchmark gains to held-out tasks \\
+        Sutton, Silver & goals, and learning from experience & agents that learn from streams of reward \\
+        LeCun & a world model that predicts representations, not tokens & replicate a claimed 16x data saving beyond one dataset \\
+        Hassabis (2025) & consistency, and posing conjectures & invent a game as deep as Go \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \src{Dwarkesh Podcast: Karpathy (2025-10-17), Sutskever (2025-11-25), Sutton (2025-09-26). Silver, Sutton, ``Welcome to the Era of Experience.'' Lex Fridman Podcast: LeCun (\#416), Hassabis (\#475). Huang, LeCun, Balestriero, \href{https://arxiv.org/abs/2602.22617}{arXiv:2602.22617}.}
+\end{frame}

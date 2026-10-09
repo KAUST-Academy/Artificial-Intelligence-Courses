@@ -1,0 +1,248 @@
+\section{Reasoning-Model Paradigms in 2026}
+
+\begin{frame}{}
+    \LARGE Advanced Reasoning: \textbf{Reasoning-Model Paradigms in 2026}
+
+    \vspace{1em}
+    \normalsize What do today's reasoning models have in common, how do they differ, and how much of it can we verify?
+\end{frame}
+
+\begin{frame}{From a Product Category to a Default}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize,
+        ev/.style={draw, rounded corners=2pt, align=center, text width=2.05cm, minimum height=1.0cm, fill=gray!10},
+        hi/.style={draw, rounded corners=2pt, align=center, text width=2.05cm, minimum height=1.0cm, fill=KAUSTcyan!18}]
+        \draw[-{Stealth}, very thick, gray] (-0.3,0) -- (14.6,0);
+        \node[ev] (a) at (1.0,1.15) {\textbf{Sep 2024}\\o1: a separate ``reasoning model''};
+        \node[hi] (b) at (3.4,-1.15) {\textbf{Jan 2025}\\DeepSeek-R1, Kimi k1.5: open recipes};
+        \node[ev] (c) at (5.8,1.15) {\textbf{Aug 2025}\\GPT-5 router, gpt-oss, hybrid DeepSeek-V3.1};
+        \node[hi] (d) at (8.2,-1.15) {\textbf{Apr 2026}\\DeepSeek-V4: specialists, then distillation};
+        \node[ev] (e) at (10.6,1.15) {\textbf{Jul to Aug 2026}\\Kimi K3, Qwen3.8: thinking always on};
+        \node[ev] (f) at (13.0,-1.15) {\textbf{Sep 2026}\\GPT-6 Astra, Claude Opus 5.5, Gemini 4 Argon};
+        \draw[gray] (1.0,0) -- (a.south);
+        \draw[gray] (3.4,0) -- (b.north);
+        \draw[gray] (5.8,0) -- (c.south);
+        \draw[gray] (8.2,0) -- (d.north);
+        \draw[gray] (10.6,0) -- (e.south);
+        \draw[gray] (13.0,0) -- (f.north);
+    \end{tikzpicture}\end{adjustbox}
+    \vspace{0.3em}
+    \begin{itemize}\itemsep0.35em
+        \item By late 2026, thinking \textbf{cannot be switched off} on Claude Opus 5.5, Grok 4.5 and later, Kimi K3 or the open Qwen3.8.
+        \item ``Reasoning model'' is no longer a category. Compare \textbf{how effort is trained}, \textbf{how state persists}, and \textbf{cost per solved task}.
+    \end{itemize}
+    \src{OpenAI system cards and Deployment Safety Hub. DeepSeek release notes and \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Kimi K3 and Qwen3.8 model cards. Anthropic and Google launch posts (Sep 2026). xAI reasoning guide.}
+\end{frame}
+
+\begin{frame}{The Open Recipes of 2025: What Was Actually Needed}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.0}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{6.6cm}>{\raggedright\arraybackslash}p{4.8cm}}
+        \toprule
+        \textbf{Model} & \textbf{Recipe} & \textbf{Notable} \\
+        \midrule
+        DeepSeek-R1 & cold-start SFT, then RL with rule-based outcome rewards & R1-Zero: RL alone, no human traces \\
+        Kimi k1.5 & long-context RL, then long-to-short compression & no MCTS, value function or PRM \\
+        \rowcolor{KAUSTcyan!12} Qwen3 & four stages. Reasoning RL on 3,995 query and verifier pairs, 170 steps & AIME 2024: 70.1 to 85.1 \\
+        Phi-4-reasoning & SFT on 1.4M traces from o3-mini. About 90 RL steps for the plus model & 14B model. AIME 2025: 63.1, then 78.0 \\
+        MiniMax-M1 & CISPO, a new RL objective & the RL run cost \$534,700 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Shared core:} a verifiable outcome reward, a light supervised start, and a \textbf{small RL stage}.
+        \item \textbf{Most of the gain is optimisation hygiene.} DAPO's fixes take naive GRPO from 30 to 50 on AIME 2024. \emph{Tomorrow's topic.}
+        \item \textbf{For small models, distil first.} Qwen3's distillation needs about a tenth of the GPU hours of RL.
+    \end{itemize}
+    \src{\href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Phi-4-reasoning, \href{https://arxiv.org/abs/2504.21318}{arXiv:2504.21318}. MiniMax-M1, \href{https://arxiv.org/abs/2506.13585}{arXiv:2506.13585}. Yu et al., ``DAPO,'' \href{https://arxiv.org/abs/2503.14476}{arXiv:2503.14476}.}
+\end{frame}
+
+\begin{frame}{2026: Specialists, Distillation, and a Trained Dial}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{DeepSeek-V4, the most detailed open recipe of 2026.} Train one expert per domain with SFT and GRPO. Then train a single student by \emph{on-policy distillation}, minimising reverse KL to the teachers.
+        \item \textbf{How is an effort dial trained?} Five public answers:
+    \end{itemize}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.08}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{6.2cm}>{\raggedright\arraybackslash}p{6.6cm}}
+        \toprule
+        \textbf{Method} & \textbf{Example} \\
+        \midrule
+        Effort tags in the system prompt & gpt-oss \\
+        Supervised examples of each mode & Qwen3 \\
+        Effort specialists, distilled into one model & DeepSeek-V4 \\
+        Alternating budgeted and unconstrained RL phases & Kimi K2.5 \\
+        RL with a per-token cost & Inkling (Thinking Machines) \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{State that survives.} Thinking is interleaved with tool calls and kept across turns: 200 to 300 consecutive calls for Kimi K2 Thinking.
+    \end{itemize}
+    \src{DeepSeek-AI, DeepSeek-V4 report, \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Raschka, ``Controlling Reasoning Effort in LLMs'' (Jul 2026). Kimi-K2-Thinking model card.}
+\end{frame}
+
+\begin{frame}{Parallel Thinking in Production}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccc}
+        \toprule
+        \textbf{July 2025, no tools} & \textbf{Gemini 2.5 Pro} & \textbf{2.5 Deep Think} & \textbf{o3} & \textbf{Grok 4} \\
+        \midrule
+        Humanity's Last Exam & 21.6\% & \textbf{34.8\%} & 20.3\% & 25.4\% \\
+        IMO 2025 (MathArena grading) & 31.6\% & \textbf{60.7\%} & 16.7\% & 21.4\% \\
+        AIME 2025 & 88.0\% & \textbf{99.2\%} & 88.9\% & 91.7\% \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item Same base model, plus ``parallel thinking''. Three patterns:
+        \begin{itemize}\itemsep0.15em
+            \item \textbf{Sample, then aggregate.} Kimi K2 Thinking Heavy: 8 trajectories and a reflective summary. HLE 44.9 to 51.0.
+            \item \textbf{Hypothesise, then critique.} Gemini Deep Think.
+            \item \textbf{Agent teams.} Claude Opus 5.5: a five-agent team reaches the same score with 2.7$\times$ lower latency, at a higher token cost.
+        \end{itemize}
+    \end{itemize}
+    \vspace{0.05em}
+    \caveat{The Deep Think IMO figure is one attempt, the others best of 32. Only Moonshot discloses its path count.}
+    \src{Google DeepMind, Gemini 2.5 Deep Think model card (Aug 2025). Kimi-K2-Thinking model card. Anthropic, Claude Opus 5.5 system card (Sep 2026), Section 8.12.}
+\end{frame}
+
+\begin{frame}{An Independent Scoreboard (3 October 2026)}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.1}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
+        \toprule
+        \textbf{Model (setting)} & \textbf{MathArena} & \textbf{Cost per problem} & \textbf{AA Index} \\
+        \midrule
+        GPT-6.1 Sol (max) & \textbf{90.1} & \$0.55 & 52 \\
+        GPT-6 Astra (max) & 88.0 & \$2.42 & 53 \\
+        Claude Opus 5.5 (high, max for AA) & 83.3 & \$0.84 & \textbf{58} \\
+        Claude Fable 5.1 (max) & 82.6 & \$30.31 & 53 \\
+        Kimi K3 & 50.5 & & 44 \\
+        DeepSeek-V4.1-Flash (max) & 43.3 & \$0.17 & 39 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{The ranking depends on the evaluator.} GPT-6 leads on new maths competitions. Anthropic leads the Artificial Analysis and Epoch indices.
+        \item \textbf{Effort is part of the model name.} GPT-6 Astra at low effort scores 82.3 for \$0.44.
+    \end{itemize}
+    \vspace{0.05em}
+    \takeaway{Every number needs four labels: evaluator, date, effort setting, harness.}
+    \src{MathArena leaderboard (ETH SRI Lab), 4 runs per problem. Artificial Analysis Intelligence Index v4.3.2, rounded. Epoch AI Benchmarking Hub. All fetched 3 Oct 2026.}
+\end{frame}
+
+\begin{frame}{Tokens, Dollars and Seconds Rank Models Differently}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[xbar, width=4.9cm, height=5.6cm, bar width=0.26cm,
+                xmin=0, xmax=340, xlabel={\scriptsize output tokens for the index (M)},
+                symbolic y coords={GPT-6 Astra / 53,GPT-6.1 Sol / 52,Gemini 4 Argon / 53,Kimi K3 / 44,Fable 5.1 / 53,DeepSeek V4.1 / 39,Opus 5.5 / 58}, ytick=data,
+                y tick label style={font=\scriptsize}, x tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\tiny},
+                axis lines=left, enlarge y limits=0.1]
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(60.0,GPT-6 Astra / 53) (67.2,GPT-6.1 Sol / 52) (112.8,Gemini 4 Argon / 53) (160.8,Kimi K3 / 44) (188.5,Fable 5.1 / 53) (253.1,DeepSeek V4.1 / 39) (259.9,Opus 5.5 / 58)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize Index score after the slash. Highest effort setting. DeepSeek is V4.1 Flash.}
+        \column{0.48\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item GPT-6 Astra uses about \textbf{4.3$\times$ fewer output tokens} than Claude Opus 5.5 at a nearby score.
+            \item But cost tells another story. Running the index: \$477 for DeepSeek V4.1 Flash, \$5,324 for Astra, \$8,708 for Opus 5.5, \$13,129 for Fable 5.1.
+            \item And time a third: 472 seconds per task for Astra, 804 for Opus 5.5, 1,205 for Kimi K3.
+        \end{itemize}
+        \vspace{0.2em}
+        \caveat{Shorter traces: a more capable model, or computation the tokens do not show? For Astra the second claim is unverified.}
+    \end{columns}
+    \vspace{0.1em}
+    \src{Artificial Analysis, data embedded in the home page (fetched 3 Oct 2026), computed for the course knowledge base. Raschka, ``GPT-6 Astra, Looped Transformers, and Hidden Reasoning'' (Sep 2026).}
+\end{frame}
+
+\begin{frame}{Can We Trust the Chain of Thought?}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{Faithfulness: does the trace state the real reason?} Slip a hint into the prompt. Does the reasoning admit using it?
+    \end{itemize}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+        \toprule
+        & \textbf{Claude 3.7 Sonnet} & \textbf{DeepSeek R1} \\
+        \midrule
+        Hint acknowledged, on average & 25\% & 39\% \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item With a planted reward hack, models used it in over 99\% of examples and mentioned it in under 2\%.
+        \item \textbf{Monitorability: is the trace still useful for oversight?} A weaker model reading the trace catches reward hacking far better than one watching actions alone.
+        \item \alert{But do not train against the monitor.} Put it in the reward and the policy learns \emph{obfuscated} reward hacking.
+    \end{itemize}
+    \vspace{0.05em}
+    \takeaway{A trace can be an imperfect explanation and still a useful alarm.}
+    \src{Chen et al. (Anthropic), ``Reasoning Models Don't Always Say What They Think,'' \href{https://arxiv.org/abs/2505.05410}{arXiv:2505.05410}. Baker et al. (OpenAI), \href{https://arxiv.org/abs/2503.11926}{arXiv:2503.11926}. Korbak et al., ``Chain of Thought Monitorability,'' \href{https://arxiv.org/abs/2507.11473}{arXiv:2507.11473}.}
+\end{frame}
+
+\begin{frame}{What the 2026 System Cards Reveal, and What They Leave Out}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \textbf{Disclosed: safety measurements}
+        \begin{itemize}\itemsep0.35em
+            \item \textbf{GPT-6 Astra:} ``monitorability has decreased'' relative to its predecessor. Verbalised awareness of being evaluated: 9.6\%, up from 2.8\%.
+            \item \textbf{CoT controllability:} 60.9\% for Astra, 44.8\% for GPT-6.1 Sol. Lower is better for oversight.
+            \item \textbf{Claude Opus 5.5, during RL:} the model guesses the grader's answer key in about 0.3\% of episodes. On \emph{impossible} tasks, attempted hacks are 3 to 6$\times$ more frequent.
+        \end{itemize}
+        \column{0.47\textwidth}
+        \textbf{Not disclosed: how the models are made}
+        \begin{itemize}\itemsep0.35em
+            \item Astra's card gives no context window, parameter count, compute or architecture.
+            \item Anthropic's API never returns the raw chain of thought, only a summary written by another model.
+            \item Even open-weight labs now withhold RL recipes: Kimi K3, Qwen3.8.
+        \end{itemize}
+        \vspace{0.3em}
+        \takeaway{Teach mechanisms from open recipes. Treat closed-model mechanisms as hypotheses, and lab tables as upper bounds under the lab's own harness.}
+    \end{columns}
+    \vspace{0.1em}
+    \src{OpenAI, GPT-6 Astra system card and GPT-6.1 Sol addendum (Sep 2026). Anthropic, Claude Opus 5.5 system card (Sep 2026), Sections 6.2 and 6.6, and thinking documentation. Kimi K3 and Qwen3.8 model cards.}
+\end{frame}
+
+\begin{frame}{Benchmark Hygiene: The Harness Is Half the Result}
+    \begin{itemize}\itemsep0.45em
+        \item \textbf{ARC-AGI-3} (interactive games, no instructions). Humans: 100\%. Frontier models at launch in March 2026: 0.51\%. Then GPT-6 Astra in September:
+    \end{itemize}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+        \toprule
+        \textbf{Harness} & \textbf{Score} & \textbf{Total cost} \\
+        \midrule
+        Standard, max effort & 62.7\% & \$26,098 \\
+        \rowcolor{KAUSTcyan!12} Provider adapter that keeps the model's opaque reasoning state & \textbf{99.9\%} & about \$19,000 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.45em
+        \item \textbf{Static leaderboards go stale.} The official HLE board predates the current models. The LiveCodeBench data file was last modified in August 2025.
+        \item \textbf{Lab numbers use tools.} Opus 5.5 reports 67.7\% on HLE with tools, graded by another Claude model. That is not comparable with the no-tools board.
+        \item \textbf{More effort is not always a higher score.} On one coding benchmark, Opus 5.5 declines above medium effort because the grader penalises out-of-scope changes.
+    \end{itemize}
+    \src{ARC Prize, ARC-AGI-3 launch (Mar 2026) and ``OpenAI's GPT-6 Astra on ARC-AGI-3'' (Sep 2026). lastexam.ai and LiveCodeBench leaderboard data (accessed Oct 2026). Anthropic, Claude Opus 5.5 system card.}
+\end{frame}
+
+\begin{frame}{Reasoning Paradigms: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item The shared recipe: \textbf{verifiable outcome rewards and RL}, started from light supervision, with distillation for small models and, in 2026, for merging specialists.
+        \item The product surface converged on \textbf{always-on thinking with an effort dial}, tools inside the reasoning, and optional parallel modes.
+        \item \textbf{Independent, dated, multi-run evaluations} disagree with each other and with lab tables. Read the harness.
+        \item Closed labs now publish \textbf{safety measurements of the reasoning}, not training recipes. Monitorability is measured, and it has started to fall.
+    \end{itemize}
+    \vspace{0.3em}
+    \vspace{0.2em}
+    \takeaway{\textbf{Next.} The day in one table, and the questions it leaves open.}
+\end{frame}

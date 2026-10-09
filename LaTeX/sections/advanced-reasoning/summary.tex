@@ -1,0 +1,37 @@
+\section{Summary}
+
+\begin{frame}{Day 2 in One Table}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{5.3cm}>{\raggedright\arraybackslash}p{5.3cm}}
+        \toprule
+        \textbf{Technique} & \textbf{With an exact checker} & \textbf{With a learned or self checker} \\
+        \midrule
+        Sampling many answers & coverage becomes accuracy, log-linearly & voting and re-ranking plateau \\
+        Tree search, MCTS & works: code, formal maths, small domains & over-exploits the scorer \\
+        Reward models & outcome rewards anchor RL & static PRMs as RL rewards get hacked \\
+        Code and symbolic tools & exact execution, sound deduction & grounding errors remain \\
+        Self-correction & tests and tools make revision pay & intrinsic revision often hurts \\
+        Planning & verifier loop: 24\% to 98\% & long plans and unsolvable cases fail \\
+        Formal proof & from silver to a perfect IMO score in two years & the statement itself is not checked \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.13em}
+    \takeaway{The common thread: \textbf{inference compute is only as useful as the signal that selects or corrects its output.} Since 2025 that signal has moved into training, and what is left for the user is an effort dial.}
+\end{frame}
+
+\begin{frame}{Research Questions to Take with You}
+    \begin{itemize}\itemsep0.5em
+        \item Outside verifiable domains, selection is the bottleneck. \textbf{What is a good verifier for open-ended work}, where reward models correlate with quality at 0.12?
+        \item Does RL \textbf{create} new search ability, or mostly make sampling from the base model more efficient? What experiment would separate the two?
+        \item When traces get shorter, is that \textbf{efficiency or hidden computation}? How should compute then be reported?
+        \item Can a chain of thought stay \textbf{monitorable} under ever stronger outcome optimisation, without paying for it in capability?
+        \item Formal provers now write their own statements. \textbf{Who checks that the statement is the right one?}
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{block}{Tomorrow}
+        Day 3 opens the box we kept closed today: the post-training algorithms, from GRPO onwards, that produce these models.
+    \end{block}
+\end{frame}

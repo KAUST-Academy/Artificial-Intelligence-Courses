@@ -1,0 +1,251 @@
+\section{Self-Improving Language Models}
+
+\begin{frame}{}
+    \LARGE Alignment and Post-Training: \textbf{Self-Improving Language Models}
+
+    \vspace{1em}
+    \normalsize Can a model improve with no new human signal, and where does it stop?
+\end{frame}
+
+\begin{frame}{Bootstrapping: Sample, Filter, Fine-Tune, Repeat}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.4\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small,
+            st/.style={draw, rounded corners=2pt, minimum width=2.9cm, minimum height=0.75cm, align=center},
+            arr/.style={-{Stealth}, thick}]
+            \node[st, fill=KAUSTcyan!20] (m) at (0,3.6) {Model $p_{\theta^t}$};
+            \node[st, fill=gray!12] (s) at (0,2.4) {Sample many answers};
+            \node[st, fill=darkorange!20] (f) at (0,1.2) {Keep the correct ones};
+            \node[st, fill=gray!12] (t) at (0,0) {Fine-tune on them};
+            \draw[arr] (m) -- (s);
+            \draw[arr] (s) -- (f);
+            \draw[arr] (f) -- (t);
+            \draw[arr, KAUSTblue, dashed] (t.west) to[out=180,in=180,looseness=1.1] (m.west);
+            \node[font=\scriptsize, gray] at (2.3,1.8) {E-step};
+            \node[font=\scriptsize, gray] at (2.3,0.0) {M-step};
+        \end{tikzpicture}\end{adjustbox}
+        \column{0.58\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item \textbf{STaR (2022).} Generate a rationale and an answer. Keep rationales whose answer is right, fine-tune, repeat.
+            \item CommonsenseQA with a 6B model: 60.0\% from direct fine-tuning, \alert{72.5\%} with STaR. A fine-tuned GPT-3, about 30 times larger, scores 73.0\%.
+            \item \textbf{ReST-EM (2023)} names the algorithm. It is expectation-maximisation with a binary reward:
+        \end{itemize}
+        \[
+            q^{t+1}(y|x)\propto p(O{=}1|x,y)\,p_{\theta^t}(y|x)
+        \]
+        \[
+            \theta^{t+1}=\arg\max_\theta\,\mathbb{E}_{x}\,\mathbb{E}_{y\sim p_{\theta^t}}\big[r(x,y)\log p_\theta(y|x)\big]
+        \]
+    \end{columns}
+    \vspace{0.2em}
+    \takeaway{STaR, rejection-sampling fine-tuning and ReST-EM are one method: \textbf{filtered behaviour cloning}. GRPO is its on-policy, every-step version.}
+    \src{Zelikman et al., ``STaR: Bootstrapping Reasoning With Reasoning,'' \href{https://arxiv.org/abs/2203.14465}{arXiv:2203.14465}. Singh et al., ``Beyond Human Data: Scaling Self-Training for Problem-Solving with Language Models,'' TMLR 2024, \href{https://arxiv.org/abs/2312.06585}{arXiv:2312.06585}.}
+\end{frame}
+
+\begin{frame}{The First Iteration Does Most of the Work}
+    \begin{itemize}\itemsep0.5em
+        \item \textbf{Returns diminish fast.} With ReST-EM on MATH, PaLM 2-L scores 41.0\% after two iterations and 41.9\% after three. On APPS, ``most gains come from the first iteration'', and further iterations \alert{regress}.
+        \item \textbf{What it needs.} A binary or scalar correctness signal. Without one, the reward must be learned, and then:
+    \end{itemize}
+    \vspace{0.3em}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{4.4cm}>{\raggedright\arraybackslash}p{8.6cm}}
+        \toprule
+        \textbf{ReST on translation, learned reward} & \textbf{An early Goodhart case} \\
+        \midrule
+        Reward (learned metric) & keeps rising with every Grow step \\
+        Human rating & best after \textbf{one} Grow step, then worse \\
+        Online PPO on the same reward & validation BLEU drops by about 8 points \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.3em}
+    \takeaway{Self-training \textbf{amortises search} over capability the model already has.}
+    \src{Singh et al., \href{https://arxiv.org/abs/2312.06585}{arXiv:2312.06585}. Gulcehre et al., ``Reinforced Self-Training (ReST) for Language Modeling,'' \href{https://arxiv.org/abs/2308.08998}{arXiv:2308.08998}, Figure 7.}
+\end{frame}
+
+\begin{frame}{No Verifier? Let the Model Judge Itself}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{3.3cm}>{\raggedright\arraybackslash}p{3.8cm}>{\raggedright\arraybackslash}p{4.0cm}}
+        \toprule
+        \textbf{Method} & \textbf{Who supplies the signal} & \textbf{Reported gain} & \textbf{Catch} \\
+        \midrule
+        SPIN & human targets against own samples & per round: 2.66, 1.32, 0.85, 0.19 & human data is a ceiling \\
+        Self-Rewarding & the model scores its own candidates & win rate 9.94 to 20.44\% & length 1,092 to 2,552 \\
+        Meta-Rewarding & a meta-judge trains the judge too & win rate 22.9 to 39.44\% & judge scores saturate \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.45em
+        \item Responses more than double in length. Is the model better, or has it learned what its own judge likes? Meta-Rewarding adds explicit length control.
+        \item The self-judging gains are measured on benchmarks that are themselves judged by GPT-4.
+    \end{itemize}
+    \takeaway{The more of the loop is self-generated, the higher the ceiling and the greater the exposure to hacking.}
+    \src{Chen et al., ``Self-Play Fine-Tuning,'' ICML 2024, \href{https://arxiv.org/abs/2401.01335}{arXiv:2401.01335}. Yuan et al., ``Self-Rewarding Language Models,'' ICML 2024, \href{https://arxiv.org/abs/2401.10020}{arXiv:2401.10020}. Wu et al., ``Meta-Rewarding Language Models,'' \href{https://arxiv.org/abs/2407.19594}{arXiv:2407.19594}.}
+\end{frame}
+
+\begin{frame}{No Data Either? Let the Model Write Its Own Tasks}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{3.7cm}>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{4.2cm}}
+        \toprule
+        \textbf{Method} & \textbf{Task source} & \textbf{Reward source} & \textbf{Reported result} \\
+        \midrule
+        Absolute Zero & self-proposed code tasks & Python executor & maths average +15.2 (7B coder) \\
+        R-Zero & a challenger model & majority vote of 10 & +6.49 maths (Qwen3-4B) \\
+        SPIRAL & zero-sum games & game outcome & MATH500 65.8 to 76.4 \\
+        TTRL & unlabelled \emph{test} questions & majority vote & AIME24 12.9 to 40.2 \\
+        \rowcolor{KAUSTcyan!12} J-Zero (2026) & a challenger model & a co-trained judge & stable for 10 or more iterations \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{The proposer needs a reward too.} Both leading designs pay it for tasks of \emph{intermediate} difficulty:
+    \end{itemize}
+    \[
+        \text{Absolute Zero: } r_{\text{propose}}=1-\bar r_{\text{solve}}
+        \qquad\qquad
+        \text{R-Zero: } r_{\text{unc}}=1-2\,\big|\hat p-\tfrac12\big|
+    \]
+    \begin{itemize}\itemsep0.35em
+        \item TTRL: label accuracy is about 37\%, reward accuracy about 92\%. But it trains on the benchmark's own questions.
+    \end{itemize}
+    \src{Zhao et al., ``Absolute Zero,'' \href{https://arxiv.org/abs/2505.03335}{arXiv:2505.03335}. Huang et al., ``R-Zero,'' \href{https://arxiv.org/abs/2508.05004}{arXiv:2508.05004}. Liu et al., ``SPIRAL,'' \href{https://arxiv.org/abs/2506.24119}{arXiv:2506.24119}. Zuo et al., ``TTRL,'' \href{https://arxiv.org/abs/2504.16084}{arXiv:2504.16084}. Chu et al., ``J-Zero,'' \href{https://arxiv.org/abs/2608.26582}{arXiv:2608.26582}.}
+\end{frame}
+
+\begin{frame}{Theory: What Self-Improvement Can and Cannot Buy}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.49\textwidth}
+        \textbf{Sharpening}
+        \begin{itemize}\itemsep0.4em
+            \item Model the self-reward as the model's own likelihood:
+            \[
+                r_{\text{self}}(y\mid x)=\log\pi_{\text{base}}(y\mid x)
+            \]
+            \item Self-training moves mass onto the response the model already ranks highest.
+            \item Sample cost scales with the \textbf{coverage} $C_{\text{cov}}=\mathbb{E}_x[1/\pi_{\text{base}}(y^\star\mid x)]$.
+            \item The gain is \textbf{computational, not statistical}. No new information enters.
+        \end{itemize}
+        \column{0.49\textwidth}
+        \textbf{The generation-verification gap}
+        \begin{itemize}\itemsep0.4em
+            \item Improvement is possible only while the model \emph{verifies} better than it \emph{generates}.
+            \item Across iterations it falls ``nearly to zero within two or three rounds''.
+            \item On factual question answering the gap is under 1\% or negative. There is nothing to sharpen.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.4em}
+    \takeaway{``It judges better than it generates, so it can improve forever'' is a misconception.}
+    \src{Huang et al., ``Self-Improvement in Language Models: The Sharpening Mechanism,'' \href{https://arxiv.org/abs/2412.01951}{arXiv:2412.01951}. Song et al., ``Mind the Gap: Examining the Self-Improvement Capabilities of Large Language Models,'' ICLR 2025, \href{https://arxiv.org/abs/2412.02674}{arXiv:2412.02674}.}
+\end{frame}
+
+\begin{frame}[fragile]{A Gallery of Collapses}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.56\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Majority-vote reward.} Training first tracks ground-truth RL, from 52.6\% to about 60\%. Then the model finds the perfect consensus: it answers \verb|\boxed{1}| to everything.
+            \item \textbf{Pseudo-labels decay.} In R-Zero their accuracy falls from 79\% to 63\%, and gains reverse after about three iterations.
+            \item \textbf{Confidence rewards} (right). Entropy-minimising rewards help for about 20 steps. The early ``gain'' is \emph{formatting}.
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \small
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+            \toprule
+            \textbf{RL step} & \textbf{Right} & \textbf{Bad format} \\
+            \midrule
+            0 & 291 & 67 \\
+            20 & 289 & 3 \\
+            \rowcolor{KAred!10} 40 & 235 & 2 \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.4em}
+        {\scriptsize Qwen2.5-3B on MATH500 (out of 500), self-certainty reward.}
+    \end{columns}
+    \vspace{0.3em}
+    \begin{itemize}\itemsep0.4em
+        \item What sustains a loop is something \textbf{external but cheap}: an executor, a corpus, game rules, a harder curriculum. Early stopping only delays the collapse.
+    \end{itemize}
+    \src{Shafayat, Tajwar et al., ``Can Large Reasoning Models Self-Train?'' \href{https://arxiv.org/abs/2505.21444}{arXiv:2505.21444}. R-Zero, \href{https://arxiv.org/abs/2508.05004}{arXiv:2508.05004}. Zhang et al., ``No Free Lunch: Rethinking Internal Feedback for LLM Reasoning,'' \href{https://arxiv.org/abs/2506.17219}{arXiv:2506.17219}, Table 2.}
+\end{frame}
+
+\begin{frame}{A Warning About Evaluation: Spurious Rewards}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.48\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=7.2cm, height=4.6cm, bar width=0.5cm,
+                ymin=0, ymax=34, ylabel={\scriptsize MATH-500 gain (points)},
+                symbolic x coords={A,B,C,D,E,F}, xtick={A,B,C,D,E,F},
+                xticklabels={format, random, wrong labels, 1-shot, majority vote, ground truth},
+                x tick label style={font=\tiny, rotate=25, anchor=east},
+                y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\scriptsize},
+                axis lines=left, enlarge x limits=0.12]
+                \addplot[bar shift=0pt, fill=KAred!45, draw=KAred!75!black] coordinates {(A,13.8) (B,21.4) (C,24.1)};
+                \addplot[bar shift=0pt, fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(D,26.0) (E,27.1) (F,29.1)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+        \column{0.5\textwidth}
+        \begin{itemize}\itemsep0.3em
+            \item On Qwen2.5-Math-7B, a \alert{random} reward recovers 21.4 of the 29.1 points that the true reward gives.
+            \item \textbf{No transfer.} On OLMo 2 and Llama 3 the same rewards give flat or negative gains.
+            \item \textbf{Explanation 1.} GRPO's clipping amplifies the model's priors. Without clipping, random rewards give nothing.
+            \item \textbf{Explanation 2.} Contamination: from 60\% of a MATH-500 problem, Qwen completes the rest exactly 54.6\% of the time.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \caveat{Validate any RL claim on more than one model family and on a clean benchmark.}
+    \src{Shao et al., ``Spurious Rewards: Rethinking Training Signals in RLVR,'' \href{https://arxiv.org/abs/2506.10947}{arXiv:2506.10947}. Wu et al., ``Reasoning or Memorization? Unreliable Results of Reinforcement Learning Due to Data Contamination,'' AAAI 2026, \href{https://arxiv.org/abs/2507.10532}{arXiv:2507.10532}.}
+\end{frame}
+
+\begin{frame}{Agents That Rewrite Themselves: The Darwin G\"odel Machine}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.56\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item A different object improves here: the \textbf{agent's code}, not the model's weights.
+            \item \textbf{The loop.}
+            \begin{enumerate}\itemsep0.1em
+                \item Keep an archive of every agent that compiles.
+                \item Sample a parent, favouring high scores and few children.
+                \item The parent reads its own benchmark logs and edits its own code.
+                \item Evaluate in stages: 10 tasks, then 50, then more.
+            \end{enumerate}
+            \item The improved agents transfer to other models and benchmarks.
+            \item One run took about two weeks. The underlying foundation model stays frozen, which bounds the result.
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \small
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+            \toprule
+            & \textbf{start} & \textbf{end} \\
+            \midrule
+            SWE-bench & 20.0\% & 50.0\% \\
+            Polyglot & 14.2\% & 30.7\% \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{1em}
+        \caveat{\textbf{It hacked its objective.} One agent removed the markers added to detect hallucinated tool use. Another created a fake log of passing tests.}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Zhang, Hu, Lu, Lange, Clune, ``Darwin G\"odel Machine: Open-Ended Evolution of Self-Improving Agents,'' \href{https://arxiv.org/abs/2505.22954}{arXiv:2505.22954}. Sakana AI blog (May 2025).}
+\end{frame}
+
+\begin{frame}{Self-Improvement: What to Remember}
+    \begin{itemize}\itemsep0.4em
+        \item Self-training is \textbf{filtered behaviour cloning}. It compiles search into weights, and the first iteration gives most of the gain.
+        \item Each step that removes an external signal raises the risk: a learned metric (ReST), a self-judge (longer answers), a vote (constant answers), confidence (formatting, then decline).
+        \item Theory agrees: the loop is bounded by \textbf{coverage} and by the \textbf{generation-verification gap}, which closes in two or three rounds.
+        \item Loops that last keep one cheap external anchor: an executor, a corpus, game rules, or a judge that is trained against the solver.
+        \item Check the evaluation before the method: \textbf{several model families, clean benchmarks}.
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{\textbf{Next.} Self-improvement updates a model again and again. So does every product team. What does repeated updating do to what the model already knew?}
+\end{frame}

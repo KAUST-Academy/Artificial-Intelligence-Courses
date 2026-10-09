@@ -1,0 +1,147 @@
+\section{Emerging Multimodal Architectures}
+
+\begin{frame}{}
+    \LARGE Next-Generation Architectures: \textbf{Multimodal Foundation Models}
+
+    \vspace{1em}
+    \normalsize What changes when the model must also see, hear and draw?
+\end{frame}
+
+\begin{frame}{Recap: Where Do Other Modalities Enter the Model?}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.3}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{4.2cm}}
+        \toprule
+        \textbf{Fusion} & \textbf{Mechanism} & \textbf{Examples} \\
+        \midrule
+        Mid-fusion & a separate encoder produces features, and a projector injects them into the LLM & LLaVA, Qwen3-VL, InternVL \\
+        Early fusion & one operator maps every modality into the same token space, and one backbone processes all & Chameleon, Transfusion \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.5em
+        \item The question has moved from \emph{where} to fuse to \emph{when in training} to fuse, and \emph{how to share capacity} between modalities.
+        \item The output side opened up too. Models now generate images, speech and video.
+    \end{itemize}
+    \vspace{0.2em}
+    \caveat{Mind the vocabulary. Qwen calls joint multimodal pre-training ``early fusion'' even with a separate encoder. The survey definitions above would call the same model mid-fusion.}
+    \src{An et al., ``Toward Native Multimodal Modeling: A Roadmap,'' \href{https://arxiv.org/abs/2605.25343}{arXiv:2605.25343}. Qwen3.5 model card (2026).}
+\end{frame}
+
+\begin{frame}{2026: The Separate Vision Model Disappears}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{6.9cm}}
+        \toprule
+        \textbf{Model} & \textbf{Backbone} & \textbf{How vision is built in} \\
+        \midrule
+        Kimi K2.5 (Jan 2026) & MoE, 1.04T / 32B active & a 400M native-resolution ViT, with 15T tokens of joint vision and text pre-training \\
+        Qwen3.5 (Feb 2026) & 3:1 hybrid MoE, 397B / 17B & one checkpoint replaces the separate Qwen3-VL line \\
+        Gemma 4 (Jul 2026) & 2.3B to 31B, dense and MoE & a 550M ViT with selectable budgets of 70 to 1,120 tokens per image \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.5em
+        \item Until 2025, most labs shipped a text model and a separate ``-VL'' variant. Each of these three ships \textbf{one natively multimodal checkpoint}.
+        \item Note the backbones. They are the hybrid and MoE designs from earlier today. The novelty is in the backbone and in token budgets, not in a new fusion trick.
+    \end{itemize}
+    \src{Kimi Team, ``Kimi K2.5,'' \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}. Qwen3.5-397B-A17B model card. Gemma Team, ``Gemma 4,'' \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}.}
+\end{frame}
+
+\begin{frame}{Fuse Early: Two Independent Lines of Evidence}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.49\textwidth}
+        \textbf{A vendor ablation (Kimi K2.5)}
+        \begin{itemize}\itemsep0.4em
+            \item Fixed total budget of vision and text tokens.
+            \item Adding vision \textbf{early, at only 10\%} of the mix, beats adding it \textbf{late at 50\%}.
+            \item The ratio matters little. The timing matters.
+            \item A bonus: reinforcement learning on \emph{vision} tasks also raised \emph{text} scores, by about 2 points on GPQA-Diamond.
+        \end{itemize}
+        \column{0.49\textwidth}
+        \textbf{An academic scaling study (Apple)}
+        \begin{itemize}\itemsep0.4em
+            \item 457 models, trained from scratch.
+            \item At equal compute, early fusion is \textbf{on par} with late fusion, and slightly better at small budgets.
+            \item Both follow almost the same scaling exponent as text-only models:
+        \end{itemize}
+        \vspace{0.2em}
+        \centering
+        \footnotesize
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
+            \toprule
+            & $L\propto C^{\,x}$ \\
+            \midrule
+            Early fusion & $-0.0492$ \\
+            Late fusion & $-0.0494$ \\
+            GPT-3 (text) & $-0.048$ \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+    \end{columns}
+    \vspace{0.4em}
+    \takeaway{Late fusion's real advantage is \emph{reuse} of pre-trained parts. With enough native training, that advantage shrinks.}
+    \src{Kimi Team, \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}, Tables 1 and 2. Shukor et al., ``Scaling Laws for Native Multimodal Models,'' ICCV 2025, \href{https://arxiv.org/abs/2504.07951}{arXiv:2504.07951}.}
+\end{frame}
+
+\begin{frame}{Sharing Capacity Between Modalities}
+    \begin{itemize}\itemsep0.36em
+        \item If one backbone handles every modality, should some weights be reserved for each?
+        \item \textbf{Mixture-of-Transformers (Meta).} Give each modality its own feed-forward, attention and normalisation weights, but keep \emph{one global self-attention} over the whole sequence. Routing is by modality, with no learned router. It matches a dense Chameleon-style model at \textbf{55.8\%} of the FLOPs.
+        \item \textbf{Learned MoE (Apple).} Let the router decide. Routing that ignores modality labels beats routing that uses them. Experts still specialise by modality on their own, mostly in the first and last layers.
+        \item These agree more than they differ:
+    \end{itemize}
+    \vspace{0.07em}
+    \takeaway{\textbf{Specialise the capacity. Keep the attention global.} It is the same division of labour as MoE in a text model: experts differ, mixing is shared.}
+    \src{Liang et al., ``Mixture-of-Transformers,'' \href{https://arxiv.org/abs/2411.04996}{arXiv:2411.04996}. Shukor et al., \href{https://arxiv.org/abs/2504.07951}{arXiv:2504.07951}.}
+\end{frame}
+
+\begin{frame}{Fewer Visual Tokens, Lighter Encoders}
+    \begin{itemize}\itemsep0.55em
+        \item An image can cost over a thousand tokens. A video costs that per frame. With long context expensive, \textbf{visual-token compression} became a design axis of its own.
+        \begin{itemize}\itemsep0.25em
+            \item \textbf{Budgets:} Gemma 4 lets the caller choose 70 to 1,120 tokens per image.
+            \item \textbf{Temporal pooling:} Kimi K2.5 averages groups of four video frames at the patch level, and fits about 4$\times$ longer video.
+            \item \textbf{Optical compression:} DeepSeek-OCR reads a page of text from an image with about 97\% precision at under 10$\times$ fewer tokens than the text itself. At 20$\times$ it falls to about 60\%.
+        \end{itemize}
+        \item \textbf{Does the encoder have to exist?} Gemma 4's 12B model has none. Raw 48$\times$48 pixel patches go through a single linear projection into the LLM. Audio chunks are projected the same way.
+    \end{itemize}
+    \vspace{0.2em}
+    \caveat{No published ablation yet compares encoder-free and encoder-based models at matched size. The other Gemma 4 sizes keep a ViT.}
+    \src{Gemma Team, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}. Kimi Team, \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}. Wei et al., ``DeepSeek-OCR: Contexts Optical Compression,'' \href{https://arxiv.org/abs/2510.18234}{arXiv:2510.18234}.}
+\end{frame}
+
+\begin{frame}{One Model That Understands and Generates}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.0}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{3.4cm}cc}
+        \toprule
+        \textbf{How images are generated} & \textbf{Example} & \textbf{GenEval} $\uparrow$ & \textbf{MMMU} $\uparrow$ \\
+        \midrule
+        Next-token prediction over image tokens & Emu3.5 (34B) & 0.86 & n/a \\
+        Autoregressive text, flow-matching images & BAGEL (14B) & 0.82 & 55.3 \\
+        Masked discrete diffusion for everything & LLaDA2.0-Uni (16B) & 0.89 & 50.1 \\
+        Multimodal LLM with a diffusion head & InternVL-U (4B) & 0.85 & 54.7 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.13em
+        \item \textbf{No design has won.} Four very different mechanisms land within a few points of each other. Sizes and settings differ, so read the numbers as indicative.
+        \item \textbf{Do the two tasks help each other?} A 2026 analysis says yes at the level of representations, and no if both are forced through identical computation. Share the knowledge. Decouple the pathway.
+    \end{itemize}
+    \src{Scores as reported in: ByteDance Seed, ``BAGEL,'' \href{https://arxiv.org/abs/2505.14683}{arXiv:2505.14683}. \href{https://arxiv.org/abs/2603.09877}{arXiv:2603.09877} (InternVL-U). \href{https://arxiv.org/abs/2604.20796}{arXiv:2604.20796} (LLaDA2.0-Uni). \href{https://arxiv.org/abs/2601.02204}{arXiv:2601.02204} (NextFlow, for Emu3.5). \href{https://arxiv.org/abs/2609.01607}{arXiv:2609.01607}.}
+\end{frame}
+
+\begin{frame}{Multimodal: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item The flagship of 2026 is \textbf{one natively multimodal model}, built on the same hybrid and MoE backbones as text models.
+        \item \textbf{Fuse early in training.} A vendor ablation and a 457-model scaling study point the same way.
+        \item \textbf{Specialise capacity, share attention.} Modality-specific experts with global mixing.
+        \item \textbf{Visual tokens are a budget} to be compressed and chosen, like context length.
+        \item \textbf{Unified generation is unsettled.} Autoregression, flow matching and discrete diffusion all remain in play.
+    \end{itemize}
+    \vspace{0.3em}
+    \caveat{Closed labs disclose almost no architectural detail. What we can teach rigorously comes from open-weight reports.}
+\end{frame}

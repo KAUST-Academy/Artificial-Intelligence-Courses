@@ -1,0 +1,176 @@
+\section{Tool and Context Interoperability: MCP}
+
+\begin{frame}{}
+    \LARGE Agentic Models: \textbf{Interoperability and MCP}
+
+    \vspace{1em}
+    \normalsize One protocol now connects any agent to any tool. Who is trusted across that connection, and for what?
+\end{frame}
+
+\begin{frame}{MCP in One Slide: What Is Still True}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.55\textwidth}
+        \begin{itemize}\itemsep0.5em
+            \item \textbf{The problem it solved.} $M$ agents times $N$ tools needed $M\times N$ adapters. A shared protocol needs $M+N$.
+            \item \textbf{Three roles.} The \emph{host} is the user-facing application and owns permissions. A \emph{client} inside it holds a 1:1 connection to one \emph{server}.
+            \item \textbf{Three server primitives.} Tools, resources and prompts, over JSON-RPC.
+            \item \textbf{Governance changed.} In December 2025 Anthropic donated MCP to the Agentic AI Foundation (Linux Foundation).
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.32\textheight,keepaspectratio]{images/agentic-models-memory/hf_mcp_architecture.png}
+
+        \vspace{0.6em}
+        \small
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
+            \toprule
+            \textbf{At donation (Dec 2025)} & \\
+            \midrule
+            Active public servers & 10,000+ \\
+            Monthly SDK downloads & 97M \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+    \end{columns}
+    \vspace{0.3em}
+    \caveat{If you learned MCP before mid-2026, the roles and primitives still hold. The \textbf{lifecycle, transport and client features} do not.}
+    \src{Figure: Hugging Face MCP Course, Unit 1. Anthropic, ``Donating the Model Context Protocol and establishing the Agentic AI Foundation'' (Dec 2025). MCP Specification 2026-07-28.}
+\end{frame}
+
+\begin{frame}{What Changed in the 2026-07-28 Specification}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{6.0cm}}
+        \toprule
+        \textbf{Topic} & \textbf{Before} & \textbf{Now} \\
+        \midrule
+        Lifecycle & \texttt{initialize} handshake & \leavevmode\alert{removed}. Each request carries version and capabilities \\
+        State & protocol sessions & \leavevmode\alert{removed}. Server-minted handles, passed as tool arguments \\
+        Client features & Sampling, Roots, Logging & \leavevmode\alert{deprecated}. Elicitation stays \\
+        Transport & HTTP+SSE, long-lived stream & deprecated. Each message is one POST \\
+        Registration & Dynamic Client Registration & deprecated. Client ID Metadata Documents first \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \takeaway{\textbf{The theme is statelessness.} Deprecated features stay for at least twelve months before removal.}
+    \src{MCP, ``Key Changes'' changelog, specification 2026-07-28. Soria Parra and Delimarsky, ``The 2026-07-28 Specification'' (MCP blog).}
+\end{frame}
+
+\begin{frame}{Stateless Does Not Mean One Shot: Multi Round-Trip Requests}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth]
+        \node[draw, rounded corners=2pt, fill=KAUSTcyan!20, minimum width=2.4cm, minimum height=0.6cm] (c) at (0,4.3) {\textbf{Client} (in host)};
+        \node[draw, rounded corners=2pt, fill=darkorange!20, minimum width=2.4cm, minimum height=0.6cm] (s) at (9.0,4.3) {\textbf{Server}};
+        \draw[gray, dashed] (0,4.0) -- (0,0.2);
+        \draw[gray, dashed] (9.0,4.0) -- (9.0,0.2);
+        \draw[->, thick] (0,3.5) -- node[above] {1. \texttt{tools/call} with version and capabilities in \texttt{\_meta}} (9.0,3.5);
+        \draw[<-, thick, KAred] (0,2.6) -- node[above] {2. \texttt{resultType: "input\_required"}, \texttt{inputRequests}, \texttt{requestState}} (9.0,2.6);
+        \node[draw, rounded corners=2pt, fill=gray!12, anchor=west] at (0.2,1.85) {3. Client gathers the input, for example by asking the user (elicitation)};
+        \draw[->, thick] (0,1.1) -- node[above] {4. Retry with a \emph{new} request id, \texttt{inputResponses} and the echoed \texttt{requestState}} (9.0,1.1);
+        \draw[<-, thick, KAUSTblue] (0,0.4) -- node[above] {5. \texttt{resultType: "complete"}} (9.0,0.4);
+    \end{tikzpicture}\end{adjustbox}
+    \begin{itemize}\itemsep0.35em
+        \item \textbf{Why.} With no session, the server cannot remember a half-finished call. The state travels through the client instead.
+        \item \textbf{The new attack surface.} The server \alert{must treat \texttt{requestState} as attacker-controlled}, and protect its integrity.
+    \end{itemize}
+    \src{MCP Specification 2026-07-28, ``Multi Round-Trip Requests'' and ``Key Changes.''}
+\end{frame}
+
+\begin{frame}{Authorisation: Tokens Bound to One Server}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
+        b/.style={draw, rounded corners=2pt, minimum width=2.5cm, minimum height=1.2cm, align=center, text width=2.35cm}]
+        \node[b, fill=gray!12] (a) at (0,0) {\textbf{1.} Call without a token: \texttt{401} with a metadata link};
+        \node[b, fill=gray!12] (b) at (2.85,0) {\textbf{2.} Read resource metadata, find the authorisation server};
+        \node[b, fill=KAUSTcyan!18] (c) at (5.7,0) {\textbf{3.} OAuth 2.1 with PKCE and a \texttt{resource} parameter};
+        \node[b, fill=KAUSTcyan!18] (d) at (8.55,0) {\textbf{4.} Check the issuer \texttt{iss} by exact match};
+        \node[b, fill=darkorange!20] (e) at (11.4,0) {\textbf{5.} Server validates the token \emph{audience}};
+        \draw[->, thick] (a) -- (b);
+        \draw[->, thick] (b) -- (c);
+        \draw[->, thick] (c) -- (d);
+        \draw[->, thick] (d) -- (e);
+    \end{tikzpicture}\end{adjustbox}
+    \vspace{0.5em}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{Roles.} The MCP server is an OAuth 2.1 \emph{resource server}. The MCP client is an OAuth client.
+        \item \textbf{Audience binding.} A server must not accept, or pass on, a token issued for anything else. This forbids \alert{token passthrough}.
+        \item \textbf{Step-up.} Start with minimal scope, and re-authorise only when the server asks for more.
+    \end{itemize}
+    \takeaway{The protocol states its own limit: MCP \emph{``cannot enforce these security principles at the protocol level.''} The host must build consent.}
+    \src{MCP Specification 2026-07-28, ``Authorization.'' MCP, ``Security Best Practices.''}
+\end{frame}
+
+\begin{frame}{Trust Boundaries: The Official Threat Catalogue}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{5.3cm}>{\raggedright\arraybackslash}p{4.9cm}}
+        \toprule
+        \textbf{Threat} & \textbf{How it works} & \textbf{Mitigation} \\
+        \midrule
+        Confused deputy & a proxy's consent cookie skips the consent screen. The code goes to the attacker & per-client consent, exact redirect matching \\
+        Token passthrough & server forwards the client's token downstream & forbidden. It breaks audience checks and audit trails \\
+        Server-side request forgery & malicious server puts internal URLs in its metadata & HTTPS only, block private ranges, egress proxy \\
+        State-handle hijacking & holding a handle is treated as authentication & a handle is ``a name, not a capability'' \\
+        Local server compromise & one-click install runs an arbitrary command & show the full command, sandbox, least privilege \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \takeaway{Every row is a place where \textbf{who is acting} and \textbf{on whose authority} come apart.}
+    \src{MCP, ``Security Best Practices'' (current page). MCP Specification 2026-07-28, ``Tools.''}
+\end{frame}
+
+\begin{frame}{Attacks That Were Demonstrated}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.55\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Tool poisoning.} Instructions hidden in a tool \emph{description}: invisible to the user, visible to the model.
+            \item \textbf{Rug pull.} The description changes \emph{after} the user approved the tool.
+            \item \textbf{Shadowing.} One server's description changes how a \emph{trusted} server's tool is used.
+            \item \textbf{GitHub MCP.} A malicious public issue led an agent to leak private repositories.
+            \item \textbf{Supabase MCP.} A support ticket made an over-privileged agent post secret tokens back into the ticket.
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.2}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.7cm}r}
+            \toprule
+            \textbf{Measured in 2025 to 2026} & \\
+            \midrule
+            Highest attack success, MCPTox & 72.8\% \\
+            Highest refusal rate, MCPTox & under 3\% \\
+            Remote servers with no authentication & 40.55\% \\
+            Servers flagged risky by scanners & 96.89\% \\
+            Scanner alerts that are real & under 50\% \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+    \end{columns}
+    \vspace{0.3em}
+    \takeaway{MCPTox: \emph{``more capable models are often more susceptible.''} Architecture fixes this, not capability.}
+    \src{Invariant Labs, tool-poisoning and GitHub MCP reports (2025). General Analysis, Supabase MCP report (2025). Wang et al., ``MCPTox,'' \href{https://arxiv.org/abs/2508.14925}{arXiv:2508.14925}. Zhou et al., \href{https://arxiv.org/abs/2605.22333}{arXiv:2605.22333}. Chen et al., \href{https://arxiv.org/abs/2607.11086}{arXiv:2607.11086}.}
+\end{frame}
+
+\begin{frame}{Permissions at the Boundary}
+    \begin{itemize}\itemsep0.5em
+        \item \textbf{Asking the user, safely.} Elicitation \emph{forms} must not request passwords or keys. Those go through a \emph{URL} flow that neither the client nor the model can inspect.
+        \item \textbf{Deterministic rules in the host.} Claude Code rules name a server or a tool, such as \texttt{mcp\_\_puppeteer}. An unanchored wildcard allow rule is ignored.
+        \item \textbf{Supply side.} The MCP Registry is still a preview, and it \alert{delegates security scanning} to package registries.
+        \item \textbf{Pin what you approved.} Show users what the model sees, and pin tools by hash.
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{Scanners alone are weak assurance. Pair them with \textbf{pinning} and \textbf{least privilege}.}
+    \src{MCP Specification 2026-07-28, ``Elicitation.'' Anthropic, Claude Code permissions docs. MCP Registry, ``About'' (Oct 2026). Invariant Labs (Apr 2025).}
+\end{frame}
+
+\begin{frame}{MCP: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item The 2026-07-28 specification made MCP \textbf{stateless}: no handshake, no sessions, state in handles and in \texttt{requestState}.
+        \item Authorisation is OAuth 2.1 with \textbf{audience-bound tokens}. Token passthrough is forbidden.
+        \item The protocol cannot enforce consent. \textbf{The host is the trust boundary.}
+        \item Tool descriptions are \textbf{untrusted input} that the model reads and the user does not see.
+        \item Stronger models did not resist poisoning better. Least privilege, pinning and data-flow control do the work.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{\textbf{Next.} Tools give the agent reach. Memory gives it a past. What should an agent keep once the context window ends?}
+\end{frame}

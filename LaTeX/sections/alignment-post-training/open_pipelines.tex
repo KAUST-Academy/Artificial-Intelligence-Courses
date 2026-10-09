@@ -1,0 +1,165 @@
+\section{Open-Source Post-Training Pipelines}
+
+\begin{frame}{}
+    \LARGE Alignment and Post-Training: \textbf{Open-Source Pipelines}
+
+    \vspace{1em}
+    \normalsize What does a full post-training run look like when every piece is public?
+\end{frame}
+
+\begin{frame}{Three Stages, Two Generations}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.1}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{3.1cm}>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.3cm}}
+        \toprule
+        & \cellcolor{gray!12}\textbf{1. SFT} & \cellcolor{KAUSTcyan!15}\textbf{2. Preference tuning} & \cellcolor{darkorange!20}\textbf{3. RL with verifiers} \\
+        \midrule
+        \textbf{T\"ulu 3} (Nov 2024) & curated and persona-driven synthetic prompts & length-normalised DPO on 354,192 on-policy pairs & PPO with a value model, 29,946 prompts \\
+        \textbf{Olmo 3} (Dec 2025) & distilled long reasoning traces & DPO on strong-against-weak pairs (``delta learning'') & GRPO variant, 104,869 prompts \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.45em
+        \item \textbf{Why open recipes matter.} Post-training is ``the portion with the least transparency''. In November 2024, none of the top 50 models on the LMSYS Arena had released its post-training data.
+        \item \textbf{The cost is on the record.} Olmo 3 took about 56 days on 1,024 H100s, roughly 2.75 million dollars. Post-training was 9 of those days.
+    \end{itemize}
+    \src{Lambert et al., ``T\"ulu 3: Pushing Frontiers in Open Language Model Post-Training,'' \href{https://arxiv.org/abs/2411.15124}{arXiv:2411.15124}. Olmo Team, ``Olmo 3,'' \href{https://arxiv.org/abs/2512.13961}{arXiv:2512.13961}.}
+\end{frame}
+
+\begin{frame}{Stage 2 Reinvented: Delta Learning}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{A puzzle.} After SFT on reasoning traces from a strong teacher, adding \emph{more} of the same traces made the model \alert{worse}: 70.3 to 64.5.
+            \item \textbf{The fix.} Reuse those traces as the \emph{chosen} side of a DPO pair. For the \emph{rejected} side, take the output of a tiny model, Qwen3-0.6B. Score: 72.9.
+            \item What a pair teaches depends on the \textbf{delta} between its two sides, not on their absolute quality. SmolLM3 found the same pairing independently.
+            \item DPO and RL are complementary: together they beat either alone (right).
+        \end{itemize}
+        \column{0.48\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=7.0cm, height=5.2cm, bar width=0.6cm,
+                ymin=68, ymax=75.5, ylabel={\scriptsize average score},
+                symbolic x coords={A,B,C,D}, xtick=data,
+                xticklabels={SFT, SFT + RL, SFT + DPO, SFT + DPO + RL},
+                x tick label style={font=\scriptsize, rotate=20, anchor=east},
+                y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\scriptsize},
+                axis lines=left, enlarge x limits=0.2]
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,70.1) (B,71.9) (C,72.7) (D,74.1)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Olmo Team, ``Olmo 3,'' \href{https://arxiv.org/abs/2512.13961}{arXiv:2512.13961}, Tables 21 and 22 (1,000 RL steps). Bakouch et al., ``SmolLM3'' (Hugging Face, 2025).}
+\end{frame}
+
+\begin{frame}{Stage 3 in the Open: OlmoRL}
+    \[
+        J(\theta)=\frac{1}{\sum_i|y_i|}\sum_i\sum_t
+        \textcolor{KAred}{\min\!\Big(\tfrac{\pi_{\theta_{old}}(y_{i,t})}{\pi^{\text{vllm}}_{\theta_{old}}(y_{i,t})},\rho\Big)}\,
+        \min\big(r_{i,t}A_{i,t},\,\mathrm{clip}(r_{i,t},1-\varepsilon_{low},1+\varepsilon_{high})A_{i,t}\big)
+    \]
+    \[
+        A_{i,t}=r(x,y_i)-\mathrm{mean}\big(\{r(x,y_j)\}\big)
+    \]
+    \begin{itemize}\itemsep0.4em
+        \item Every patch from the first section is here: token-level loss, no KL, no std, clip-higher. The red factor is the \textbf{truncated importance weight} between trainer and inference engine.
+        \item \textbf{Verifiers.} SymPy for maths, unit tests for code (17.2 million samples graded on AWS Lambda), constraint checkers for instructions, an LM judge for chat.
+        \item \textbf{Mix the domains.} RL on instruction-following alone lowered chat quality. A mixed run has lower training reward, and no such loss downstream.
+    \end{itemize}
+    \src{Olmo Team, ``Olmo 3,'' \href{https://arxiv.org/abs/2512.13961}{arXiv:2512.13961}, Eqs. 1 to 2. Conditioning on the prompt and prefix is omitted in the ratio for space.}
+\end{frame}
+
+\begin{frame}{Where the Time Goes: Rollouts}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[xbar stacked, width=5.6cm, height=4.2cm, bar width=0.5cm,
+                xmin=0, xmax=2200, xlabel={\scriptsize seconds per RL step},
+                symbolic y coords={Olmo,Tulu}, ytick=data,
+                yticklabels={Olmo 3 (2025), T\"ulu 3 (2024)}, xtick={0,1000,2000}, scaled x ticks=false,
+                y tick label style={font=\scriptsize}, x tick label style={font=\scriptsize},
+                axis lines=left, enlarge y limits=0.5,
+                legend style={font=\scriptsize, draw=none, at={(0.3,1.05)}, anchor=south, legend columns=1, legend cell align=left}]
+                \addplot[fill=darkorange!55, draw=darkorange!80!black] coordinates {(875,Olmo) (550,Tulu)};
+                \addplot[fill=gray!40, draw=gray] coordinates {(0,Olmo) (25,Tulu)};
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(125,Olmo) (1500,Tulu)};
+                \legend{generation and waiting, weight transfer, training}
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize T\"ulu 3 405B and Olmo 3 32B. Olmo 3: a representative 1,000 s step, of which 125 s is training.}
+        \column{0.48\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{The bottleneck moved.} In 2024, with 1K-token responses and a critic, training dominated. In 2025, with responses up to 32K tokens, generation does.
+            \item Olmo 3's learner spends \alert{75\%} of its time waiting for data. Inference uses 5 to 14 times the compute of training.
+            \item \textbf{Stragglers.} Completions for one prompt range from 1K to 32K tokens. Static batching wastes up to 54\%.
+            \item \textbf{Fixes.} Continuous batching, and \emph{inflight} weight updates: swap weights without draining the generation queue. Up to 4 times faster on the same hardware.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{T\"ulu 3, \href{https://arxiv.org/abs/2411.15124}{arXiv:2411.15124} (405B run: 550 s inference, 25 s transfer, 1,500 s training). Olmo 3, \href{https://arxiv.org/abs/2512.13961}{arXiv:2512.13961}. Dirhoussi, Gallou\'edec et al., ``Keep the Tokens Flowing'' (Hugging Face, 2026).}
+\end{frame}
+
+\begin{frame}{Asynchronous RL: Speed Against On-Policyness}
+    \begin{itemize}\itemsep0.35em
+        \item A 2026 survey of 16 open RL libraries found one architecture: \textbf{separate inference and training pools}, joined by a rollout buffer, with asynchronous weight transfer.
+        \item Asynchrony means some samples come from an \emph{older} policy. Three ways to handle that: reject by version, bound the buffer depth, or correct with a clipped importance ratio.
+    \end{itemize}
+    \vspace{0.2em}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{8.0cm}}
+        \toprule
+        \textbf{Weight synchronisation} & \textbf{Cost} \\
+        \midrule
+        Broadcast, T\"ulu 3 405B (2024) & 25 s per iteration \\
+        Broadcast with bucketing (verl) & about 20 ms \\
+        LoRA adapter only & about 50 MB at rank 32, under a millisecond \\
+        \rowcolor{KAUSTcyan!12} Delta sync (TRL, 2026) & 1.2 GB becomes 20 to 35 MB per step for a 0.6B model \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.35em
+        \item Why delta sync works: at RL learning rates, about \alert{99\%} of bf16 weights are bit-identical from one step to the next.
+    \end{itemize}
+    \src{Dirhoussi, Gallou\'edec et al., ``Keep the Tokens Flowing: Lessons from 16 Open-Source RL Libraries'' and ``Delta Weight Sync in TRL'' (Hugging Face, 2026). T\"ulu 3, \href{https://arxiv.org/abs/2411.15124}{arXiv:2411.15124}.}
+\end{frame}
+
+\begin{frame}{The Open Toolbox in 2026}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{4.3cm}>{\raggedright\arraybackslash}p{9.0cm}}
+        \toprule
+        \textbf{You need} & \textbf{Reach for} \\
+        \midrule
+        One node, LoRA, preference losses & TRL v1.0, Axolotl, LLaMA-Factory \\
+        Large dense or MoE RL & verl, slime, NeMo RL \\
+        Long-horizon agentic RL & SkyRL, AReaL, prime-rl \\
+        Open post-training data & Dolci (Olmo 3), Mixture-of-Thoughts (350K traces), Nemotron set (25.66M samples) \\
+        Evaluation & OLMES, lm-evaluation-harness, LightEval \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{Libraries age fast.} TRL v1.0 moved PPO toward its experimental layer: ``strong assumptions have a short half-life''. torchtune wound down in 2025.
+        \item \textbf{Evaluate like T\"ulu 3.} Keep a development suite and a separate \emph{unseen} suite, and decontaminate training data against both.
+    \end{itemize}
+    \src{Hugging Face TRL v1 blog (2026) and async RL survey (2026). Sheng et al., ``HybridFlow,'' \href{https://arxiv.org/abs/2409.19256}{arXiv:2409.19256}. Gu et al., ``OLMES,'' \href{https://arxiv.org/abs/2406.08446}{arXiv:2406.08446}. Open-R1 (Hugging Face, 2025). NVIDIA, Nemotron-Post-Training-Dataset-v1. Project repositories as named. The grouping by need is a synthesis.}
+\end{frame}
+
+\begin{frame}{Open Pipelines: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item The open recipe is \textbf{SFT, preference tuning, RL}. Olmo 3 documents each stage with data, code and cost.
+        \item Stage 2 survives because of \textbf{delta learning}: the contrast in a pair matters more than the quality of its better half.
+        \item Stage 3 is a \textbf{systems problem}. Generation dominates, so the design choices are batching, weight sync and how much staleness to tolerate.
+        \item Asynchronous RL trades systems efficiency against on-policyness. The knobs are buffer depth, sync granularity and the correction method.
+        \item Tools change every year. The stable skills are \textbf{reward design, data design and honest evaluation}.
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{\textbf{Next.} One table for the whole day, and the questions it leaves open.}
+\end{frame}

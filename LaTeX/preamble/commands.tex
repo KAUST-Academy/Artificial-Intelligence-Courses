@@ -135,3 +135,15 @@
 
 % Glossary entries
 \newacronym{ML}{ML}{machine learning} 
+% Source line under a figure, table or claim (Advanced LLM Research decks)
+\newcommand{\src}[1]{{\par\vspace{0.25em}\scriptsize\color{gray}#1\par}}
+% One-line takeaway box
+\newcommand{\takeaway}[1]{%
+\begin{tcolorbox}[colback=KAUSTcyan!8,colframe=KAUSTcyan!70!black,boxrule=0.5pt,left=4pt,right=4pt,top=2pt,bottom=2pt]
+\small #1
+\end{tcolorbox}}
+% Warning or caveat box
+\newcommand{\caveat}[1]{%
+\begin{tcolorbox}[colback=KAred!6,colframe=KAred!75!black,boxrule=0.5pt,left=4pt,right=4pt,top=2pt,bottom=2pt]
+\small #1
+\end{tcolorbox}}

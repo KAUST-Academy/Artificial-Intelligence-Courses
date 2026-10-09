@@ -1,0 +1,209 @@
+\section{Hallucination and Uncertainty}
+
+\begin{frame}{}
+    \LARGE Research Frontiers: \textbf{Hallucination and Uncertainty}
+
+    \vspace{1em}
+    \normalsize Why does a model guess, and can it know when it does not know?
+\end{frame}
+
+\begin{frame}{A Puzzle: Better Reasoners That Hallucinate More}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
+        \toprule
+        \textbf{SimpleQA, no web access} & \textbf{Accuracy} & \textbf{Hallucination rate} & \textbf{Abstains} \\
+        \midrule
+        o1 (2024) & 0.47 & 0.44 & 0.09 \\
+        o3 (Apr 2025) & 0.49 & 0.51 & 0.00 \\
+        \rowcolor{KAred!10} o4-mini (Apr 2025) & 0.20 & 0.79 & 0.01 \\
+        \rowcolor{KAUSTcyan!12} gpt-5-thinking-mini (Aug 2025) & 0.22 & 0.26 & 0.52 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.45em
+        \item o3 hallucinates more than o1. OpenAI's reading: it \emph{``tends to make more claims overall''}.
+        \item The two small models \textbf{know about the same amount} (0.20 and 0.22). One answers almost everything. The other declines half the time.
+        \item So hallucination is not only a knowledge problem. It is a \textbf{decision}: answer, or abstain.
+    \end{itemize}
+    \vspace{0.2em}
+    \caveat{``Hallucination rate'' here is wrong answers over \emph{all} questions. The abstain column is derived as the remainder.}
+    \src{OpenAI, ``o3 and o4-mini System Card'' (Apr 2025), Table 4. OpenAI, ``GPT-5 System Card'' (Aug 2025), Table 8. Wei et al., ``Measuring short-form factuality in large language models,'' \href{https://arxiv.org/abs/2411.04368}{arXiv:2411.04368}.}
+\end{frame}
+
+\begin{frame}{Three Arguments That Some Hallucination Is Unavoidable}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Terms.} A hallucination is a \emph{plausible falsehood}. A \emph{confabulation} is wrong \emph{and arbitrary}: it changes with the random seed.
+    \end{itemize}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.18}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{5.8cm}>{\raggedright\arraybackslash}p{3.7cm}}
+        \toprule
+        \textbf{Line of argument} & \textbf{Claim} & \textbf{What it tells you} \\
+        \midrule
+        Computability (Xu et al., 2024) & no computable model can learn every computable function & \emph{some} error is unavoidable \\
+        Statistics (Kalai and Vempala, 2024) & a calibrated model hallucinates at about the share of facts seen \emph{exactly once} in training & \emph{how much}, and on which facts \\
+        \rowcolor{KAUSTcyan!12} Statistics plus incentives (Kalai et al., 2025) & generating is at least as hard as classifying ``is this output valid?'' & errors start in pre-training and \emph{survive} because of scoring \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \src{Xu, Jain, Kankanhalli, \href{https://arxiv.org/abs/2401.11817}{arXiv:2401.11817}. Kalai, Vempala, ``Calibrated Language Models Must Hallucinate,'' \href{https://arxiv.org/abs/2311.14648}{arXiv:2311.14648}. Kalai, Nachum, Vempala, Zhang, ``Why Language Models Hallucinate,'' \href{https://arxiv.org/abs/2509.04664}{arXiv:2509.04664}, Theorem 1. Farquhar et al., Nature 630 (2024).}
+\end{frame}
+
+\begin{frame}{The Incentive: Under Binary Grading, Guessing Is Optimal}
+    \begin{itemize}\itemsep0.45em
+        \item \textbf{Observation.} If a grader gives 1 for a right answer and 0 otherwise, ``I don't know'' is \emph{never} the best response. A student facing such an exam guesses.
+        \item \textbf{Audit.} GPQA, MMLU-Pro, IFEval, BBH, MATH, SWE-bench and HLE give no credit for abstaining. Models are tuned on these scoreboards.
+        \item \textbf{Proposed fix.} State a confidence target in the task, and score accordingly:
+    \end{itemize}
+    \begin{center}
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small]
+        \node[draw, rounded corners=2pt, fill=gray!10, text width=12.4cm, align=left, inner sep=5pt] at (0,0) {\emph{``Answer only if you are $> t$ confident, since mistakes are penalized $t/(1-t)$ points, while correct answers receive 1 point.''}};
+    \end{tikzpicture}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.45em
+        \item The authors ask for this in \emph{mainstream} benchmarks, not in one more hallucination benchmark.
+        \item \textbf{Not settled.} A formal result says wrong definite answers cannot be removed entirely, so the real quantity is \emph{coverage} at guaranteed correctness.
+    \end{itemize}
+    \src{Kalai, Nachum, Vempala, Zhang, ``Why Language Models Hallucinate,'' \href{https://arxiv.org/abs/2509.04664}{arXiv:2509.04664}, Observation 1. Imamura, ``Hallucination, abstention, and computable inseparability,'' \href{https://arxiv.org/abs/2604.28067}{arXiv:2604.28067}.}
+\end{frame}
+
+\begin{frame}{What Post-Training Does to Calibration}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \centering
+        \includegraphics[width=0.49\linewidth,height=0.38\textheight,keepaspectratio]{images/research-frontiers/kalai_fig2_gpt4_calibration_pretrain.png}
+        \includegraphics[width=0.49\linewidth,height=0.38\textheight,keepaspectratio]{images/research-frontiers/kalai_fig2_gpt4_calibration_ppo.png}
+
+        {\scriptsize GPT-4 on an MMLU subset. Left: after pre-training, ECE 0.007. Right: after PPO post-training, ECE 0.074.}
+        \column{0.48\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item \textbf{Pre-training} gives a calibrated model. \textbf{RLHF} worsens calibration tenfold.
+            \item \textbf{SFT on unknown facts:} they are learned slowly, and hallucination rises linearly as they are learned.
+            \item \textbf{Reasoning fine-tuning lowers abstention by 24\%} on average on unanswerable questions. Scale has almost no effect.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.3em}
+    \takeaway{Link to Day 3: every stage after pre-training optimises a score that pays for answers. None of them pays for saying ``I don't know''.}
+    \src{Figures: Kalai et al., \href{https://arxiv.org/abs/2509.04664}{arXiv:2509.04664}, Figure 2, from OpenAI, ``GPT-4 Technical Report,'' Figure 8. Gekhman et al., \href{https://arxiv.org/abs/2405.05904}{arXiv:2405.05904}. Kirichenko, Ibrahim, Chaudhuri, Bell, ``AbstentionBench,'' \href{https://arxiv.org/abs/2506.09038}{arXiv:2506.09038}.}
+\end{frame}
+
+\begin{frame}{Uncertainty Estimation: a Ladder of Cost and Access}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.5cm}>{\raggedright\arraybackslash}p{2.8cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{3.7cm}}
+        \toprule
+        \textbf{Method} & \textbf{Cost} & \textbf{Access} & \textbf{Weakness} \\
+        \midrule
+        Token log-probability, entropy & 1 pass & logits & paraphrases look like doubt \\
+        Semantic entropy probe & 1 pass + linear probe & hidden states & white-box only \\
+        Verbalised confidence & 1 pass & black box & consistently overconfident \\
+        P(True) & 1 to 2 passes & logits & needs the right format \\
+        \rowcolor{KAUSTcyan!12} Semantic entropy & 5 to 10 samples + NLI & black box & blind to systematic errors \\
+        Conformal wrapper & wraps any score & any & needs labelled data \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item Nothing wins everywhere. The first question is not ``which is best?'' but ``what can I afford, and what can I see?''
+    \end{itemize}
+    \src{Farquhar, Kossen, Kuhn, Gal, Nature 630 (2024). Kossen et al., \href{https://arxiv.org/abs/2406.15927}{arXiv:2406.15927}. Xiong et al., \href{https://arxiv.org/abs/2306.13063}{arXiv:2306.13063}. Kadavath et al., \href{https://arxiv.org/abs/2207.05221}{arXiv:2207.05221}. Shelmanov et al., ACL 2025 tutorial on uncertainty quantification.}
+\end{frame}
+
+\begin{frame}{Semantic Entropy: Uncertainty over Meanings, Not Strings}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.58\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item \textbf{Problem.} Two paraphrases of one answer are two strings. Token entropy sees disagreement.
+            \item \textbf{Method.} Sample several answers. Put two in the same cluster $C$ if each \emph{entails} the other. Take the entropy over clusters:
+            \[
+                \mathrm{SE}(x)\approx-\sum_{i}P(C_i\mid x)\,\log P(C_i\mid x)
+            \]
+            \item A \emph{discrete} variant only counts samples per cluster, so it runs on closed models.
+            \item \textbf{Limit.} It detects \emph{arbitrary} errors. A model that is consistently wrong has low entropy.
+        \end{itemize}
+        \column{0.4\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=5.5cm, height=5.0cm, bar width=0.5cm,
+                ymin=0.5, ymax=0.85, ylabel={\scriptsize AUROC, mean over 30 settings},
+                symbolic x coords={A,B,C,D}, xtick=data,
+                xticklabels={{naive\\entropy}, {embedding\\regression}, {P(True)}, {semantic\\entropy}},
+                x tick label style={font=\tiny, align=center},
+                y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\scriptsize, /pgf/number format/.cd, fixed, precision=3},
+                axis lines=left, enlarge x limits=0.2]
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,0.691) (B,0.687) (C,0.698) (D,0.790)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Farquhar, Kossen, Kuhn, Gal, ``Detecting hallucinations in large language models using semantic entropy,'' Nature 630 (2024). Kuhn, Gal, Farquhar, \href{https://arxiv.org/abs/2302.09664}{arXiv:2302.09664}.}
+\end{frame}
+
+\begin{frame}{Acting on Uncertainty: Guarantee, Abstain, Verify}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{5.3cm}>{\raggedright\arraybackslash}p{4.4cm}}
+        \toprule
+        \textbf{Approach} & \textbf{How} & \textbf{Reported effect} \\
+        \midrule
+        Conformal factuality & drop the least supported sub-claims until a calibrated threshold is met & 80 to 90\% correctness guarantees \\
+        R-Tuning & fine-tune on data labelled with what the model does not know & refuses 87 to 99\% of unanswerable questions \\
+        Chain-of-Verification & draft, write checking questions, answer them \emph{without} the draft, revise & FActScore 55.9 to 71.4 \\
+        Abstention-aware RL & reward declining when likely wrong & up to 10.3 points of precision (one 2026 preprint) \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item The trend follows the diagnosis: from decoding tricks (2023) to \textbf{rewards that pay for abstention} (2026).
+        \item \textbf{The open trade-off:} precision against coverage. Abstaining on everything is trivially safe.
+    \end{itemize}
+    \src{Mohri, Hashimoto, \href{https://arxiv.org/abs/2402.10978}{arXiv:2402.10978}. Zhang, Diao et al., ``R-Tuning,'' \href{https://arxiv.org/abs/2311.09677}{arXiv:2311.09677}, Table 3. Dhuliawala et al., ``Chain-of-Verification,'' \href{https://arxiv.org/abs/2309.11495}{arXiv:2309.11495}. Zhang et al., ``AWA-RL,'' \href{https://arxiv.org/abs/2607.10738}{arXiv:2607.10738}.}
+\end{frame}
+
+\begin{frame}{Measuring It in 2026: the Metric Keeps Moving}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.47\textwidth}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.15}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
+            \toprule
+            \textbf{AA-Omniscience, 3 Oct 2026} & \textbf{Index} \\
+            \midrule
+            Claude Opus 5.5 (Max) & 46 \\
+            GPT-6 Astra (High) & 44 \\
+            Claude Fable 5.1 (Max) & 43 \\
+            Best model at release, Nov 2025 & 4.8 \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.4em}
+        {\scriptsize Index from $-100$ to 100. Correct answers add, hallucinations subtract, abstentions count zero.}
+        \column{0.51\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item \textbf{Scoring now penalises wrong answers}, as the theory asks.
+            \item \textbf{Low hallucination is not knowledge.} The lowest rate on the board, 1\%, belongs to a 1B model.
+            \item \textbf{First-party reports diverge.} Anthropic reports a net score. OpenAI's Astra card gives no SimpleQA or abstention numbers. Google's September cards give no factuality metric.
+            \item \textbf{Judges are in the loop.} Graders agree with humans 72 to 75\% of the time.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Jackson et al., ``AA-Omniscience,'' \href{https://arxiv.org/abs/2511.13029}{arXiv:2511.13029}, and live leaderboard (opened 2026-10-03). Anthropic, ``Claude Opus 5.5 System Card.'' OpenAI, ``GPT-6 Astra System Card'' and ``GPT-5 System Card.'' Wei et al., \href{https://arxiv.org/abs/2403.18802}{arXiv:2403.18802}.}
+\end{frame}
+
+\begin{frame}{Hallucination: What to Remember}
+    \begin{itemize}\itemsep0.55em
+        \item Some hallucination is \textbf{statistically unavoidable} on facts seen once. Much of the rest is \textbf{an incentive}: binary grading rewards a guess over ``I don't know''.
+        \item \textbf{Post-training makes it worse}: RLHF degrades calibration, and reasoning fine-tuning lowers abstention.
+        \item \textbf{Uncertainty estimators} trade cost against access. Semantic entropy catches arbitrary errors and misses systematic ones.
+        \item The fixes that match the diagnosis are \textbf{abstention-aware scoring and rewards}.
+        \item Read a hallucination rate \textbf{together with accuracy and abstention}.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{\textbf{Next.} Some 2026 preprints suggest the model \emph{has} the uncertainty signal inside and does not act on it. To check a claim like that, we have to look inside.}
+\end{frame}

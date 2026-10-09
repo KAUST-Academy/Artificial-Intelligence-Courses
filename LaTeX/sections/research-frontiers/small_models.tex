@@ -1,0 +1,216 @@
+\section{Small Language Models and the Edge}
+
+\begin{frame}{}
+    \LARGE Research Frontiers: \textbf{Small Models and the Edge}
+
+    \vspace{1em}
+    \normalsize How much model fits in a phone, and what makes it good?
+\end{frame}
+
+\begin{frame}{Ten Times Fewer Parameters, the Same Scores}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.55\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=7.8cm, height=5.6cm, bar width=0.18cm,
+                ymin=0, ymax=100, ylabel={\scriptsize score},
+                symbolic x coords={A,B,C,D,E}, xtick=data,
+                xticklabels={MMLU-Pro, GPQA-D, AIME 2026, LiveCodeBench v6, RULER 128k},
+                x tick label style={font=\tiny, rotate=20, anchor=east},
+                y tick label style={font=\scriptsize},
+                legend style={font=\tiny, at={(0.5,1.03)}, anchor=south, legend columns=3, draw=none},
+                axis lines=left, enlarge x limits=0.13]
+                \addplot[fill=gray!45, draw=gray!70!black] coordinates {(A,67.6) (B,42.4) (C,20.8) (D,29.1) (E,66.0)};
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,60.0) (B,43.4) (C,37.5) (D,44.0) (E,70.4)};
+                \addplot[fill=darkorange!65, draw=darkorange!80!black] coordinates {(A,69.4) (B,58.6) (C,42.5) (D,52.0) (E,86.6)};
+                \legend{Gemma 3 27B (2025), Gemma 4 E2B (2.3B), Gemma 4 E4B (4.5B)}
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+        \column{0.43\textwidth}
+        \begin{itemize}\itemsep0.5em
+            \item One generation later, a model with 2.3B effective parameters matches a 27B one.
+            \item \textbf{Read it carefully.} The Gemma 4 models run with thinking. The Gemma 3 baseline does not.
+            \item Size did not do this. Four levers did:
+            \begin{itemize}\itemsep0.15em
+                \item data and distillation
+                \item fewer bits, trained in
+                \item architecture shaped by memory
+                \item respect for edge hardware
+            \end{itemize}
+        \end{itemize}
+    \end{columns}
+    \src{Gemma Team, Google DeepMind, ``Gemma 4 Technical Report'' (v2, July 2026), \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Tables 5 and 9.}
+\end{frame}
+
+\begin{frame}{What ``Small'' Means, and Who Builds It}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Working definition:} fits on a consumer device and serves one user. Under about 10B parameters.
+    \end{itemize}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.08}
+    \setlength{\tabcolsep}{4pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{llll}
+        \toprule
+        \textbf{Model} & \textbf{Parameters} & \textbf{Training tokens} & \textbf{Distinctive idea} \\
+        \midrule
+        SmolLM3 (Jul 2025) & 3B & 11.2T & staged data mix \\
+        MobileLLM-R1 (Sep 2025) & 0.95B & 4.2T & data chosen by influence \\
+        Apple on-device (2025) & about 3B & 14T & 2-bit weights, shared KV cache \\
+        BitNet b1.58 (Apr 2025) & 2B & 4T & ternary weights, trained natively \\
+        LFM2 (Nov 2025) & 0.35 to 2.6B & 10T + 1T & convolutions and a little attention \\
+        Qwen3.5 Small (Mar 2026) & 0.8 to 9B & not disclosed & 3:1 Gated DeltaNet hybrid (Day 1) \\
+        \rowcolor{KAUSTcyan!12} Gemma 4 E2B, E4B (2026) & 2.3B, 4.5B eff. & not disclosed & per-layer embeddings, KV sharing \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Over-training is the norm:} thousands of tokens per parameter, against about 20 for Chinchilla.
+        \item \textbf{A 2026 habit:} labs no longer publish token counts or distillation recipes.
+    \end{itemize}
+    \src{Belcak et al., ``Small Language Models are the Future of Agentic AI,'' \href{https://arxiv.org/abs/2506.02153}{arXiv:2506.02153}. Technical reports and model cards of each model, including \href{https://arxiv.org/abs/2509.24945}{arXiv:2509.24945}, \href{https://arxiv.org/abs/2507.13575}{arXiv:2507.13575}, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}.}
+\end{frame}
+
+\begin{frame}{Lever 1: Data and Distillation}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.2cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{7.5cm}}
+        \toprule
+        \textbf{Recipe} & \textbf{Where} & \textbf{What the report shows} \\
+        \midrule
+        Synthetic data, repeated & Phi-4 & about 400B synthetic tokens. Several epochs over them beat adding fresh web tokens \\
+        Curation instead of volume & MobileLLM-R1 & 4.2T tokens, 11.7\% of Qwen3's 36T. Wins AIME24 (15.5 against 11.3), loses MATH500 (26.8 against 29.8) \\
+        Sampled-logit distillation & Gemma 3 & 256 teacher logits sampled per token. A small teacher is better for short runs, a large one for long runs \\
+        On-policy distillation & Qwen3 & the student generates and matches teacher logits. One tenth of the GPU hours of the RL pipeline \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{LFM2 refines top-$K$ distillation:} match the teacher's \emph{total mass} on its top-32 tokens, and its \emph{distribution inside} that set, as two terms: $\mathcal{L}_{DTK}=\mathcal{L}_{B}+\mathcal{L}_{T}$.
+        \item Microsoft's 2026 verdict on its own line: \emph{``data quality remains the primary lever''}.
+    \end{itemize}
+    \src{Microsoft, ``Phi-4 Technical Report,'' \href{https://arxiv.org/abs/2412.08905}{arXiv:2412.08905}. Meta, \href{https://arxiv.org/abs/2509.24945}{arXiv:2509.24945}. Gemma 3, \href{https://arxiv.org/abs/2503.19786}{arXiv:2503.19786}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Liquid AI, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Aneja et al., \href{https://arxiv.org/abs/2603.03975}{arXiv:2603.03975}.}
+\end{frame}
+
+\begin{frame}{Lever 2: Fewer Bits, Trained In}
+    \begin{itemize}\itemsep0.3em
+        \item The shift beyond post-training quantisation: \textbf{train at the target precision}. BitNet rounds every weight to $\{-1,0,1\}$ during training, with $\gamma$ the mean absolute weight:
+    \end{itemize}
+    \[
+        \tilde W=\mathrm{RoundClip}\!\Big(\frac{W}{\gamma+\epsilon},-1,1\Big)
+    \]
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcccc}
+        \toprule
+        \textbf{Model} & \textbf{Memory} & \textbf{CPU decode} & \textbf{Energy per token} & \textbf{Benchmark average} \\
+        \midrule
+        LLaMA-3.2-1B & 2.0 GB & 48 ms & 0.258 J & 44.90 \\
+        Qwen2.5-1.5B & 2.6 GB & 65 ms & 0.347 J & 55.23 \\
+        \rowcolor{KAUSTcyan!12} BitNet b1.58 2B4T & 0.4 GB & 29 ms & 0.028 J & 54.19 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Apple} ships 2 bits per weight (MMLU 67.8 to 64.4). \textbf{Gemma 4 E2B} goes from 4.6 GB to 0.8 GB.
+        \item Note: BitNet's numbers need its own runtime, and its memory excludes embeddings.
+    \end{itemize}
+    \src{Microsoft Research, ``BitNet b1.58 2B4T Technical Report,'' \href{https://arxiv.org/abs/2504.12285}{arXiv:2504.12285}, Table 1. Ma et al., \href{https://arxiv.org/abs/2402.17764}{arXiv:2402.17764}. Apple, \href{https://arxiv.org/abs/2507.13575}{arXiv:2507.13575}. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Table 3.}
+\end{frame}
+
+\begin{frame}{Lever 3: Architecture Shaped by the KV Cache}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{5.1cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{5.4cm}}
+        \toprule
+        \textbf{Design choice} & \textbf{Model} & \textbf{Effect} \\
+        \midrule
+        Five local layers per global layer & Gemma 3 & KV memory under 15\% of global-only \\
+        Later block reuses the earlier block's KV & Apple (2025) & KV memory and first-token time down 37.5\% \\
+        Per-layer embeddings off the accelerator & Gemma 4 E2B & 2,340M of about 5B parameters offloaded \\
+        Convolutions plus a few attention blocks & LFM2 & found by search with phones in the loop \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item These are Day 1's ideas under a \textbf{memory budget of a few GB}.
+        \item \textbf{An open disagreement.} LFM2's search found that linear-attention operators hurt on-device latency without improving quality. Qwen3.5 Small ships one anyway.
+    \end{itemize}
+    \src{Gemma 3, \href{https://arxiv.org/abs/2503.19786}{arXiv:2503.19786}. Apple, \href{https://arxiv.org/abs/2507.13575}{arXiv:2507.13575}. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Table 1. LFM2, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Qwen3.5-2B model card (2026).}
+\end{frame}
+
+\begin{frame}{Lever 4: Edge Physics}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.4\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[ybar, width=5.6cm, height=5.0cm, bar width=0.6cm,
+                ymin=0, ymax=4.6, ylabel={\scriptsize Apple M5 relative to M4},
+                symbolic x coords={A,B,C}, xtick=data,
+                xticklabels={{first\\token}, {token\\generation}, {memory\\bandwidth}},
+                x tick label style={font=\tiny, text width=1.5cm, align=center},
+                y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\scriptsize},
+                axis lines=left, enlarge x limits=0.3]
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,3.97) (B,1.27) (C,1.28)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize Token generation: 1.19x to 1.27x across models.}
+        \column{0.58\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Prefill is compute-bound. Decode is bandwidth-bound.} A faster GPU gave 3.97x on the first token and about 1.2x after it, the same as the gain in memory bandwidth.
+            \item \textbf{Memory is mostly not weights.} At maximum context, the KV cache and buffers take 83 to 90\% of memory.
+            \item \textbf{4 bits is the practical floor.} Irregular 3, 5 and 6-bit formats run slower on less optimised kernels.
+            \item \textbf{NPUs are not a free win.} One 2026 abstract reports CPUs up to 1.6x faster at prefill.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Apple, ``Exploring LLMs with MLX and the Neural Accelerators in the M5 GPU'' (Nov 2025). Lu et al., ``Small Language Models: Survey, Measurements, and Insights,'' \href{https://arxiv.org/abs/2409.15790}{arXiv:2409.15790}. Li, Qi, Chen, \href{https://arxiv.org/abs/2605.27435}{arXiv:2605.27435} (abstract only).}
+\end{frame}
+
+\begin{frame}{Where Small Models Still Lose, and Where They May Win}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.46\textwidth}
+        \centering
+        \footnotesize
+        \renewcommand{\arraystretch}{1.15}
+        \setlength{\tabcolsep}{3pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
+            \toprule
+            & \textbf{Qwen} & \textbf{Qwen} & \textbf{GPT-OSS} \\
+            \textbf{Benchmark} & \textbf{3.5-4B} & \textbf{3.5-9B} & \textbf{120B} \\
+            \midrule
+            MMLU-Pro & 79.1 & 82.5 & 80.8 \\
+            GPQA Diamond & 76.2 & 81.7 & 80.1 \\
+            IFEval & 89.8 & 91.5 & 88.9 \\
+            HMMT Feb 25 & 74.0 & 83.2 & 90.0 \\
+            \rowcolor{KAred!10} LiveCodeBench v6 & 55.8 & 65.6 & 82.7 \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.4em}
+        {\scriptsize Thinking mode, from the Qwen3.5-9B model card (March 2026).}
+        \column{0.52\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Knowledge and instructions:} a 9B model matches one more than ten times its size.
+            \item \textbf{Hard maths and code:} the gap is still 7 to 17 points.
+            \item \textbf{The agent argument (NVIDIA).} A 7B model costs 10 to 30 times less to serve than a 70 to 175B one. In three open agents, 40 to 70\% of LLM calls could go to a small model.
+            \item \textbf{The condition:} \emph{fine-tuned} small models inside a mixed system, not a small orchestrator (Day 4).
+        \end{itemize}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Qwen team, Qwen3.5-9B model card (2026). Belcak et al., NVIDIA, ``Small Language Models are the Future of Agentic AI,'' \href{https://arxiv.org/abs/2506.02153}{arXiv:2506.02153}, Appendix B.}
+\end{frame}
+
+\begin{frame}{Small Models: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item A 2026 model with \textbf{2 to 5B effective parameters} reaches the scores of a 27B model from 2025.
+        \item The gain comes from \textbf{data curation, distillation and heavy over-training}, not from a new block.
+        \item \textbf{Low precision is trained in}: ternary weights, 2-bit QAT, official int4 checkpoints.
+        \item Edge architectures are designed around \textbf{KV memory and memory bandwidth}.
+        \item Small models still trail on hard code and maths. Their strongest case is as \textbf{fine-tuned specialists}.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{\textbf{Next.} If decode speed is set by memory bandwidth, the same holds for large models in the data centre. What is left to gain once the weights are already quantised?}
+\end{frame}

@@ -1,0 +1,38 @@
+\section{Summary}
+
+\begin{frame}{Day 4 in One Table}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.0}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{5.4cm}}
+        \toprule
+        \textbf{Question} & \textbf{The 2026 answer} & \textbf{Still open} \\
+        \midrule
+        Architecture & interleaved thinking in an RL-trained model, inside a harness & how much scaffold a strong model needs \\
+        Tool use & tool search, strict schemas, RL with execution rewards & recovery, tool hallucination \\
+        Interoperability & stateless MCP with audience-bound tokens. A2A between agents & poisoned descriptions, unenforced consent \\
+        Memory & files, tools and a write policy. Structure where retrieval needs it & forgetting, governance, independent benchmarks \\
+        Multi-agent & orchestrator and workers for parallel, read-only work & failure attribution, matched-token baselines \\
+        World models & one-step lookahead, synthetic experience mixed with real & long rollouts, sycophantic simulators \\
+        Evaluation & audited, long-horizon tasks. Scores with their conditions & reliability lags accuracy \\
+        Operations & sandbox, delegated identity, traces, spend caps & revocation, consent fatigue \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.1em}
+    \takeaway{The common thread: \textbf{capability arrived before reliability.}}
+\end{frame}
+
+\begin{frame}{Research Questions to Take with You}
+    \begin{itemize}\itemsep0.35em
+        \item RL for stronger reasoning raises tool hallucination in step with task gains. \textbf{What reward teaches an agent to say ``I cannot do this''} without lowering its utility?
+        \item Memory write policies are learned from a final-answer reward on question answering. \textbf{Does that transfer to long-running work?}
+        \item Much of the multi-agent gain is parallel compute. \textbf{What is the right matched-budget baseline}, and what is left after it?
+        \item LLM world models are good one-step critics and poor simulators. \textbf{Can a world model be trained to be pessimistic}, not sycophantic?
+        \item The 80\% time horizon is a small fraction of the 50\% one. \textbf{What closes that gap}: training, verification, or operations?
+    \end{itemize}
+    \vspace{0.2em}
+    \begin{block}{Tomorrow}
+        Day 5 turns to the frontiers: small models, interpretability, hallucination and measurement.
+    \end{block}
+\end{frame}

@@ -1,0 +1,298 @@
+\section{Tool Learning and Tool-Use Evaluation}
+
+\begin{frame}{}
+    \LARGE Agentic Models: \textbf{Tool Learning and Evaluation}
+
+    \vspace{1em}
+    \normalsize The model can emit a valid call. Does it pick the right tool, fill the right arguments, and recover when the call fails?
+\end{frame}
+
+\begin{frame}{Learning to Use Tools: A Utility Filter}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{Toolformer (2023)} asked a self-supervised question: \emph{does this API call make the following text easier to predict?}
+        \item Let $L_i^+$ be the language-model loss after position $i$ with the call and its result as a prefix, and $L_i^-$ the loss without the result. Keep the call only if
+        \[
+            L_i^- - L_i^+ \;\geq\; \tau_f
+        \]
+        \item Tool use emerged only at about \textbf{775M parameters}. The method could not chain tools or use them interactively.
+    \end{itemize}
+    \vspace{0.2em}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
+        b/.style={draw, rounded corners=2pt, minimum width=2.9cm, minimum height=0.9cm, align=center}]
+        \node[b, fill=gray!12] (a) at (0,0) {\textbf{2023: loss filter}\\Toolformer};
+        \node[b, fill=KAUSTcyan!18] (b) at (3.5,0) {\textbf{2023: instruction tuning}\\Gorilla, ToolLLM};
+        \node[b, fill=KAUSTcyan!18] (c) at (7.0,0) {\textbf{2024: executed data}\\APIGen, ToolACE};
+        \node[b, fill=darkorange!20] (d) at (10.5,0) {\textbf{2025: RL reward}\\ToolRL, agentic RL};
+        \draw[->, thick] (a) -- (b);
+        \draw[->, thick] (b) -- (c);
+        \draw[->, thick] (c) -- (d);
+    \end{tikzpicture}\end{adjustbox}
+    \vspace{0.3em}
+    \takeaway{The filter is a \emph{utility reward} in disguise. It returns as execution-verified data, then as an RL reward.}
+    \src{Schick et al., ``Toolformer: Language Models Can Teach Themselves to Use Tools,'' \href{https://arxiv.org/abs/2302.04761}{arXiv:2302.04761}. Lineage is a synthesis with Liu et al., \href{https://arxiv.org/abs/2406.18518}{arXiv:2406.18518} and Qian et al., \href{https://arxiv.org/abs/2504.13958}{arXiv:2504.13958}.}
+\end{frame}
+
+\begin{frame}{Scaling to Real APIs: Retrieval Enters the Loop}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Gorilla.} Fine-tune with the retrieved API document \emph{in the prompt}, so the model adapts when documentation changes.
+            \item It introduced \textbf{AST matching}: a call is correct if its syntax tree matches a reference. A call to a tool that does not exist is a \emph{hallucination}.
+            \item \textbf{ToolLLM.} 16,464 real REST APIs. A depth-first search over calls (DFSDT) can backtrack, where ReAct follows one path: pass rate 64.8 against 40.2 for ChatGPT.
+            \item \alert{The catch:} a poor retriever can cut Gorilla's accuracy by up to 52\%.
+        \end{itemize}
+        \column{0.47\textwidth}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.15}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+            \toprule
+            \textbf{HuggingFace APIs} & \textbf{Accuracy} & \textbf{Halluc.} \\
+            \midrule
+            \rowcolor{KAUSTcyan!12} Gorilla (7B) & 71.68 & 10.95 \\
+            GPT-4 & 19.80 & 37.16 \\
+            GPT-3.5 & 16.81 & 35.73 \\
+            Claude & 6.19 & 77.65 \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.5em}
+        {\footnotesize Zero-shot, 2023 models. A small tuned model beat frontier models that invented APIs.}
+    \end{columns}
+    \src{Patil et al., ``Gorilla: Large Language Model Connected with Massive APIs,'' \href{https://arxiv.org/abs/2305.15334}{arXiv:2305.15334}, Table 1. Qin et al., ``ToolLLM,'' \href{https://arxiv.org/abs/2307.16789}{arXiv:2307.16789}, Table 4.}
+\end{frame}
+
+\begin{frame}{Autonomous Tool Creation: Models That Write Their Tools}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.55\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{LATM.} A strong model \emph{makes} a tool once. A cheap model \emph{uses} it many times.
+            \begin{itemize}\itemsep0.15em
+                \item \emph{Propose} a function from 3 examples
+                \item \emph{Verify} it with generated unit tests
+                \item \emph{Wrap} it with usage demos
+            \end{itemize}
+            \item A dispatcher decides whether to reuse a cached tool or make a new one.
+            \item \textbf{CRAFT} abstracts verified solutions into a retrievable toolset. Removing the abstraction step drops GQA F1 from 48.8 to 39.7.
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \small
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+            \toprule
+            \textbf{GPT-3.5 as user} & \textbf{CoT} & \textbf{LATM} \\
+            \midrule
+            Logical deduction & 66.4 & 79.7 \\
+            Tracking objects & 61.6 & 99.6 \\
+            Dyck language & 20.4 & 92.2 \\
+            Word sorting & 59.2 & 98.3 \\
+            Schedule meeting & 18.9 & 100.0 \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+    \end{columns}
+    \vspace{0.4em}
+    \caveat{These papers test \textbf{closed task families}, where verification is cheap. The open-world form today is a skill library plus retrieval.}
+    \src{Cai et al., ``Large Language Models as Tool Makers,'' \href{https://arxiv.org/abs/2305.17126}{arXiv:2305.17126}, Table 2. Yuan et al., ``CRAFT,'' \href{https://arxiv.org/abs/2309.17428}{arXiv:2309.17428}.}
+\end{frame}
+
+\begin{frame}{Tool Discovery: Too Many Tools Hurt}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.52\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{The cost.} Five MCP servers expose 58 tools. Their definitions take about \textbf{55K tokens} before the user says anything.
+            \item \textbf{The damage.} In ReWOO, 17 of 20 new failures after going from 2 to 7 tools were tool misuse.
+            \item \textbf{The fix is retrieval.} Keep tool schemas out of context until the model searches for them.
+            \item \textbf{Programmatic calling.} Orchestrate tools from code, so intermediate results stay out of context: 37\% fewer tokens.
+        \end{itemize}
+        \column{0.46\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}
+            \begin{axis}[
+                ybar, bar width=9pt, width=6.8cm, height=4.0cm,
+                ymin=0, ymax=110, ytick={0,50,100}, ylabel={accuracy (\%)},
+                symbolic x coords={RAG-MCP,Opus 4,Opus 4.5,Examples},
+                xtick=data, x tick label style={font=\scriptsize},
+                y label style={font=\scriptsize}, y tick label style={font=\scriptsize},
+                nodes near coords, nodes near coords style={font=\tiny},
+                legend style={font=\tiny, at={(0.5,1.04)}, anchor=south, draw=none, legend columns=2},
+                legend entries={all tools in context, with retrieval or examples},
+                axis lines*=left, ymajorgrids, grid style={gray!20}, enlarge x limits=0.2]
+                \addplot[fill=gray!35, draw=gray] coordinates {(RAG-MCP,13.6) (Opus 4,49) (Opus 4.5,79.5) (Examples,72)};
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(RAG-MCP,43.1) (Opus 4,74) (Opus 4.5,88.1) (Examples,90)};
+            \end{axis}
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize Four separate evaluations. ``Examples'': example calls in the tool definition, on complex parameters.}
+    \end{columns}
+    \vspace{0.2em}
+    \caveat{A 2026 critique: with several valid tools per query, 30 to 47\% of reported retriever gains are scoring artefacts.}
+    \src{Anthropic, ``Introducing advanced tool use'' (Nov 2025). Gan and Sun, ``RAG-MCP,'' \href{https://arxiv.org/abs/2505.03275}{arXiv:2505.03275}. Xu et al., \href{https://arxiv.org/abs/2305.18323}{arXiv:2305.18323}. Zhu et al., ``Tool Retrievers Are Underestimated,'' \href{https://arxiv.org/abs/2609.08327}{arXiv:2609.08327}.}
+\end{frame}
+
+\begin{frame}{Training for Tool Use: From Data Engines to Rewards}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{Data engines (2024).} APIGen keeps a synthetic call only if it passes three checks: format, real execution, semantic review.
+        \item \textbf{RL (2025).} ToolRL scores each call with a fine-grained reward:
+        \[
+            R_{\text{final}} = R_{\text{format}} + R_{\text{correct}}, \qquad R_{\text{format}}\in\{0,1\}, \quad R_{\text{correct}}\in[-3,3]
+        \]
+        where $R_{\text{correct}}$ combines tool-name, parameter-name and parameter-value matches.
+        \item \textbf{Result.} Qwen2.5-7B rises from 41.97\% to \textbf{58.38\%} on BFCL with about 4K samples. Fine-grained rewards beat binary ones, and RL from a cold start beats SFT then RL.
+    \end{itemize}
+    \takeaway{Data \emph{shrinks} as methods move to RL: 126K examples (ToolBench), 60K (APIGen), about 4K (ToolRL).}
+    \src{Liu et al., ``APIGen,'' \href{https://arxiv.org/abs/2406.18518}{arXiv:2406.18518}. Qian et al., ``ToolRL: Reward is All Tool Learning Needs,'' \href{https://arxiv.org/abs/2504.13958}{arXiv:2504.13958}.}
+\end{frame}
+
+\begin{frame}{Schema Adherence: Constrained Decoding}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.56\textwidth}
+        \begin{itemize}\itemsep0.45em
+            \item \textbf{Goal.} Make an invalid call \emph{impossible to sample}.
+            \item \textbf{Outlines.} Compile the format into an automaton, and index offline the tokens allowed in each state:
+            \[
+                \sigma : Q \rightarrow \mathcal{P}(V)
+            \]
+            Each step masks the logits to $\sigma(q_t)$, at $O(1)$ average cost.
+            \item \textbf{JSON needs a grammar.} OpenAI compiles the schema to a context-free grammar. XGrammar makes this up to 100$\times$ faster.
+        \end{itemize}
+        \column{0.41\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
+            st/.style={draw, circle, minimum size=0.75cm, inner sep=0pt}]
+            \node[st, fill=gray!12] (q0) at (0,0) {$q_0$};
+            \node[st, fill=KAUSTcyan!20] (q1) at (2.0,0) {$q_1$};
+            \node[st, fill=KAUSTcyan!20, double] (q2) at (4.0,0) {$q_2$};
+            \draw[->, thick] (-0.9,0) -- (q0);
+            \draw[->, thick] (q0) -- node[above] {\texttt{\{}} (q1);
+            \draw[->, thick] (q1) -- node[above] {\texttt{\}}} (q2);
+            \draw[->, thick] (q1) to[loop above] node[above] {key, value} (q1);
+            \node[draw, rounded corners=2pt, fill=darkorange!15, align=left, text width=4.3cm] at (2.0,-1.7) {In state $q_1$ only tokens in $\sigma(q_1)$ keep their logits. All others are set to $-\infty$.};
+        \end{tikzpicture}\end{adjustbox}
+    \end{columns}
+    \vspace{0.3em}
+    \takeaway{This is why ``strict'' modes can promise valid output. The promise covers \textbf{syntax only}.}
+    \src{Willard and Louf, ``Efficient Guided Generation for Large Language Models,'' \href{https://arxiv.org/abs/2307.09702}{arXiv:2307.09702}. Dong et al., ``XGrammar,'' \href{https://arxiv.org/abs/2411.15100}{arXiv:2411.15100}. OpenAI, ``Introducing Structured Outputs in the API'' (Aug 2024).}
+\end{frame}
+
+\begin{frame}{Schema Adherence in Practice: Syntax Is Not Semantics}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccccc}
+        \toprule
+        \textbf{Schemas accepted and satisfied} & \textbf{LM only} & \textbf{Guidance} & \textbf{Outlines} & \textbf{XGrammar} & \textbf{OpenAI} \\
+        \midrule
+        GlaiveAI & 0.90 & 0.96 & 0.95 & 0.93 & 0.89 \\
+        GitHub, easy & 0.65 & 0.86 & 0.59 & 0.79 & 0.29 \\
+        GitHub, hard & 0.13 & 0.41 & 0.03 & 0.28 & \alert{0.09} \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{Coverage is the hidden limit.} Closed APIs comply on the schemas they accept, but \emph{reject} most hard ones.
+        \item \textbf{Does constraining hurt reasoning?} One paper says yes. A re-run with matched prompts found no loss: GSM8K 0.77 free against 0.78 structured.
+        \item \textbf{What no grammar can fix.} The right tool, and the right \emph{values}.
+    \end{itemize}
+    \src{Geng et al., ``JSONSchemaBench,'' \href{https://arxiv.org/abs/2501.10868}{arXiv:2501.10868}, Table 4 (values taken from a summarised extraction: verify before quoting). Tam et al., ``Let Me Speak Freely?'' \href{https://arxiv.org/abs/2408.02442}{arXiv:2408.02442}. Kurt, ``Say What You Mean'' (.txt blog). OpenAI, Structured Outputs announcement (Aug 2024).}
+\end{frame}
+
+\begin{frame}{Reliability: pass@$k$ Becomes pass\textasciicircum$k$}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.55\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item Code benchmarks ask: does \emph{at least one} of $k$ samples pass? A customer-facing agent must pass \emph{every} time.
+            \item With $c$ successes in $n$ trials of a task:
+            \[
+                \text{pass}^k = \mathbb{E}_{\text{task}}\!\left[\binom{c}{k}\Big/\binom{n}{k}\right]
+            \]
+            \item \textbf{$\tau$-bench} grades the final database state after a dialogue with a simulated user, under a policy document.
+        \end{itemize}
+        \column{0.42\textwidth}
+        \centering
+        \footnotesize
+        \renewcommand{\arraystretch}{1.2}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.7cm}cc}
+            \toprule
+            \textbf{Setting} & \textbf{1 trial} & \textbf{all $k$} \\
+            \midrule
+            gpt-4o, $\tau$ retail (2024) & 61.2 & 25 ($k{=}8$) \\
+            gpt-5-medium, MCPMark & 52.6 & 33.9 ($k{=}4$) \\
+            \rowcolor{KAUSTcyan!12} Opus 5, $\tau^2$ banking (2026) & 48.7 & 32.0 ($k{=}4$) \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.5em}
+        {\footnotesize The gap did not close as models improved. Harder domains reopened it.}
+    \end{columns}
+    \vspace{0.3em}
+    \caveat{User simulators are noisy too: $\tau^2$-bench measured simulator error rates of 40\% in retail and 47\% in airline tasks.}
+    \src{Yao et al., ``$\tau$-bench,'' \href{https://arxiv.org/abs/2406.12045}{arXiv:2406.12045}. Barres et al., ``$\tau^2$-bench,'' \href{https://arxiv.org/abs/2506.07982}{arXiv:2506.07982}. Sierra Research, $\tau^2$-bench leaderboard (Aug 2026). Wu et al., ``MCPMark,'' \href{https://arxiv.org/abs/2509.24002}{arXiv:2509.24002}.}
+\end{frame}
+
+\begin{frame}{Execution Feedback and Recovery: When Tools Fail}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.5\textwidth}
+        \centering
+        \small
+        \renewcommand{\arraystretch}{1.25}
+        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{4.3cm}}
+            \toprule
+            \textbf{Error source} & \textbf{Types (CRITICTOOL)} \\
+            \midrule
+            \textbf{Internal} (the model) & tool selection, tool hallucination, parameter key, parameter value \\
+            \textbf{External} (the world) & environment errors such as timeouts and permission failures \\
+            \bottomrule
+        \end{tabular}\end{adjustbox}
+
+        \vspace{0.4em}
+        {\footnotesize Best overall score: GPT-4o at 69.01. External errors are handled worst.}
+        \column{0.48\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item Recovery falls about \textbf{37\%} when the failure is \emph{implicit} and semantic, not an explicit error.
+            \item Fault tolerance improves \textbf{3.66$\times$ more slowly} than nominal task success.
+            \item When the API itself drifts, GPT-5.4 loses 13.7\% and Claude Sonnet 4.6 loses 14.4\%.
+        \end{itemize}
+    \end{columns}
+    \vspace{0.5em}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{The reasoning trap.} Strengthening reasoning with RL \alert{raises} tool hallucination in proportion to the task gains.
+        \item \textbf{Knowing when to stop.} With insufficient information, GPT-4o scores 42.0 in ToolSandbox: it invents arguments.
+    \end{itemize}
+    \src{Huang et al., ``CRITICTOOL,'' \href{https://arxiv.org/abs/2506.13977}{arXiv:2506.13977}. Zhu et al., ``ToolMaze,'' \href{https://arxiv.org/abs/2606.05806}{arXiv:2606.05806}. Yin et al., ``The Reasoning Trap,'' \href{https://arxiv.org/abs/2510.22977}{arXiv:2510.22977}. Liu et al., ``MCPEvol-Bench,'' \href{https://arxiv.org/abs/2607.14642}{arXiv:2607.14642}. Lu et al., ``ToolSandbox,'' \href{https://arxiv.org/abs/2408.04682}{arXiv:2408.04682}.}
+\end{frame}
+
+\begin{frame}{Five Axes, and the Benchmark for Each}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.12}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.0cm}>{\raggedright\arraybackslash}p{4.9cm}>{\raggedright\arraybackslash}p{5.3cm}}
+        \toprule
+        \textbf{Axis} & \textbf{How it is measured} & \textbf{A number to remember} \\
+        \midrule
+        Schema adherence & BFCL syntax-tree match, JSONSchemaBench & hard-schema coverage 0.09 to 0.41 \\
+        Tool selection & hallucination and irrelevance tests & 2023 models invented APIs 36 to 88\% of the time \\
+        Argument correctness & ComplexFuncBench, NESTFUL & nested sequences: best full match 28\% \\
+        Execution feedback & backend state checks (BFCL v3, $\tau$-bench) & state, not the transcript, is graded \\
+        Recovery & error injection (BFCL v4), ToolMaze & recovery down 37\% on implicit failures \\
+        \rowcolor{KAUSTcyan!12} Reliability & pass\textasciicircum$k$ & 48.7 falls to 32.0 over four trials \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}
+        \item \textbf{The trend:} failures move from wrong arguments toward reasoning. In MCP-Atlas, 63.3\% of failures are cognitive.
+    \end{itemize}
+    \src{Berkeley Gorilla team, BFCL blogs. Patil et al., \href{https://arxiv.org/abs/2305.15334}{arXiv:2305.15334}. Basu et al., ``NESTFUL,'' \href{https://arxiv.org/abs/2409.03797}{arXiv:2409.03797}. Zhong et al., ``ComplexFuncBench,'' \href{https://arxiv.org/abs/2501.10132}{arXiv:2501.10132}. Bandi et al., ``MCP-Atlas,'' \href{https://arxiv.org/abs/2602.00933}{arXiv:2602.00933}.}
+\end{frame}
+
+\begin{frame}{Tools: What to Remember}
+    \begin{itemize}\itemsep0.6em
+        \item Tool learning went from a \textbf{loss filter} to \textbf{executed synthetic data} to \textbf{RL rewards}. Execution-based verification is the constant.
+        \item Tool \emph{discovery} is now a \textbf{retrieval problem}: defer schemas, search for tools, call them from code.
+        \item Constrained decoding solved \textbf{syntax}. Selection, argument values and recovery remain open.
+        \item Measure \textbf{pass\textasciicircum$k$}, not one lucky run, and grade the \textbf{state} the agent leaves behind.
+        \item Stronger reasoning does not imply safer tool use. RL can amplify tool hallucination.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{\textbf{Next.} Tools now arrive through one shared protocol. That solves integration, and it creates a new trust boundary.}
+\end{frame}

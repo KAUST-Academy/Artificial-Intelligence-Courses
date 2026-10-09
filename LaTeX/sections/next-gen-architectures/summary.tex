@@ -1,0 +1,36 @@
+\section{Summary}
+
+\begin{frame}{Day 1 in One Table}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.9cm}>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{5.2cm}}
+        \toprule
+        \textbf{Pressure} & \textbf{The 2026 answer} & \textbf{Still open} \\
+        \midrule
+        KV cache grows with context & hybrids: recurrent mixers plus a few attention layers & recall and state tracking in a fixed state \\
+        Every token pays for every weight & MoE with 3 to 5\% of weights active & routing score, shared experts, serving at small batch \\
+        Attention is quadratic & FlashAttention-3 and 4, learned sparse attention & the cost of the selector itself \\
+        Context beyond training length & YaRN, NoPE layers, explicit sinks, staged training & uniform quality across 1M tokens \\
+        Finite compute and data & over-train small models, curate data, shift compute to RL and inference & laws for post-training and for verifiers \\
+        Inputs beyond text & one natively multimodal model, fused early & unified generation, encoder-free inputs \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.13em}
+    \takeaway{The common thread: \textbf{do the expensive, exact operation rarely, and the cheap, approximate one everywhere else.}}
+\end{frame}
+
+\begin{frame}{Research Questions to Take with You}
+    \begin{itemize}\itemsep0.65em
+        \item Hybrids and sparse attention both claim the long-context frontier. Under matched training and serving budgets, \textbf{which wins on multi-hop reasoning}, and why?
+        \item Can a recurrent state be made to \textbf{grow on demand}, so capacity follows the input instead of being fixed in advance?
+        \item What is the right \textbf{benchmark} for a million-token context, now that needle tests are saturated and vendor tables disagree?
+        \item Sparse models lose on reading comprehension at matched loss. \textbf{What does loss fail to measure?}
+        \item Is there a scaling law that jointly allocates compute between \textbf{pre-training, reinforcement learning and inference}?
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{block}{Tomorrow}
+        Day 2 picks up the last question: reasoning, search and verification at test time.
+    \end{block}
+\end{frame}

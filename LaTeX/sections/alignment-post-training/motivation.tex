@@ -1,0 +1,43 @@
+\section{Motivation}
+
+\begin{frame}{Post-Training Moved. The Bottleneck Moved with It.}
+    \begin{itemize}\itemsep0.35em
+        \item In 2023 and 2024 the centre of post-training was \textbf{RLHF and DPO} on human preferences.
+        \item By 2025 and 2026 the open recipe is SFT, then an optional DPO-style stage, then \alert{large-scale on-policy RL with verifiable rewards}.
+        \item The scarce resource is no longer the optimiser. It is the \textbf{signal}:
+        \begin{itemize}\itemsep0.3em
+            \item \textbf{Cost.} A human preference label costs 5 to 20 dollars. An AI label costs under one cent.
+            \item \textbf{Data.} More than 98\% of the alignment data of Nemotron-4 340B is synthetic.
+            \item \textbf{Compute.} DeepSeek-V3.2 reports post-training compute above 10\% of its pre-training cost.
+        \end{itemize}
+        \item Once humans leave the loop, who checks the reward, the data and the model?
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{Every oversight signal degrades when you optimise against it: a reward model, a judge, a chain-of-thought monitor, a self-generated label.}
+    \src{Lambert, ``The state of post-training in 2025'' (Interconnects, 2025). NVIDIA, ``Nemotron-4 340B Technical Report,'' \href{https://arxiv.org/abs/2406.11704}{arXiv:2406.11704}. DeepSeek-AI, ``DeepSeek-V3.2,'' \href{https://arxiv.org/abs/2512.02556}{arXiv:2512.02556}.}
+\end{frame}
+
+\begin{frame}{Today's Map: One Loop, Seven Questions}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small,
+        blk/.style={draw, rounded corners=2pt, minimum width=2.7cm, minimum height=0.8cm, align=center},
+        note/.style={align=left, text width=4.6cm, font=\footnotesize},
+        arr/.style={-{Stealth}, thick}]
+        \node[blk, fill=gray!12] (data) at (0,0) {\textbf{Data}};
+        \node[blk, fill=KAUSTcyan!20] (pol) at (0,1.5) {\textbf{Policy} $\pi_\theta$};
+        \node[blk, fill=darkorange!20] (rew) at (0,3.0) {\textbf{Reward signal}};
+        \node[blk, fill=KAred!12] (ovs) at (0,4.5) {\textbf{Oversight}};
+        \draw[arr] (data) -- (pol);
+        \draw[arr] (pol) -- (rew);
+        \draw[arr] (rew) -- (ovs);
+        \draw[arr, KAUSTblue, dashed] (rew.east) to[out=0,in=0,looseness=1.6] (pol.east);
+        \draw[arr, KAUSTblue, dashed] (pol.west) to[out=180,in=180,looseness=1.6] (data.west);
+        \node[note, anchor=west, text width=5.4cm] at (2.3,4.6) {\textbf{3. Who oversees a stronger model?}\\Constitutions, debate, critics};
+        \node[note, anchor=west, text width=5.4cm] at (2.3,3.1) {\textbf{2. Where does the reward come from?}\\AI feedback, shaping, hacking};
+        \node[note, anchor=west, text width=5.4cm] at (2.3,1.6) {\textbf{1. Which objective, which optimiser?}\\DPO family, GRPO family};
+        \node[note, anchor=west, text width=5.4cm] at (2.3,0.1) {\textbf{4. Where does the data come from?}\\Synthetic pipelines, curation};
+        \node[note, anchor=east] at (-2.3,3.6) {\textbf{5. Can the loop close on itself?}\\Self-improving language models};
+        \node[note, anchor=east] at (-2.3,2.0) {\textbf{6. Can it run for years?}\\Continual post-training, merging};
+        \node[note, anchor=east] at (-2.3,0.4) {\textbf{7. What does it look like in public?}\\T\"ulu 3, Olmo 3, RL frameworks};
+    \end{tikzpicture}\end{adjustbox}
+\end{frame}

@@ -1,0 +1,214 @@
+\section{Interpretability and Steering for Safety}
+
+\begin{frame}{}
+    \LARGE Research Frontiers: \textbf{Interpretability and Steering}
+
+    \vspace{1em}
+    \normalsize Can we read what a model represents, and write to it?
+\end{frame}
+
+\begin{frame}{Features, Directions and Superposition}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.64\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item Grad-CAM and SHAP attribute an output to \emph{inputs}. Mechanistic interpretability asks what happens \emph{in between}.
+            \item A \textbf{feature} is a property of the input that the model represents. A \textbf{circuit} turns earlier features into later ones.
+            \item \textbf{Linear representation hypothesis:} features are directions. Reading one is \emph{probing}. Adding to one is \emph{steering}.
+            \item \textbf{Superposition:} $n$ dimensions store more than $n$ sparse features, as directions that interfere.
+            \item So single neurons are a poor unit of analysis.
+        \end{itemize}
+        \column{0.33\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth]
+            \draw[gray!60, ->] (-1.8,0) -- (1.8,0);
+            \draw[gray!60, ->] (0,-1.8) -- (0,1.8);
+            \draw[->, very thick, KAUSTblue] (0,0) -- (90:1.5);
+            \draw[->, very thick, KAUSTblue] (0,0) -- (162:1.5);
+            \draw[->, very thick, KAUSTblue] (0,0) -- (234:1.5);
+            \draw[->, very thick, KAUSTblue] (0,0) -- (306:1.5);
+            \draw[->, very thick, KAUSTblue] (0,0) -- (18:1.5);
+            \draw[dashed, KAUSTcyan] (90:1.5) -- (162:1.5) -- (234:1.5) -- (306:1.5) -- (18:1.5) -- cycle;
+            \node at (0,-2.1) {5 sparse features in 2 dimensions};
+        \end{tikzpicture}\end{adjustbox}
+    \end{columns}
+    \vspace{0.2em}
+    \caveat{``Feature'' has no formal definition yet, and strong linearity claims are false for some models.}
+    \src{Nanda, ``Mechanistic Interpretability Glossary.'' Park, Choe, Veitch, \href{https://arxiv.org/abs/2311.03658}{arXiv:2311.03658}. Elhage et al., ``Toy Models of Superposition'' (Anthropic, 2022). Sharkey et al., ``Open Problems in Mechanistic Interpretability,'' \href{https://arxiv.org/abs/2501.16496}{arXiv:2501.16496}.}
+\end{frame}
+
+\begin{frame}{The Causal Toolkit, and How Each Tool Misleads}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.5cm}>{\raggedright\arraybackslash}p{5.7cm}>{\raggedright\arraybackslash}p{4.5cm}}
+        \toprule
+        \textbf{Tool} & \textbf{Question it answers} & \textbf{Pitfall} \\
+        \midrule
+        Activation patching & copy an activation between a clean and a corrupted run. Is this component \emph{sufficient}, or \emph{necessary}? & the two directions disagree, and results change with the metric \\
+        Attribution patching & the same for \emph{every} component, from 2 forward passes and 1 backward & a first-order approximation \\
+        Logit and tuned lens & what would the model predict from layer $\ell$? & shows some of what goes on, not all \\
+        Probes & is a concept \emph{decodable} from $h$? & decodable is not \emph{used} \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.25em
+        \item \textbf{What success looks like:} the indirect-object circuit in GPT-2 small. 26 attention heads in 7 classes recover 87\% of the behaviour.
+    \end{itemize}
+    \src{Heimersheim, Nanda, \href{https://arxiv.org/abs/2404.15255}{arXiv:2404.15255}. Nanda, ``Attribution Patching'' (2024). Wang et al., ``Interpretability in the Wild,'' \href{https://arxiv.org/abs/2211.00593}{arXiv:2211.00593}. Belrose et al., \href{https://arxiv.org/abs/2303.08112}{arXiv:2303.08112}. Hewitt, Liang, \href{https://arxiv.org/abs/1909.03368}{arXiv:1909.03368}.}
+\end{frame}
+
+\begin{frame}{Sparse Autoencoders: Learning the Feature Basis}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.62\textwidth}
+        \begin{itemize}\itemsep0.35em
+            \item Train a wide, sparse autoencoder on the activations $x$ of one layer. Each latent should be one feature:
+            \[
+                z = \mathrm{ReLU}(W_{enc}(x - b_{pre}) + b_{enc}), \quad \hat{x} = W_{dec}\, z + b_{pre}
+            \]
+            \[
+                \mathcal{L} = \lVert x-\hat{x}\rVert_2^2 + \lambda \lVert z\rVert_1
+            \]
+            \item \textbf{TopK} and \textbf{JumpReLU} variants set the sparsity directly.
+        \end{itemize}
+        \column{0.36\textwidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.46\textheight,keepaspectratio]{images/research-frontiers/openai_sae_fig1_scaling.png}
+
+        {\scriptsize Reconstruction error against SAE training compute.}
+    \end{columns}
+    \vspace{0.2em}
+    \src{Gao et al., ``Scaling and evaluating sparse autoencoders'' (OpenAI), \href{https://arxiv.org/abs/2406.04093}{arXiv:2406.04093}, Figure 1. Rajamanoharan et al., ``JumpReLU SAEs,'' \href{https://arxiv.org/abs/2407.14435}{arXiv:2407.14435}. Anthropic, ``Mapping the Mind of a Large Language Model'' (May 2024).}
+\end{frame}
+
+\begin{frame}{What a Sparse Autoencoder Delivers, and What It Misses}
+    \begin{itemize}\itemsep0.6em
+            \item \textbf{How faithful is it?} Test: replace a layer's activations by the SAE's reconstruction and measure the language-modelling loss. OpenAI's largest SAE (16 million latents, trained on GPT-4) raises the loss to that of a GPT-4 trained with only about \alert{10\% of its compute}. Much of what the model computes is still lost.
+            \item \textbf{Features can be controlled.} Forcing one feature to stay active changes behaviour. Anthropic fixed the ``Golden Gate Bridge'' feature on, and the model mentioned the bridge in nearly every answer.
+        \item \textbf{The gap.} The reconstruction loss (previous slide) does not measure what matters downstream. A 10 to 40\% rise in language-modelling loss is typical when an SAE replaces a layer of GPT-2.
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{An SAE gives interpretable, controllable features, but it is a lossy description of the model. The lost part is sometimes called ``dark matter''.}
+    \src{Gao et al., \href{https://arxiv.org/abs/2406.04093}{arXiv:2406.04093}. Anthropic, ``Mapping the Mind of a Large Language Model'' and ``Golden Gate Claude'' (May 2024). Sharkey et al., ``Open Problems in Mechanistic Interpretability,'' \href{https://arxiv.org/abs/2501.16496}{arXiv:2501.16496}.}
+\end{frame}
+
+\begin{frame}{Beyond SAEs: Tracing a Computation Across Layers}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.6\textwidth}
+        \begin{itemize}\itemsep0.4em
+            \item An SAE describes one layer. A \textbf{transcoder} predicts an MLP's \emph{output} from its \emph{input} through a sparse layer, so features in different layers connect.
+            \item \textbf{Attribution graphs (Anthropic, 2025):} replace the MLPs with cross-layer transcoders, freeze attention, keep \emph{error nodes} for what is missed.
+            \item \textbf{What the graphs showed} in Claude 3.5 Haiku: two-hop recall through an intermediate fact, rhymes planned ahead, and a default ``can't answer'' circuit that ``known entity'' features switch off. When that misfires, the model confabulates.
+        \end{itemize}
+        \column{0.38\textwidth}
+        \centering
+        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
+            f/.style={draw, rounded corners=2pt, fill=KAUSTcyan!18, minimum height=0.5cm, minimum width=1.4cm, align=center}]
+            \node[f, fill=gray!15] (p1) at (0,0) {``Dallas''};
+            \node[f] (t) at (1.5,1.2) {Texas};
+            \node[f, fill=darkorange!30] (o) at (3.0,2.4) {``Austin''};
+            \node[draw, dashed, rounded corners=2pt, minimum height=0.5cm, minimum width=1.0cm] (e) at (0.6,2.4) {error node};
+            \draw[->, thick] (p1) -- (t);
+            \draw[->, thick] (t) -- (o);
+            \draw[->, dashed] (e) -- (o);
+            \node[gray] at (0,-0.55) {input token};
+            \node[gray] at (2.9,1.2) {feature};
+            \node[gray] at (3.0,2.95) {output};
+        \end{tikzpicture}\end{adjustbox}
+
+        {\scriptsize Schematic of a two-hop attribution graph.}
+    \end{columns}
+    \vspace{0.2em}
+    \caveat{The graphs explain ``only a fraction'' of the computation, for one prompt, after hours of human analysis.}
+    \src{Dunefsky, Chlenski, Nanda, \href{https://arxiv.org/abs/2406.11944}{arXiv:2406.11944}. Ameisen, Lindsey et al., ``Circuit Tracing'' (Anthropic, Mar 2025). Anthropic, ``Tracing the thoughts of a large language model'' (Mar 2025).}
+\end{frame}
+
+\begin{frame}{The 2025 Reality Check: Do SAEs Beat Simple Baselines?}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.18}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{4.0cm}>{\raggedright\arraybackslash}p{4.2cm}}
+        \toprule
+        \textbf{Task} & \textbf{Simple baseline} & \textbf{SAE-based method} \\
+        \midrule
+        Detect harmful intent, out of distribution (Gemma 2 9B) & dense linear probe: AUROC 0.999 & sparse probes on SAE features: ``distinctly worse'' \\
+        Steer a concept (AxBench) & prompting, then fine-tuning & not competitive \\
+        Detect a concept (AxBench) & difference of means is best & not competitive \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item Google DeepMind deprioritised SAE research in March 2025: \emph{``it should not be so hard to find compelling scenarios where they beat baselines.''}
+        \item \textbf{The reconciliation.} When the concept is \emph{known}, use a probe. SAEs earn their place in \emph{discovering} concepts nobody specified.
+    \end{itemize}
+    \takeaway{The measurement lesson again: reconstruction loss was the proxy. Downstream usefulness was the target.}
+    \src{Smith et al., ``Negative Results for SAEs on Downstream Tasks'' (Google DeepMind, Mar 2025). Wu et al., ``AxBench,'' \href{https://arxiv.org/abs/2501.17148}{arXiv:2501.17148}. Karvonen et al., ``SAEBench,'' \href{https://arxiv.org/abs/2503.09532}{arXiv:2503.09532}. Peng et al., \href{https://arxiv.org/abs/2506.23845}{arXiv:2506.23845}.}
+\end{frame}
+
+\begin{frame}{Activation Steering: Writing to a Direction}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.54\textwidth}
+        \[
+            h_\ell \leftarrow h_\ell + \alpha\, v_\ell
+            \qquad\quad
+            x' = x - \hat{r}\hat{r}^\top x
+        \]
+        \vspace{-0.6em}
+        \begin{itemize}\itemsep0.35em
+            \item \textbf{Where $v$ comes from:} the mean activation difference between prompts with and without a behaviour.
+            \item \textbf{Refusal is one direction.} In 13 chat models, ablating $\hat r$ largely removes refusal. Adding it makes the model refuse harmless requests.
+            \item \textbf{Persona vectors:} the projection \emph{before} the response predicts the trait (right).
+        \end{itemize}
+        \column{0.44\textwidth}
+        \centering
+        \includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{images/research-frontiers/persona_monitoring.png}
+    \end{columns}
+    \vspace{0.2em}
+    \caveat{Steerability varies across inputs and is brittle to prompt changes. Large coefficients cost capability.}
+    \src{Panickssery et al., \href{https://arxiv.org/abs/2312.06681}{arXiv:2312.06681}. Arditi et al., ``Refusal in Language Models Is Mediated by a Single Direction,'' \href{https://arxiv.org/abs/2406.11717}{arXiv:2406.11717}. Chen, Arditi, Sleight, Evans, Lindsey, ``Persona vectors,'' \href{https://arxiv.org/abs/2507.21509}{arXiv:2507.21509}. Tan et al., \href{https://arxiv.org/abs/2407.12404}{arXiv:2407.12404}.}
+\end{frame}
+
+\begin{frame}{Does It Help Safety? A Ladder of Evidence}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.18}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{4.7cm}>{\raggedright\arraybackslash}p{4.4cm}}
+        \toprule
+        \textbf{Setting} & \textbf{Result} & \textbf{Limitation} \\
+        \midrule
+        Model with a planted backdoor (2024) & simple probes detect defection, AUROC above 99\% & may not transfer to natural deception \\
+        Blind auditing game (2025) & 3 of 4 teams found a hidden objective & one model organism \\
+        Realistic deception data, Llama-3.3-70B (2025) & 95 to 99\% caught at 1\% false positives & authors: ``insufficient as a robust defence'' \\
+        \rowcolor{KAUSTcyan!12} Production, Gemini (2026) & misuse probes deployed, as a probe-then-LLM cascade & probes failed on long contexts until redesigned \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \begin{itemize}\itemsep0.4em
+        \item What audits now look for: \textbf{evaluation awareness}. GPT-6 Astra shows it in 9.6\% of trajectories, against 2.8\% for its predecessor.
+        \item Day 4 used probes as a safeguard layer for agents. This is the evidence behind it.
+    \end{itemize}
+    \src{MacDiarmid et al., ``Simple probes can catch sleeper agents'' (Anthropic, 2024). Marks et al., \href{https://arxiv.org/abs/2503.10965}{arXiv:2503.10965}. Goldowsky-Dill et al., \href{https://arxiv.org/abs/2502.03407}{arXiv:2502.03407}. Kram\'ar et al., \href{https://arxiv.org/abs/2601.11516}{arXiv:2601.11516}. OpenAI, ``GPT-6 Astra System Card'' (2026-09-03).}
+\end{frame}
+
+\begin{frame}{The 2026 Frontier: Let the Activations Speak}
+    \begin{itemize}\itemsep0.5em
+        \item \textbf{Natural Language Autoencoders (May 2026).} One model writes a text description of an activation. A second reconstructs the activation from that text. In the audit of Claude Opus 4.6 it surfaced \emph{unverbalised} evaluation awareness. Risk: the verbaliser can confabulate.
+        \item \textbf{A ``global workspace'' (July 2026).} A small subspace, under 10\% of activation variance, carries what the model can report. Swapping a concept there redirects the answer in 88\% of cases, against 5\% elsewhere.
+        \item \textbf{Chain of thought as a monitor (Day 2).} Reasoning models mention a hint they used in under 20\% of cases, and Astra's monitorability fell.
+
+    \end{itemize}
+    \vspace{0.2em}
+    \takeaway{The arc: dictionaries of features, then circuits, then natural-language readouts. The test moved from proxy metrics to ``did it help an audit?''}
+    \src{Fraser-Taliente et al., ``Natural Language Autoencoders'' (Anthropic, 2026). Gurnee et al., ``Verbalizable Representations Form a Global Workspace'' (Anthropic, 2026). Chen et al., \href{https://arxiv.org/abs/2505.05410}{arXiv:2505.05410}. OpenAI, ``GPT-6 Astra System Card.''}
+\end{frame}
+
+\begin{frame}{Interpretability: What to Remember}
+    \begin{itemize}\itemsep0.55em
+        \item The working assumptions are \textbf{linear features in superposition}. Useful, and not proven.
+        \item Causal claims need \textbf{interventions}. A probe shows decodability, not use.
+        \item \textbf{SAEs} find features at scale and leave ``dark matter''. For a \emph{known} concept, a linear probe or a mean-difference vector is hard to beat.
+        \item \textbf{Steering} is cheap and real: refusal and persona traits are single directions. It is also brittle.
+        \item In deployment today: \textbf{probes for monitoring}, \textbf{lenses and verbalisers for audits}.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{\textbf{Next.} We checked the model from inside. Most evaluation still happens from outside, and increasingly by another model. What happens to a judge when we train against it?}
+\end{frame}

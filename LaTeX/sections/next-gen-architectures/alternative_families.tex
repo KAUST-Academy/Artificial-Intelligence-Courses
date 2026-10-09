@@ -1,0 +1,57 @@
+\subsection{Other Families: RWKV, xLSTM, Hyena}
+
+\begin{frame}{RWKV: The Community RNN}
+    \begin{itemize}\itemsep0.5em
+        \item \textbf{Idea (2023):} an RNN that trains in parallel like a Transformer and decodes with constant memory. Open source from the start.
+        \item The lineage climbs the same ladder you just saw:
+    \end{itemize}
+    \vspace{0.2em}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
+        \toprule
+        \textbf{Version} & \textbf{State} & \textbf{Update rule} \\
+        \midrule
+        RWKV-4 (2023) & vector, $O(d)$ & fixed per-channel decay \\
+        RWKV-5 and 6 (2024) & matrix & data-dependent decay (v6) \\
+        \rowcolor{KAUSTcyan!12} RWKV-7 ``Goose'' (2025) & matrix & \textbf{generalised delta rule}, vector learning rate \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.2em}
+    \begin{itemize}\itemsep0.5em
+        \item RWKV-7 separates the key it \emph{removes} from the key it \emph{writes}. The authors prove it recognises all regular languages with a constant number of layers.
+        \item \textbf{Status:} the largest RWKV-7 release is 2.9B. No frontier hybrid uses an RWKV mixer.
+    \end{itemize}
+    \src{Peng et al., \href{https://arxiv.org/abs/2305.13048}{arXiv:2305.13048} (RWKV-4), \href{https://arxiv.org/abs/2404.05892}{arXiv:2404.05892} (Eagle and Finch), \href{https://arxiv.org/abs/2503.14456}{arXiv:2503.14456} (RWKV-7). RWKV wiki, architecture history (Nov 2025).}
+\end{frame}
+
+\begin{frame}{xLSTM: The LSTM Returns}
+    \begin{itemize}\itemsep0.45em
+        \item Hochreiter's group asks: how far do LSTMs go with modern scale and two repairs?
+        They are \textbf{exponential gating} and a \textbf{matrix memory} (the mLSTM cell):
+        \[
+            C_t=f_t\,C_{t-1}+i_t\,v_tk_t^\top
+        \]
+        \item Look familiar? It is gated linear attention plus an \textbf{input gate}. There is no erase term.
+        \item \textbf{xLSTM 7B} (2025): trained on 2.3T tokens. About 50\% faster generation than Mamba-based models, with quality the authors call comparable to similar-sized LLMs.
+        \item A scaling study with 672 training runs (ICLR 2026) claims xLSTM is Pareto-better than Llama-style Transformers.
+    \end{itemize}
+    \caveat{No xLSTM model above 7B exists, and adoption outside the originating lab is limited.}
+    \src{Beck et al., ``xLSTM,'' NeurIPS 2024, \href{https://arxiv.org/abs/2405.04517}{arXiv:2405.04517}. ``xLSTM 7B,'' \href{https://arxiv.org/abs/2503.13427}{arXiv:2503.13427}. ``xLSTM Scaling Laws,'' ICLR 2026, \href{https://arxiv.org/abs/2510.02228}{arXiv:2510.02228}.}
+\end{frame}
+
+\begin{frame}{Hyena: Long Convolutions, and Where They Won}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Hyena} (2023) mixes tokens with \textbf{long convolutions} whose filters come from a small network, interleaved with data-controlled gating. Cost is $O(L\log L)$.
+        \item On text it matched small GPT models, but recall is its weak point. A 70M attention model beats a 1.4B Hyena on associative recall.
+        \item It found its home where sequences are \textbf{long and untokenised}:
+    \end{itemize}
+    \vspace{0.1em}
+    \takeaway{\textbf{Evo 2} (Arc Institute, 2025): a 40B-parameter genome model trained on 9.3T DNA base pairs, with a context of 1M base pairs at single-nucleotide resolution. Of its 50 layers, 42 are convolutional and 8 are attention.}
+    \begin{itemize}\itemsep0.3em
+        \item Gu's argument: SSM-like mixers suit raw, high-resolution data. Attention suits tokens that already carry meaning.
+        \item Even here, \textbf{a few attention layers stay}.
+    \end{itemize}
+    \src{Poli et al., ``Hyena Hierarchy,'' \href{https://arxiv.org/abs/2302.10866}{arXiv:2302.10866}. Arora et al., \href{https://arxiv.org/abs/2312.04927}{arXiv:2312.04927}. Arc Institute et al., ``Genome modeling and design across all domains of life with Evo 2,'' bioRxiv (2025). Evo 2 40B configuration file, \url{https://github.com/ArcInstitute/evo2}.}
+\end{frame}

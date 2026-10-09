@@ -1,0 +1,37 @@
+\section{Summary}
+
+\begin{frame}{Day 3 in One Table}
+    \begin{center}
+    \footnotesize
+    \renewcommand{\arraystretch}{1.15}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.7cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{5.2cm}}
+        \toprule
+        \textbf{Question} & \textbf{The 2026 answer} & \textbf{Still open} \\
+        \midrule
+        Which objective? & SFT, a DPO-style stage, then GRPO without KL or std & what moves the asymptote, not only the speed \\
+        Which reward? & verifiers where they exist, rubrics and judges elsewhere & rewards for tasks nobody can verify \\
+        Who oversees? & specifications in the reasoning, critics, classifiers & supervision that survives a real capability gap \\
+        Which data? & synthetic for skills, curated web for breadth & keeping diversity through many generations \\
+        Can the loop close? & yes, for a few rounds, with an external anchor & a judge that cannot be hacked \\
+        Can it keep going? & replay, on-policy updates, merging & sequential RL without forgetting \\
+        Can we reproduce it? & open recipes, data and asynchronous RL stacks & independent benchmarks of the frameworks \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.13em}
+    \takeaway{The common thread: \textbf{every signal you optimise against degrades}. Keep something outside the loop, and do not train on what you monitor.}
+\end{frame}
+
+\begin{frame}{Research Questions to Take with You}
+    \begin{itemize}\itemsep0.65em
+        \item Random rewards improve one model family and not others. \textbf{What exactly does RL with verifiable rewards teach}, beyond sharpening what pre-training left?
+        \item Monitors, judges and reviewers all erode under optimisation. Is there an oversight signal whose reliability \textbf{grows} with the capability of the model it checks?
+        \item Is there a \textbf{scaling law for synthetic data}: how much, from which teacher, at what share, before diversity is lost?
+        \item Can a self-improvement loop be shown to exceed its source data, or is every gain \textbf{amortised search}?
+        \item RL forgets less on one task and still forgets across many. What is the right objective for \textbf{continual} policy optimisation?
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{block}{Tomorrow}
+        Day 4 puts these post-trained models to work: agents, tools and long-horizon tasks.
+    \end{block}
+\end{frame}

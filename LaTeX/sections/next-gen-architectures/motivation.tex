@@ -1,0 +1,50 @@
+\section{Motivation}
+
+\begin{frame}{The Transformer Was Not Replaced. It Was Re-plumbed.}
+    \begin{itemize}\itemsep0.6em
+        \item The block from 2017 is still recognisable in every frontier model of 2026.
+        \item What changed is \textbf{where the cost goes}. Three pressures drive almost every design in this lecture:
+        \begin{itemize}\itemsep0.3em
+            \item \textbf{Memory per token.} Attention keeps every past token in a cache that grows with context.
+            \item \textbf{Compute per token.} Most parameters sit in feed-forward layers that every token pays for.
+            \item \textbf{Context length.} One million tokens is now a product feature, not a research demo.
+        \end{itemize}
+        \item The answers are \alert{hybrids}, \alert{sparsity} and \alert{compression}, not a new architecture.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{Frontier MoE models went from about 28\% of parameters active per token (Mixtral, 2024) to about 3 to 5\% in 2026.}
+    \src{Raschka, ``The Big LLM Architecture Comparison'' (2025, updated 2026). Jiang et al., ``Mixtral of Experts,'' \href{https://arxiv.org/abs/2401.04088}{arXiv:2401.04088}. Kimi K3 and DeepSeek-V4 model configurations (2026).}
+\end{frame}
+
+\begin{frame}{Today's Map: One Block, Six Questions}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small,
+        blk/.style={draw, rounded corners=2pt, minimum width=3.6cm, minimum height=0.75cm, align=center},
+        note/.style={align=left, text width=4.2cm, font=\footnotesize},
+        arr/.style={-{Stealth}, thick, KAUSTblue}]
+        % the block
+        \node[blk, fill=gray!12] (in) at (0,0) {Tokens and positions};
+        \node[blk, fill=KAUSTcyan!20] (mix) at (0,1.25) {\textbf{Sequence mixer} (attention)};
+        \node[blk, fill=darkorange!20] (ffn) at (0,2.5) {\textbf{Feed-forward} (FFN)};
+        \node[blk, fill=gray!12] (out) at (0,3.75) {Next-token prediction};
+        \draw[-{Stealth}, thick] (in) -- (mix);
+        \draw[-{Stealth}, thick] (mix) -- (ffn);
+        \draw[-{Stealth}, thick] (ffn) -- (out);
+        \draw[dashed, gray] (-2.1,0.72) rectangle (2.1,3.05);
+        \node[font=\scriptsize, gray] at (2.45,2.95) {$\times N$};
+        % left notes
+        \node[note, anchor=east] (n1) at (-2.6,1.6) {\textbf{1. Can we replace attention?}\\Linear attention, SSMs, hybrids};
+        \node[note, anchor=east] (n3) at (-2.6,0.35) {\textbf{3. Can we keep attention but pay less?}\\Faster kernels, sparse attention};
+        \node[note, anchor=east] (n4) at (-2.6,-0.75) {\textbf{4. How far can context stretch?}\\Positions, sinks, memory};
+        % right notes
+        \node[note, anchor=west] (n2) at (2.6,2.5) {\textbf{2. Must every token use every weight?}\\Mixture-of-Experts};
+        \node[note, anchor=west] (n5) at (2.6,1.1) {\textbf{5. How big, and trained how long?}\\Scaling laws and their limits};
+        \node[note, anchor=west] (n6) at (2.6,-0.2) {\textbf{6. What if the input is not text?}\\Multimodal architectures};
+        \draw[arr] (n1.east) -- (mix.west);
+        \draw[arr] (n3.east) -- (mix.south west);
+        \draw[arr] (n4.east) -- (in.west);
+        \draw[arr] (n2.west) -- (ffn.east);
+        \draw[arr] (n5.west) -- (2.1,1.9);
+        \draw[arr] (n6.west) -- (in.east);
+    \end{tikzpicture}\end{adjustbox}
+\end{frame}

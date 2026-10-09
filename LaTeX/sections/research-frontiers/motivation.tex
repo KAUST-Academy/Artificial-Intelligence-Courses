@@ -1,0 +1,50 @@
+\section{Motivation}
+
+\begin{frame}{The Frontier Is No Longer a Bigger Dense Model}
+    \begin{itemize}\itemsep0.55em
+        \item Days 1 to 4 followed one model from architecture to reasoning, post-training and agents. Today asks: \textbf{what is still moving?}
+        \item A 2026 phone-sized model, Gemma 4 E2B, \emph{``roughly matches Gemma 3 27B performance with 10x less parameters''}.
+        \item So the research questions changed. Three of them organise this lecture:
+        \begin{itemize}\itemsep0.25em
+            \item \textbf{Where does computation live?} On the edge, in a drafter, in a parallel denoiser.
+            \item \textbf{Where does memory live?} In dense weights, in addressable tables, in the context.
+            \item \textbf{How is any of it checked?} By uncertainty estimates, by looking inside, by judges.
+        \end{itemize}
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{Ask for the honest number. Speculative decoding with EAGLE-3 gives 4.40x at batch size 1, and 1.38x at batch size 64, on the same model.}
+    \src{Gemma Team, ``Gemma 4 Technical Report'' (2026), \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}. Li et al., ``EAGLE-3,'' \href{https://arxiv.org/abs/2503.01840}{arXiv:2503.01840}, Tables 1 and 3 (LLaMA-3.1-8B).}
+\end{frame}
+
+\begin{frame}{Today's Map: Nine Topics, One Story}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small,
+        part/.style={align=left, text width=3.3cm, font=\footnotesize},
+        blk/.style={draw, rounded corners=2pt, minimum width=3.1cm, minimum height=0.85cm, align=center, font=\footnotesize},
+        arr/.style={-{Stealth}, thick, KAUSTblue}]
+        \node[part, anchor=west] at (-6.1,3.6) {\textbf{Where computation lives}\\small, fast, parallel};
+        \node[blk, fill=KAUSTcyan!20] (a1) at (-0.9,3.6) {1. Small models\\and the edge};
+        \node[blk, fill=KAUSTcyan!20] (a2) at (2.7,3.6) {2. Faster decoding,\\compression};
+        \node[blk, fill=KAUSTcyan!20] (a3) at (6.3,3.6) {3. Diffusion\\language models};
+        \node[part, anchor=west] at (-6.1,2.3) {\textbf{Where memory lives}\\weights, tables, context};
+        \node[blk, fill=darkorange!20] (b1) at (-0.9,2.3) {4. Parametric memory\\and its limits};
+        \node[part, anchor=west] at (-6.1,1.0) {\textbf{How it is checked}\\from outside and inside};
+        \node[blk, fill=KAred!12] (c1) at (-0.9,1.0) {5. Hallucination\\and uncertainty};
+        \node[blk, fill=KAred!12] (c2) at (2.7,1.0) {6. Interpretability\\and steering};
+        \node[blk, fill=KAred!12] (c3) at (6.3,1.0) {7. Judges\\under pressure};
+        \node[part, anchor=west] at (-6.1,-0.3) {\textbf{Where it leaves us}\\the week drawn together};
+        \node[blk, fill=gray!15] (d1) at (-0.9,-0.3) {8. Frontier models,\\October 2026};
+        \node[blk, fill=gray!15] (d2) at (2.7,-0.3) {9. Open research\\challenges};
+        \draw[arr] (a1) -- (a2);
+        \draw[arr] (a2) -- (a3);
+        \draw[arr] (c1) -- (c2);
+        \draw[arr] (c2) -- (c3);
+        \draw[arr] (d1) -- (d2);
+        \draw[arr] (a3.south) -- (6.3,2.3) -- (b1.east);
+        \draw[arr] (b1) -- (c1);
+        \draw[arr] (c3.south) -- (6.3,-0.3) -- (d2.east);
+    \end{tikzpicture}\end{adjustbox}
+
+    \vspace{0.4em}
+    {\footnotesize Days 1 to 4 covered architectures, reasoning, post-training and agents. Today refers back to them and does not repeat them.}
+\end{frame}

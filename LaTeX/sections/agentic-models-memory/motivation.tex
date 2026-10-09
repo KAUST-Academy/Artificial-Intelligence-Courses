@@ -1,0 +1,48 @@
+\section{Motivation}
+
+\begin{frame}{The Agent Is No Longer a Prompt}
+    \begin{itemize}\itemsep0.45em
+        \item In 2023 an agent was a \emph{prompt scaffold} wrapped around a chat model. ReWOO, LATS, multi-agent debate and Toolformer are now history lessons.
+        \item By 2026, agency is \textbf{trained into the model} and \textbf{engineered around it}:
+        \begin{itemize}\itemsep0.3em
+            \item \textbf{Trained behaviour.} Kimi K2 learns from 3,000+ real MCP tools and 20,000+ synthetic ones. DeepSeek-V3.2 trains in 1,800+ environments.
+            \item \textbf{Planning inside the model.} Every major API now asks the client to pass reasoning state back across tool calls.
+            \item \textbf{An engineered harness.} Context, memory, permissions and sandboxes are designed, not prompted.
+        \end{itemize}
+    \end{itemize}
+    \vspace{0.3em}
+    \takeaway{Public frontier agents finish tasks of about \textbf{12 hours} at 50\% success, but only about \textbf{1.5 hours} at 80\%. Capability is ahead of reliability.}
+    \src{Kimi Team, ``Kimi K2: Open Agentic Intelligence,'' \href{https://arxiv.org/abs/2507.20534}{arXiv:2507.20534}. DeepSeek-AI, ``DeepSeek-V3.2,'' \href{https://arxiv.org/abs/2512.02556}{arXiv:2512.02556}. METR, ``Frontier Risk Report'' (May 2026).}
+\end{frame}
+
+\begin{frame}{Today's Map: One Agent, Eight Questions}
+    \centering
+    \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\small,
+        blk/.style={draw, rounded corners=2pt, minimum width=3.3cm, minimum height=0.7cm, align=center},
+        note/.style={align=left, text width=4.5cm, font=\footnotesize},
+        arr/.style={-{Stealth}, thick, KAUSTblue}]
+        \node[blk, fill=gray!12] (env) at (0,0) {Environment};
+        \node[blk, fill=darkorange!20] (tools) at (0,1.2) {\textbf{Tools} and protocols};
+        \node[blk, fill=KAUSTcyan!20] (model) at (0,2.4) {\textbf{Agentic model} (plan, act)};
+        \node[blk, fill=gray!12] (mem) at (0,3.6) {\textbf{Memory}};
+        \draw[{Stealth}-{Stealth}, thick] (env) -- (tools);
+        \draw[{Stealth}-{Stealth}, thick] (tools) -- (model);
+        \draw[{Stealth}-{Stealth}, thick] (model) -- (mem);
+        \node[note, anchor=east] (n1) at (-2.5,2.9) {\textbf{1. What came after ReAct?}\\Architectures, planning, trained agency};
+        \node[note, anchor=east] (n2) at (-2.5,1.6) {\textbf{2. Does it call tools correctly?}\\Tool learning, training, evaluation};
+        \node[note, anchor=east] (n3) at (-2.5,0.4) {\textbf{3. Who is trusted, and for what?}\\MCP, permissions, security};
+        \node[note, anchor=east] (n6) at (-2.5,-0.8) {\textbf{6. Can it rehearse before acting?}\\World models and environments};
+        \node[note, anchor=west] (n4) at (2.5,3.6) {\textbf{4. What should it remember?}\\Memory types, stores, retrieval hybrids};
+        \node[note, anchor=west] (n5) at (2.5,2.4) {\textbf{5. When does a second agent help?}\\Multi-agent patterns, costs, failures};
+        \node[note, anchor=west] (n7) at (2.5,1.1) {\textbf{7. How do we measure it?}\\Benchmarks, reliability, time horizons};
+        \node[note, anchor=west] (n8) at (2.5,-0.2) {\textbf{8. How do we run it safely?}\\Identity, audit, cost, incidents};
+        \draw[arr] (n1.east) -- (model.west);
+        \draw[arr] (n2.east) -- (tools.west);
+        \draw[arr] (n3.east) -- (tools.south west);
+        \draw[arr] (n6.east) -- (env.south west);
+        \draw[arr] (n4.west) -- (mem.east);
+        \draw[arr] (n5.west) -- (model.east);
+        \draw[arr] (n7.west) -- (tools.east);
+        \draw[arr] (n8.west) -- (env.east);
+    \end{tikzpicture}\end{adjustbox}
+\end{frame}
