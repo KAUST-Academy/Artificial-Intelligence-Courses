@@ -1,10 +1,11 @@
-##  (2026-10-08)
+##  (2026-10-09)
 
 
 ### Features
 
 * add new lab ([8e7ba73](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/8e7ba738aa1a499237fdb81cef9bf76e3dbee177))
 * added new labs (YASREF CV) ([1345b79](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/1345b79d6af798e0e9804e128418f423bd1257ea))
+* **Course:** add Advanced LLM Research course ([0ea8367](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/0ea8367b3b90acf9712d0296d5c0e5483c04c3f0))
 * **Course:** add CV 24 Image Classification and Recognition deck ([4cce9b4](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/4cce9b48e6559e285828fdda498f9e8e7655a496))
 * **Course:** add CV 25 Vision-Language Models deck ([be43d35](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/be43d35a6ca256e6dcddc1790e44317c1c73bb1a))
 * **Course:** add CV 26 Geometric and 3D Vision deck ([1955a3a](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/1955a3a2fdd0563cbb03463202b7575c929e24a8))
@@ -115,6 +116,7 @@
 * **Course:** apply deck review to NLP 22 LLM Evaluation ([946c9a3](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/946c9a3338a9800fb3beeba328c82b1ac17274e1))
 * **Course:** apply deck review to NLP 23 distributed training ([3a98c85](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/3a98c8505833a87fe8d88487732139c1e84e2d21)), closes [#1](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/issues/1)
 * **Course:** apply verification fixes to the seven gap-buildout decks ([95c4a3c](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/95c4a3c12c18483fc8c6c5cb7ab2d6b168c95930))
+* **Course:** dedupe Advanced LLM Research against the existing courses ([d665b73](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/d665b73e500672510bc9f8da6915ede76fadfe99))
 * **Course:** Fixed incorrect references ([b998f4a](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b998f4af3e9bc68ff6d1ee939d921aceea23718f))
 * **Course:** remove covered-earlier pointers and recap frames from six decks ([6afab32](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/6afab328a71f15c6ec3a7684d4f21ec761122edf))
 * **Course:** remove Day N references from the RL decks ([b3d854f](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b3d854fe91d3a7643ae4b96f6ca15b3168b0bad6))
