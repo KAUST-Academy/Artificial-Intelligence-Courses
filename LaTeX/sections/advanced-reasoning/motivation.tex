@@ -1,11 +1,11 @@
 \section{Motivation}
 
-\begin{frame}{Yesterday's Last Slide: Same Weights, 74\% or 93\%}
+\begin{frame}{Same Weights, 74\% or 93\%}
     \begin{columns}[T,onlytextwidth]
         \column{0.62\textwidth}
         \begin{itemize}\itemsep0.55em
-            \item Day 1 closed on OpenAI's o1 and AIME 2024. GPT-4o solves 12\%. o1 solves \textbf{74\% to 93\%, depending on inference settings}.
-            \item The ladder we showed: 74\% with one sample, 83\% with a vote over 64 samples, 93\% when a learned scorer re-ranks 1,000 samples.
+            \item OpenAI's o1 on AIME 2024 mathematics problems. GPT-4o solves 12\%. o1 solves \textbf{74\% to 93\%, depending on inference settings}.
+            \item The ladder: 74\% with one sample, 83\% with a vote over 64 samples, 93\% when a learned scorer re-ranks 1,000 samples.
             \item Nothing in the model changed between those three numbers. What changed is \alert{how many candidates were generated} and \alert{what chose among them}.
             \item One reading: test-time scaling is ``a new axis for scaling compute''. The plot on the right is linear in the \emph{logarithm} of compute, so each constant gain costs a multiple.
         \end{itemize}
@@ -14,7 +14,7 @@
         \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{images/advanced-reasoning/metacot_o1_inference.png}
     \end{columns}
     \vspace{0.2em}
-    \src{Range and GPT-4o baseline: Wolfe, ``Demystifying Reasoning Models'' (Feb 2025). Per-setting ladder: OpenAI, ``Learning to reason with LLMs'' (Sep 2024), as cited on Day 1. Quote: Hoogland, ``o1: A Technical Primer'' (Dec 2024). Plot: OpenAI's o1 launch figure as reproduced in Xiang et al., \href{https://arxiv.org/abs/2501.04682}{arXiv:2501.04682}, Figure 9.}
+    \src{Range and GPT-4o baseline: Wolfe, ``Demystifying Reasoning Models'' (Feb 2025). Per-setting ladder: OpenAI, ``Learning to reason with LLMs'' (Sep 2024). Quote: Hoogland, ``o1: A Technical Primer'' (Dec 2024). Plot: OpenAI's o1 launch figure as reproduced in Xiang et al., \href{https://arxiv.org/abs/2501.04682}{arXiv:2501.04682}, Figure 9.}
 \end{frame}
 
 \begin{frame}{One Idea, Told Ten Times}

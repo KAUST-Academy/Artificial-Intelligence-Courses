@@ -9,7 +9,7 @@
 
 \begin{frame}{From Prompted Judges to Trained Judges}
     \begin{itemize}\itemsep0.35em
-        \item The evaluation deck covered judge prompts, biases and calibration against humans. Since then, judges became \textbf{trained models}, and their scores became \textbf{rewards}.
+        \item Since 2023, LLM judges have become \textbf{trained models}, and their scores have become \textbf{rewards}. How were they validated?
     \end{itemize}
     \begin{center}
     \small
@@ -44,7 +44,7 @@
         {\scriptsize RM-Bench accuracy by style of the chosen (rows) and rejected (columns) answer. Upper right: the correct answer is plain, the wrong one is polished.}
         \column{0.62\textwidth}
         \begin{itemize}\itemsep0.4em
-            \item A reward model is a judge whose score is optimised (Day 3). Its benchmark should predict the \emph{policy}.
+            \item A reward model is a judge whose score is optimised by RL. Its benchmark should predict the \emph{policy}.
             \item \textbf{RewardBench saturated.} Among top models its score correlates \emph{negatively} with downstream RLHF quality.
             \item \textbf{Style leaks into preference.} On RM-Bench the best model averages 70.1, and \alert{46.6} on the hard cells. Below chance.
             \item \textbf{RewardBench 2:} unseen human prompts, best-of-4, about 20 points harder. Pearson 0.87 with best-of-$N$ sampling quality.
@@ -55,24 +55,24 @@
     \src{Liu et al., ``RM-Bench,'' \href{https://arxiv.org/abs/2410.16184}{arXiv:2410.16184}, Figure 2 and Table 3. Frick et al., \href{https://arxiv.org/abs/2410.14872}{arXiv:2410.14872}. Lambert et al., ``RewardBench,'' \href{https://arxiv.org/abs/2403.13787}{arXiv:2403.13787}. Malik et al., ``RewardBench 2,'' \href{https://arxiv.org/abs/2506.01937}{arXiv:2506.01937}.}
 \end{frame}
 
-\begin{frame}{Generative Verifiers: Judges That Think Before They Score}
+\begin{frame}{DeepSeek-GRM: A Judge That Writes Its Own Principles}
     \begin{columns}[T,onlytextwidth]
         \column{0.55\textwidth}
         \begin{itemize}\itemsep0.4em
-            \item A scalar reward head cannot reason. A \textbf{generative} reward model writes a critique, then a score.
-            \item \textbf{DeepSeek-GRM} first writes the \emph{principles} $p$ to judge by, then the critique $\mathcal{C}$, then extracts scores:
+            \item \textbf{DeepSeek-GRM} first writes the \emph{principles} $p$ to judge by, then the critique $\mathcal{C}$, then extracts scores $S$ for the responses $y$ to the query $x$:
             \[
                 p \sim p_\theta(x, y), \quad \mathcal{C} \sim r_\theta(x, y, p), \quad S = f_{\text{extract}}(\mathcal{C})
             \]
-            \item The verdict is sampled, so \textbf{judging scales with inference compute}: sample $k$ times and vote, or let a meta reward model filter.
-            \item Accuracy: 69.9 with one sample, 72.8 with 32. GPT-4o as a judge: 71.3.
+            \item \textbf{Principles are sampled too.} Each of $k$ samples judges by its own principles, and their scores are summed.
+            \item \textbf{A meta reward model} rates each sample, and only the top half vote.
+            \item Accuracy (27B): 69.9 with one sample, 71.0 with 32 votes, 72.8 with meta-RM voting. GPT-4o as a judge: 71.3.
         \end{itemize}
         \column{0.43\textwidth}
         \centering
         \includegraphics[width=\linewidth,height=0.56\textheight,keepaspectratio]{images/research-frontiers/deepseek_grm_fig1_inference_scaling.png}
     \end{columns}
     \vspace{0.2em}
-    \src{Liu et al., ``Inference-Time Scaling for Generalist Reward Modeling'' (DeepSeek), \href{https://arxiv.org/abs/2504.02495}{arXiv:2504.02495}, Figure 1 and Table 2. Zhang et al., ``Generative Verifiers,'' ICLR 2025, \href{https://arxiv.org/abs/2408.15240}{arXiv:2408.15240}.}
+    \src{Liu et al., ``Inference-Time Scaling for Generalist Reward Modeling'' (DeepSeek), \href{https://arxiv.org/abs/2504.02495}{arXiv:2504.02495}, Figure 1 and Table 2.}
 \end{frame}
 
 \begin{frame}{Rubrics: Making Open-Ended Answers Checkable}
@@ -98,7 +98,7 @@
     \centering
     \includegraphics[width=0.9\linewidth,height=0.42\textheight,keepaspectratio]{images/research-frontiers/onetoken_fig1_rlvr_collapse.png}
     \begin{itemize}\itemsep0.35em
-        \item \textbf{How it was found.} An RL policy trained against an LLM judge collapsed to answers such as ``Solution''. The judge kept marking them correct.
+        \item \textbf{The test.} Give the judge a question, its reference answer and a response with no content. The false-positive rate is how often the judge says ``correct''.
         \item \textbf{Master keys:} a space, a colon, ``Thought process:''. GPT-4o's false-positive rate reaches 35\% on punctuation and 60 to 90\% on ``Thought process:''.
         \item \textbf{Fix:} train the judge on 20K adversarial negatives. False positives fall to about zero.
     \end{itemize}
@@ -118,7 +118,7 @@
     \begin{itemize}\itemsep0.55em
         \item Judges are now \textbf{trained reward models}. Validate them on \emph{objective correctness}, not on agreement with a teacher.
         \item A reward-model benchmark matters only if it \textbf{predicts the downstream policy}.
-        \item \textbf{Generative verifiers} turn judging into reasoning, and scale with inference compute.
+        \item A judge that \textbf{writes its own principles} gains accuracy from extra samples, filtered by a meta reward model.
         \item \textbf{Rubrics} make open tasks checkable, and are hacked as soon as they are optimised.
         \item Judges have \textbf{attack surfaces}. Leaderboards have \textbf{incentives}.
     \end{itemize}

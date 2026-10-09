@@ -12,15 +12,14 @@
         \item \textbf{The tempting answer:} context windows reach a million tokens, so put everything in.
         \item \textbf{Why it fails.}
         \begin{itemize}\itemsep0.25em
-            \item \emph{Context rot.} Recall degrades as context grows. Context is a finite attention budget.
             \item \emph{LongMemEval.} Assistants and long-context models drop \textbf{30 to 60\%} on 115K-token chat histories, against seeing only the relevant evidence.
             \item \emph{Cost.} Full context on LoCoMo: 17 s at p95, against 1.4 s for a memory layer.
         \end{itemize}
         \item \textbf{What memory must do} (MemoryAgentBench): accurate retrieval, test-time learning, long-range understanding, and \alert{selective forgetting}.
     \end{itemize}
     \vspace{0.3em}
-    \takeaway{Day 1 asked whether a model can \emph{use} a long context. Today asks what to \textbf{write down} so it does not have to.}
-    \src{Rajasekaran et al., ``Effective context engineering for AI agents'' (Anthropic, 2025). Wu et al., ``LongMemEval,'' \href{https://arxiv.org/abs/2410.10813}{arXiv:2410.10813}. Chhikara et al., ``Mem0,'' \href{https://arxiv.org/abs/2504.19413}{arXiv:2504.19413}. Hu et al., ``MemoryAgentBench,'' \href{https://arxiv.org/abs/2507.05257}{arXiv:2507.05257}.}
+    \takeaway{The design question for memory: what should the agent \textbf{write down}, so that it does not have to read everything again?}
+    \src{Wu et al., ``LongMemEval,'' \href{https://arxiv.org/abs/2410.10813}{arXiv:2410.10813}. Chhikara et al., ``Mem0,'' \href{https://arxiv.org/abs/2504.19413}{arXiv:2504.19413}. Hu et al., ``MemoryAgentBench,'' \href{https://arxiv.org/abs/2507.05257}{arXiv:2507.05257}.}
 \end{frame}
 
 \begin{frame}{A Vocabulary: Episodic, Semantic and Procedural Memory}
@@ -202,13 +201,14 @@
         \textbf{System} & \textbf{Structure built at index time} & \textbf{Memory role} & \textbf{Headline} \\
         \midrule
         RAPTOR & tree of recursive cluster summaries & consolidation & +20\% absolute on QuALITY \\
-        GraphRAG & entity graph, community summaries & consolidation & wins 72 to 83\% on comprehensiveness \\
-        HippoRAG & knowledge graph, Personalized PageRank & association & iterative-retrieval quality at 10 to 30$\times$ lower cost \\
         MemoRAG & a small model's compressed global memory drafts retrieval clues & global memory & 40.2 against 35.0 for full context \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \takeaway{Flat RAG only recognises chunks. Each row \textbf{precomputes a kind of memory} for sense-making or association.}
+    \begin{itemize}
+        \item Graph indexes play the same two roles: GraphRAG's community summaries are \textbf{consolidation}, HippoRAG's knowledge graph is \textbf{association}.
+    \end{itemize}
+    \takeaway{Flat RAG only recognises chunks. Each of these \textbf{precomputes a kind of memory} for sense-making or association.}
     \src{Sarthi et al., \href{https://arxiv.org/abs/2401.18059}{arXiv:2401.18059}. Edge et al., \href{https://arxiv.org/abs/2404.16130}{arXiv:2404.16130}. Jim\'enez Guti\'errez et al., \href{https://arxiv.org/abs/2405.14831}{arXiv:2405.14831}. Qian et al., \href{https://arxiv.org/abs/2409.05591}{arXiv:2409.05591}. Su, Berkeley CS294 (2025).}
 \end{frame}
 
@@ -218,7 +218,6 @@
         \begin{itemize}\itemsep0.45em
             \item \textbf{Simple facts get worse.} GraphRAG, LightRAG and RAPTOR drop on plain factual questions against a strong dense retriever.
             \item \textbf{Graph indexes are expensive.} A GraphRAG answer reads about 610,000 tokens of community reports. LightRAG needs under 100.
-            \item \textbf{Long context often agrees.} RAG and long context give the same answer on over 60\% of queries. Self-Route sends only the rest to long context, at 65\% lower cost.
         \end{itemize}
         \column{0.42\textwidth}
         \centering
@@ -239,7 +238,7 @@
     \end{columns}
     \vspace{0.3em}
     \caveat{\textbf{Not all memory should be external.} On deep compositions of facts, models using retrieval ``fail badly''. A grokked transformer is near perfect.}
-    \src{Jim\'enez Guti\'errez et al., ``HippoRAG 2,'' \href{https://arxiv.org/abs/2502.14802}{arXiv:2502.14802}. Guo et al., ``LightRAG,'' \href{https://arxiv.org/abs/2410.05779}{arXiv:2410.05779}. Li et al., \href{https://arxiv.org/abs/2407.16833}{arXiv:2407.16833}. Hu et al., \href{https://arxiv.org/abs/2507.05257}{arXiv:2507.05257}. Su, Berkeley CS294 (2025).}
+    \src{Jim\'enez Guti\'errez et al., ``HippoRAG 2,'' \href{https://arxiv.org/abs/2502.14802}{arXiv:2502.14802}. Guo et al., ``LightRAG,'' \href{https://arxiv.org/abs/2410.05779}{arXiv:2410.05779}. Hu et al., \href{https://arxiv.org/abs/2507.05257}{arXiv:2507.05257}. Su, Berkeley CS294 (2025).}
 \end{frame}
 
 \begin{frame}{The LoCoMo Dispute: Read Memory Benchmarks Carefully}

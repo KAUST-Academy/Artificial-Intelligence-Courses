@@ -104,17 +104,17 @@
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.35em
-        \item \textbf{The proposer needs a reward too.} Both leading designs pay it for tasks of \emph{intermediate} difficulty:
+        \item \textbf{The proposer needs a reward too.} Both leading designs pay nothing for a task the solver always or never solves. $\bar r_{\text{solve}}$ and $\hat p$ are the solver's success rate over several rollouts:
     \end{itemize}
-    \[
-        \text{Absolute Zero: } r_{\text{propose}}=1-\bar r_{\text{solve}}
+    {\small\[
+        \text{Absolute Zero: } r_{\text{propose}}=\begin{cases}0, & \bar r_{\text{solve}}=0\\ 1-\bar r_{\text{solve}}, & \text{otherwise}\end{cases}
         \qquad\qquad
         \text{R-Zero: } r_{\text{unc}}=1-2\,\big|\hat p-\tfrac12\big|
-    \]
+    \]}
     \begin{itemize}\itemsep0.35em
         \item TTRL: label accuracy is about 37\%, reward accuracy about 92\%. But it trains on the benchmark's own questions.
     \end{itemize}
-    \src{Zhao et al., ``Absolute Zero,'' \href{https://arxiv.org/abs/2505.03335}{arXiv:2505.03335}. Huang et al., ``R-Zero,'' \href{https://arxiv.org/abs/2508.05004}{arXiv:2508.05004}. Liu et al., ``SPIRAL,'' \href{https://arxiv.org/abs/2506.24119}{arXiv:2506.24119}. Zuo et al., ``TTRL,'' \href{https://arxiv.org/abs/2504.16084}{arXiv:2504.16084}. Chu et al., ``J-Zero,'' \href{https://arxiv.org/abs/2608.26582}{arXiv:2608.26582}.}
+    \src{Zhao et al., ``Absolute Zero,'' \href{https://arxiv.org/abs/2505.03335v3}{arXiv:2505.03335v3}, Eq. 4. Huang et al., ``R-Zero,'' \href{https://arxiv.org/abs/2508.05004}{arXiv:2508.05004}. Liu et al., ``SPIRAL,'' \href{https://arxiv.org/abs/2506.24119}{arXiv:2506.24119}. Zuo et al., ``TTRL,'' \href{https://arxiv.org/abs/2504.16084}{arXiv:2504.16084}. Chu et al., ``J-Zero,'' \href{https://arxiv.org/abs/2608.26582}{arXiv:2608.26582}.}
 \end{frame}
 
 \begin{frame}{Theory: What Self-Improvement Can and Cannot Buy}

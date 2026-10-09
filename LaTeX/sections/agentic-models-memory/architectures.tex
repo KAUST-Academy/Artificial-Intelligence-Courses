@@ -41,23 +41,20 @@
     \centering
     \includegraphics[width=0.92\linewidth,height=0.3\textheight,keepaspectratio]{images/agentic-models-memory/llmcompiler_fig2_overview.png}
     \begin{itemize}\itemsep0.3em
-        \item \textbf{ReWOO.} ReAct re-sends its history at every tool call. Plan once instead, with placeholders for evidence. HotpotQA: \textbf{1,986 tokens} against 9,795, at similar accuracy.
+        \item \textbf{ReWOO.} ReAct re-sends its history at every tool call. Plan once instead, with variables that the tool outputs fill in later. HotpotQA: \textbf{1,986 tokens} against 9,795, at similar accuracy.
         \item \textbf{LLMCompiler} (above). The plan is a DAG, executed in parallel: up to 3.7$\times$ faster and 6.7$\times$ cheaper than ReAct.
     \end{itemize}
     \caveat{\textbf{Historical numbers.} gpt-3.5-era results on short QA. Prompt caching has since weakened the token argument.}
     \src{Xu et al., ``ReWOO: Decoupling Reasoning from Observations,'' \href{https://arxiv.org/abs/2305.18323}{arXiv:2305.18323}, Table 2. Figure: Kim et al., ``An LLM Compiler for Parallel Function Calling,'' \href{https://arxiv.org/abs/2312.04511}{arXiv:2312.04511}, Figure 2.}
 \end{frame}
 
-\begin{frame}{Search Is Expensive, and Self-Checking Is Not Enough}
+\begin{frame}{Tree Search Is Expensive}
     \begin{columns}[T,onlytextwidth]
         \column{0.53\textwidth}
-        \begin{itemize}\itemsep0.4em
-            \item \textbf{LATS} runs tree search over trajectories. It needs an environment that can be \alert{reverted}:
-            \[
-                \mathrm{UCT}(s)=V(s)+w\sqrt{\tfrac{\ln N(p)}{N(s)}}
-            \]
-            \item \textbf{Can LLMs plan?} On PlanBench, o1 is a large step up but far from saturating it.
-            \item \textbf{LLM-Modulo:} let the LLM \emph{generate} candidates, and let external, sound verifiers \emph{test} them.
+        \begin{itemize}\itemsep0.5em
+            \item \textbf{LATS} runs tree search over whole agent trajectories. It needs an environment that can be \alert{reverted}, so that a failed branch leaves no trace.
+            \item \textbf{The cost check.} Kapoor et al.\ re-ran these agents and tracked the bill. A ``warming'' baseline, which retries at rising temperature, beat both Reflexion and LATS.
+            \item LATS cost about \textbf{55$\times$} as much as the baseline, for lower accuracy.
         \end{itemize}
         \column{0.44\textwidth}
         \centering
@@ -71,27 +68,17 @@
             LATS & 88.0\% & \alert{\$134.50} \\
             \bottomrule
         \end{tabular}\end{adjustbox}
-
-        \vspace{0.8em}
-        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
-            b/.style={draw, rounded corners=2pt, minimum width=2.2cm, minimum height=0.6cm, align=center}]
-            \node[b, fill=KAUSTcyan!20] (g) at (0,0) {LLM generates};
-            \node[b, fill=darkorange!20] (v) at (3.4,0) {Verifier tests};
-            \draw[->, thick] (g.north east) to[bend left=25] node[above] {candidate plan} (v.north west);
-            \draw[->, thick] (v.south west) to[bend left=25] node[below] {critique} (g.south east);
-        \end{tikzpicture}\end{adjustbox}
     \end{columns}
-    \vspace{0.2em}
-    \takeaway{In production the verifier is a \textbf{test suite, a linter or a screenshot}, not the model's own opinion. Day 2 covered search and reflection in depth.}
-    \src{Zhou et al., ``Language Agent Tree Search,'' \href{https://arxiv.org/abs/2310.04406}{arXiv:2310.04406}. Kapoor et al., ``AI Agents That Matter,'' \href{https://arxiv.org/abs/2407.01502}{arXiv:2407.01502}. Valmeekam et al., \href{https://arxiv.org/abs/2409.13373}{arXiv:2409.13373}. Kambhampati et al., \href{https://arxiv.org/abs/2402.01817}{arXiv:2402.01817}.}
+    \vspace{0.6em}
+    \takeaway{In production the verifier is a \textbf{test suite, a linter or a screenshot}, not the model's own opinion.}
+    \src{Zhou et al., ``Language Agent Tree Search,'' \href{https://arxiv.org/abs/2310.04406}{arXiv:2310.04406}. Kapoor et al., ``AI Agents That Matter,'' \href{https://arxiv.org/abs/2407.01502}{arXiv:2407.01502}.}
 \end{frame}
 
 \begin{frame}{Axis 2: Code as the Action Space}
     \centering
     \includegraphics[width=0.9\linewidth,height=0.4\textheight,keepaspectratio]{images/agentic-models-memory/codeact_fig1_code_vs_json.png}
     \begin{itemize}\itemsep0.3em
-        \item \textbf{Why.} One JSON call does one thing. A code action has loops, variables and existing libraries.
-        \item \textbf{Result} (M3ToolEval, 82 multi-tool tasks): \textbf{74.4\%} success for code, against 52.4\% for JSON and 53.7\% for text, in 5.5 turns instead of 7.6.
+        \item \textbf{CodeAct} (above) on M3ToolEval, 82 multi-tool tasks: \textbf{74.4\%} success for code actions, against 52.4\% for JSON and 53.7\% for text, in 5.5 turns instead of 7.6.
         \item \textbf{Afterlife.} OpenHands ships a CodeAct agent. Presenting MCP servers as code APIs cut one Anthropic example from 150,000 to 2,000 tokens.
     \end{itemize}
     \src{Wang et al., ``Executable Code Actions Elicit Better LLM Agents,'' \href{https://arxiv.org/abs/2402.01030}{arXiv:2402.01030}, Figure 1. Wang et al., ``OpenHands,'' \href{https://arxiv.org/abs/2407.16741}{arXiv:2407.16741}. Anthropic, ``Code execution with MCP'' (Nov 2025).}
@@ -202,7 +189,7 @@
         \item \textbf{DeepSeek-V3.2.} 1,800+ environments and 85,000 prompts. \textbf{Qwen3-Coder.} 20,000 parallel environments.
     \end{itemize}
     \vspace{0.2em}
-    \takeaway{Day 3 covered the RL algorithms. What is new here is the \textbf{scale of environments and verifiers}.}
+    \takeaway{The RL objectives are standard. What is new is the \textbf{scale of environments and verifiers}.}
     \src{Recipe is a synthesis of: Kimi Team, \href{https://arxiv.org/abs/2507.20534}{arXiv:2507.20534}. GLM-4.5 Team, \href{https://arxiv.org/abs/2508.06471}{arXiv:2508.06471}. DeepSeek-AI, \href{https://arxiv.org/abs/2512.02556}{arXiv:2512.02556}. Qwen, ``Qwen3-Coder'' blog (Jul 2025).}
 \end{frame}
 
@@ -245,8 +232,7 @@
         \textbf{Evidence} & \textbf{Finding} & \textbf{Reading} \\
         \midrule
         METR tasks (Feb 2026) & Opus 4.5 in Claude Code beats a plain ReAct scaffold in only 50.7\% of bootstrap samples & scaffold barely matters \\
-        Terminal-Bench 2.0 & Gemini 2.5 Pro: 32.6\% on Terminus 2, 15.7\% on OpenHands & scaffold changes score by \alert{2.1$\times$} \\
-        Terminal-Bench 2.0 & GPT-5.3-Codex: 64.7 on Terminus 2, 77.3 on the Codex harness & vendors tune to their own models \\
+        Terminal-Bench 2.0 & GPT-5.3-Codex: 64.7 on Terminus 2, 77.3 on the Codex harness & a vendor-tuned harness adds \alert{12.6 points} \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
@@ -254,7 +240,7 @@
         \item The Terminal-Bench authors still conclude that \emph{``model selection is usually more important than agent scaffold.''}
         \item Yu Su: \emph{``stronger LLMs may require less scaffolding (i.e., more `reactive')''}.
     \end{itemize}
-    \src{METR, ``Measuring time horizon using Claude Code and Codex'' (Feb 2026). Merrill et al., ``Terminal-Bench,'' \href{https://arxiv.org/abs/2601.11868}{arXiv:2601.11868}, Table 2. Google DeepMind, Gemini 3.1 Pro Model Evaluation (Feb 2026). Su, Berkeley CS294 (Feb 2025).}
+    \src{METR, ``Measuring time horizon using Claude Code and Codex'' (Feb 2026). Merrill et al., ``Terminal-Bench,'' \href{https://arxiv.org/abs/2601.11868}{arXiv:2601.11868}. Google DeepMind, Gemini 3.1 Pro Model Evaluation (Feb 2026). Su, Berkeley CS294 (Feb 2025).}
 \end{frame}
 
 \begin{frame}{Architectures: What to Remember}

@@ -119,7 +119,6 @@
     \end{center}
     \begin{itemize}\itemsep0.2em
         \item Changes from correct to incorrect outnumber changes from incorrect to correct.
-        \item \textbf{Multi-agent debate} loses to self-consistency at equal budget: 83.2 against 85.3.
         \item \textbf{The weak-baseline trap.} On one Self-Refine task, a better first prompt scored 81.8\%. The self-corrected pipeline reached 75.1\%.
         \item \textbf{Add a tool and the sign flips.} CRITIC verifies with search or code: HotpotQA F1 from 42.8 to 52.9. Remove the tools and it falls to 46.1.
     \end{itemize}
@@ -178,22 +177,15 @@
     \src{Kumar et al. (Google DeepMind), ``Training Language Models to Self-Correct via Reinforcement Learning,'' \href{https://arxiv.org/abs/2409.12917}{arXiv:2409.12917}, Table 2.}
 \end{frame}
 
-\begin{frame}{The ``Aha Moment'', Revisited}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.42\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.44\textheight,keepaspectratio]{images/advanced-reasoning/r1_zero_aha_moment.png}
-        \column{0.56\textwidth}
-        \begin{itemize}\itemsep0.2em
-            \item The usual reading: outcome RL made self-reflection \emph{emerge}.
-            \item \textbf{Limitation 1.} Reflection phrases appear at \textbf{epoch 0}, before any RL. \emph{Wrong} answers contain more of them.
-            \item \textbf{Limitation 2.} GRPO has a bias that inflates response length, most of all for incorrect outputs.
-            \item \textbf{Limitation 3.} Four behaviours of the base model predict whether RL helps: verification, backtracking, subgoal setting, backward chaining. Priming with them works \alert{even when the answers are wrong}.
-        \end{itemize}
-    \end{columns}
-    \vspace{0.1em}
+\begin{frame}{Did RL Create the ``Aha Moment''?}
+    \begin{itemize}\itemsep0.6em
+        \item The usual reading of DeepSeek-R1-Zero: outcome RL made self-reflection \emph{emerge}.
+        \item \textbf{Evidence against 1.} Reflection phrases appear at \textbf{epoch 0}, before any RL. \emph{Wrong} answers contain more of them.
+        \item \textbf{Evidence against 2.} Four behaviours of the base model predict whether RL helps: verification, backtracking, subgoal setting, backward chaining. Priming with them works \alert{even when the answers are wrong}.
+    \end{itemize}
+    \vspace{0.4em}
     \takeaway{Read the ``aha'' as \textbf{amplification of latent behaviours}, not creation from nothing.}
-    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}, Table 2. Liu et al. (Sea AI Lab), ``There May Not be Aha Moment in R1-Zero-like Training'' (Feb 2025), and \href{https://arxiv.org/abs/2503.20783}{arXiv:2503.20783}. Gandhi et al., \href{https://arxiv.org/abs/2503.01307}{arXiv:2503.01307}.}
+    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. Liu et al. (Sea AI Lab), ``There May Not be Aha Moment in R1-Zero-like Training'' (Feb 2025), and \href{https://arxiv.org/abs/2503.20783}{arXiv:2503.20783}. Gandhi et al., \href{https://arxiv.org/abs/2503.01307}{arXiv:2503.01307}.}
 \end{frame}
 
 \begin{frame}{Self-Correction: What to Remember}

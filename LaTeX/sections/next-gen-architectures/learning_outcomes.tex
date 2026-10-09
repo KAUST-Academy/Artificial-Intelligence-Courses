@@ -2,14 +2,15 @@
 
 \begin{frame}{Learning Outcomes}
     By the end of this session, you should be able to:
-    \vspace{0.4em}
-    \begin{itemize}\itemsep0.4em
-        \item \textbf{Derive} linear attention as a recurrence, and explain how gating and the delta rule turn it into the mixers used in 2026 hybrids.
-        \item \textbf{Compare} state-space models, RWKV, xLSTM and Hyena against a Transformer baseline on recall, throughput and scale.
-        \item \textbf{Analyse} Mixture-of-Experts routing, load balancing and serving cost at frontier scale.
-        \item \textbf{Explain} how FlashAttention-3 and 4, sliding windows and learned sparse attention cut the cost of attention.
-        \item \textbf{Evaluate} long-context methods and tell a claimed context window from an effective one.
+    \begin{itemize}\itemsep0.25em
+        \item \textbf{Relate} decay gates, the delta rule and SSMs, and say why hybrids keep attention.
+        \item \textbf{Compare} Mamba-3, RWKV, xLSTM and Hyena on recall and throughput.
+        \item \textbf{Analyse} MoE routing, load balancing and serving cost at frontier scale.
+        \item \textbf{Explain} how FlashAttention-3 and 4, windows and compressed sparse attention save cost.
+        \item \textbf{Explain} how RoPE scaling, engineered sinks and staged training extend context.
         \item \textbf{Apply} scaling laws to a training budget, and state where they stop holding.
         \item \textbf{Describe} the current design choices in natively multimodal models.
     \end{itemize}
+    \vspace{0.4em}
+    {\scriptsize \textbf{Prerequisite knowledge:} linear attention, the delta rule and Gated DeltaNet; S4, Mamba and Mamba-2; MoE routing, load balancing and expert parallelism; FlashAttention; block-sparse attention (NSA, DSA); attention sinks; segment recurrence and memory-augmented Transformers; RoPE; effective-context benchmarks; Ring Attention; Kaplan and Chinchilla scaling laws; test-time compute; data curation; multimodal fusion patterns.\par}
 \end{frame}

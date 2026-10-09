@@ -7,53 +7,28 @@
     \normalsize One protocol now connects any agent to any tool. Who is trusted across that connection, and for what?
 \end{frame}
 
-\begin{frame}{MCP in One Slide: What Is Still True}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.55\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item \textbf{The problem it solved.} $M$ agents times $N$ tools needed $M\times N$ adapters. A shared protocol needs $M+N$.
-            \item \textbf{Three roles.} The \emph{host} is the user-facing application and owns permissions. A \emph{client} inside it holds a 1:1 connection to one \emph{server}.
-            \item \textbf{Three server primitives.} Tools, resources and prompts, over JSON-RPC.
-            \item \textbf{Governance changed.} In December 2025 Anthropic donated MCP to the Agentic AI Foundation (Linux Foundation).
-        \end{itemize}
-        \column{0.42\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.32\textheight,keepaspectratio]{images/agentic-models-memory/hf_mcp_architecture.png}
-
-        \vspace{0.6em}
-        \small
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
-            \toprule
-            \textbf{At donation (Dec 2025)} & \\
-            \midrule
-            Active public servers & 10,000+ \\
-            Monthly SDK downloads & 97M \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-    \end{columns}
-    \vspace{0.3em}
-    \caveat{If you learned MCP before mid-2026, the roles and primitives still hold. The \textbf{lifecycle, transport and client features} do not.}
-    \src{Figure: Hugging Face MCP Course, Unit 1. Anthropic, ``Donating the Model Context Protocol and establishing the Agentic AI Foundation'' (Dec 2025). MCP Specification 2026-07-28.}
-\end{frame}
-
 \begin{frame}{What Changed in the 2026-07-28 Specification}
+    \begin{itemize}\small\itemsep0.2em
+        \item \textbf{Governance.} Anthropic donated MCP to the Agentic AI Foundation (Linux Foundation) in December 2025, at 10,000+ active public servers and 97M monthly SDK downloads.
+        \item \textbf{Unchanged:} host, client and server roles; tools, resources and prompts.
+    \end{itemize}
     \begin{center}
     \small
-    \renewcommand{\arraystretch}{1.2}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{4.5cm}>{\raggedright\arraybackslash}p{6.0cm}}
+    \renewcommand{\arraystretch}{1.0}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.4cm}>{\raggedright\arraybackslash}p{3.9cm}>{\raggedright\arraybackslash}p{6.8cm}}
         \toprule
-        \textbf{Topic} & \textbf{Before} & \textbf{Now} \\
+        \textbf{Changed} & \textbf{Before} & \textbf{Now} \\
         \midrule
-        Lifecycle & \texttt{initialize} handshake & \leavevmode\alert{removed}. Each request carries version and capabilities \\
-        State & protocol sessions & \leavevmode\alert{removed}. Server-minted handles, passed as tool arguments \\
+        Lifecycle & \texttt{initialize} handshake & \leavevmode\alert{removed}. Version and capabilities in every request \\
+        State & protocol sessions & \leavevmode\alert{removed}. Server-minted handles in tool arguments \\
         Client features & Sampling, Roots, Logging & \leavevmode\alert{deprecated}. Elicitation stays \\
-        Transport & HTTP+SSE, long-lived stream & deprecated. Each message is one POST \\
+        Transport & HTTP+SSE stream & deprecated. Each message is one POST \\
         Registration & Dynamic Client Registration & deprecated. Client ID Metadata Documents first \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
     \takeaway{\textbf{The theme is statelessness.} Deprecated features stay for at least twelve months before removal.}
-    \src{MCP, ``Key Changes'' changelog, specification 2026-07-28. Soria Parra and Delimarsky, ``The 2026-07-28 Specification'' (MCP blog).}
+    \src{Anthropic, ``Donating the Model Context Protocol and establishing the Agentic AI Foundation'' (Dec 2025). MCP, ``Key Changes'' changelog, specification 2026-07-28. Soria Parra and Delimarsky, ``The 2026-07-28 Specification'' (MCP blog).}
 \end{frame}
 
 \begin{frame}{Stateless Does Not Mean One Shot: Multi Round-Trip Requests}
@@ -92,7 +67,7 @@
     \end{tikzpicture}\end{adjustbox}
     \vspace{0.5em}
     \begin{itemize}\itemsep0.4em
-        \item \textbf{Roles.} The MCP server is an OAuth 2.1 \emph{resource server}. The MCP client is an OAuth client.
+        \item \textbf{Roles.} The MCP server is an OAuth 2.1 \emph{resource server}. The MCP client is an OAuth client, inside a host application that owns the user's permissions and consent.
         \item \textbf{Audience binding.} A server must not accept, or pass on, a token issued for anything else. This forbids \alert{token passthrough}.
         \item \textbf{Step-up.} Start with minimal scope, and re-authorise only when the server asks for more.
     \end{itemize}

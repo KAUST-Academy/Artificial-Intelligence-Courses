@@ -28,26 +28,6 @@
     \src{Anthropic, Claude Code permissions docs. Dworken and Weller-Davies, ``Making Claude Code more secure and autonomous'' (Oct 2025). Anthropic, Claude Haiku 4.5 system card. OWASP GenAI Security Project, ``Top 10 for Agentic Applications 2026'' (Dec 2025).}
 \end{frame}
 
-\begin{frame}{Defence by Design: Separate Control from Data}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.54\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{images/agentic-models-memory/camel_fig5_system.png}
-        \column{0.44\textwidth}
-        \begin{itemize}\itemsep0.4em
-            \item \textbf{CaMeL.} A \emph{privileged} LLM sees only the user query and writes a program. A \emph{quarantined} LLM parses untrusted data, with no tools.
-            \item Every value carries \textbf{capabilities}, checked by policy at each tool call.
-            \item 77\% of AgentDojo tasks \emph{with provable security}, against 84\% undefended, at 2.8$\times$ the tokens.
-        \end{itemize}
-    \end{columns}
-    \vspace{0.2em}
-    \begin{itemize}\itemsep0.3em
-        \item This is plan-first from Section 1, reused for security: the plan is fixed \emph{before} untrusted data arrives.
-        \item \alert{Out of scope:} text-to-text attacks such as a manipulated summary.
-    \end{itemize}
-    \src{Debenedetti et al., ``Defeating Prompt Injections by Design,'' \href{https://arxiv.org/abs/2503.18813}{arXiv:2503.18813}, Figure 5. Beurer-Kellner et al., ``Design Patterns for Securing LLM Agents against Prompt Injections,'' \href{https://arxiv.org/abs/2506.08837}{arXiv:2506.08837}.}
-\end{frame}
-
 \begin{frame}{Identity and Authorisation: On Whose Behalf?}
     \centering
     \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\footnotesize, >=Stealth,
@@ -74,8 +54,7 @@
     \begin{columns}[T,onlytextwidth]
         \column{0.53\textwidth}
         \begin{itemize}\itemsep0.45em
-            \item \textbf{The failure mode is fatigue.} Ask too often and users approve by reflex.
-            \item \textbf{Key approval on consequence.} In the OpenAI Agents SDK, the approval rule is a function of the call. The run pauses, and resumes later from saved state.
+            \item \textbf{Approval as code.} In the OpenAI Agents SDK, the approval rule is a function of the call and its arguments. The run pauses, and resumes later from saved state.
             \item \textbf{Require presence.} ChatGPT agent pauses in sensitive logged-in contexts when the user is inactive.
         \end{itemize}
         \column{0.44\textwidth}
@@ -96,7 +75,7 @@
         \end{tabular}\end{adjustbox}
     \end{columns}
     \vspace{0.4em}
-    \caveat{An ``auto'' mode with a classifier puts a model back in the authorisation path, which CaMeL avoids. An open debate.}
+    \caveat{An ``auto'' mode with a classifier puts a model back in the authorisation path, which designs that separate control from data avoid. An open debate.}
     \src{OpenAI Agents SDK, human-in-the-loop docs. OpenAI, ChatGPT agent system card (Jul 2025), Tables 13 and 14. Anthropic, Claude Code permissions docs.}
 \end{frame}
 

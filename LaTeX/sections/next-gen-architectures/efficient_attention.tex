@@ -24,8 +24,7 @@
     \end{center}
     \vspace{0.3em}
     \begin{itemize}\itemsep0.5em
-        \item The first idea dates from 2022. \textbf{FlashAttention} computes exact attention in tiles that fit in fast on-chip memory, and never writes the $L\times L$ matrix out.
-        \item That fixed the bottleneck of its day, which was \emph{memory traffic}. The hardware then moved on. So did the bottleneck.
+        \item The first idea dates from 2022: \textbf{FlashAttention} removed the bottleneck of its day, which was \emph{memory traffic}. The hardware then moved on. So did the bottleneck.
     \end{itemize}
 \end{frame}
 
@@ -104,38 +103,11 @@
 
 \subsection{Learned Sparse Attention}
 
-\begin{frame}{Native Sparse Attention: Three Views of the Past}
-    \centering
-    \includegraphics[width=0.95\linewidth,height=0.4\textheight,keepaspectratio]{images/next-gen-architectures/nsa_fig2_architecture.png}
-    \begin{itemize}\itemsep0.35em
-        \item Each query attends through three branches, mixed by learned gates:
-        \textbf{compressed} blocks (a coarse view of everything), \textbf{selected} blocks (the top-$n$ most relevant, at full detail), and a \textbf{sliding window}.
-        \item The compressed scores are reused to choose the blocks, so selection is almost free.
-        \item Trained sparse from the start. At 64K context: 11.6$\times$ faster decoding and 9$\times$ faster forward pass, with benchmark scores at or above the full-attention baseline.
-    \end{itemize}
-    \src{Yuan et al., ``Native Sparse Attention: Hardware-Aligned and Natively Trainable Sparse Attention,'' \href{https://arxiv.org/abs/2502.11089}{arXiv:2502.11089}, Figure 2. Reported by the authors and not yet independently replicated.}
-\end{frame}
-
-\begin{frame}{DeepSeek Sparse Attention: A Cheap Scorer Picks 2048 Tokens}
-    \begin{itemize}\itemsep0.45em
-        \item A tiny \textbf{lightning indexer} scores every past token for the current query:
-        \[
-            I_{t,s}=\sum_{j=1}^{H^I} w^I_{t,j}\;\mathrm{ReLU}\big(q^I_{t,j}\cdot k^I_s\big)
-        \]
-        \item Only the \textbf{top 2048} tokens go to the real attention. Its cost falls from $O(L^2)$ to $O(Lk)$.
-        \item \textbf{It can be retrofitted.} DeepSeek converted a dense checkpoint: a short warm-up where the indexer imitates dense attention, then sparse training. GLM-5 repeated the recipe with only 20B tokens.
-        \item \textbf{Impact:} DeepSeek cut API prices by more than 50\% with V3.2.
-    \end{itemize}
-    \vspace{0.1em}
-    \takeaway{Contrast with Part 1. Hybrids \emph{compress} the past into a state. Sparse attention keeps every token and \emph{retrieves}.}
-    \src{DeepSeek-AI, ``DeepSeek-V3.2,'' \href{https://arxiv.org/abs/2512.02556}{arXiv:2512.02556}. DeepSeek API news (Sep 2025). Zhipu AI, ``GLM-5,'' \href{https://arxiv.org/abs/2602.15763}{arXiv:2602.15763}.}
-\end{frame}
-
 \begin{frame}{DeepSeek-V4: Compress First, Then Select}
     \begin{columns}[T,onlytextwidth]
         \column{0.6\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item One problem remained: the indexer still scans every token. V4 shrinks the sequence \emph{before} scoring.
+        \begin{itemize}\itemsep0.2em
+            \item In DeepSeek Sparse Attention (V3.2) a lightning indexer picks the top 2,048 tokens, but the indexer itself still scans every token. V4 shrinks the sequence \emph{before} scoring.
             \item Two layer types alternate through the network:
             \begin{itemize}\itemsep0.25em
                 \item \textbf{CSA}: compress keys and values 4$\times$, then keep the top-$k$ compressed entries. A sparse, fine view.
@@ -143,48 +115,31 @@
             \end{itemize}
             \item Every layer adds a window of 128 recent uncompressed tokens.
             \item At 1M tokens, a CSA layer in V4-Pro reads about 1,150 entries. An HCA layer reads about 8,300.
+            \item The cache shrinks with it: DeepSeek-V4.1-Flash reports about 890 bytes of KV per token.
         \end{itemize}
         \column{0.38\textwidth}
         \centering
-        \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{images/next-gen-architectures/dsv4_fig1_right_flops_kv.png}
+        \includegraphics[width=\linewidth,height=0.56\textheight,keepaspectratio]{images/next-gen-architectures/dsv4_fig1_right_flops_kv.png}
     \end{columns}
     \vspace{0.2em}
-    \src{DeepSeek-AI, ``DeepSeek-V4,'' \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}, Figure 1 (right) and Section 2.3. Entry counts derived from the published hyperparameters ($k=1024$, window 128, $2^{20}/128$).}
+    \src{DeepSeek-AI, ``DeepSeek-V4,'' \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}, Figure 1 (right) and Section 2.3. Entry counts derived from the published hyperparameters ($k=1024$, window 128, $2^{20}/128$). DeepSeek-AI, \href{https://arxiv.org/abs/2609.19969}{arXiv:2609.19969}.}
 \end{frame}
 
 \begin{frame}{Is Sparse Attention Ready? A Seven-Month Reversal}
     \begin{itemize}\itemsep0.55em
-        \item \textbf{November 2025.} MiniMax ships M2 with full attention and writes that no efficient variant has shown stable superiority in production.
-        \item \textbf{June 2026.} MiniMax ships M3 with its own block-sparse attention: 14.2$\times$ faster prefill and 7.6$\times$ faster decoding at 1M tokens, on par with the dense baseline.
+        \item \textbf{June 2026.} Seven months after returning to full attention for M2, MiniMax ships M3 with its own block-sparse attention: 14.2$\times$ faster prefill and 7.6$\times$ faster decoding at 1M tokens, on par with the dense baseline.
         \item \textbf{What changed?} Not the idea. The \emph{kernels} (selection matched to GPU blocks) and the \emph{training recipes} (adapt from a dense checkpoint).
         \item The frontier in mid-2026 is the indexer itself. GLM-5.2 reuses one indexer result across four layers and removes 75\% of the indexer's compute.
         \item No training budget? \textbf{Training-free} methods (Quest, MInference, DuoAttention) select KV entries at inference time on an unmodified model.
     \end{itemize}
-    \src{MiniMax, ``No Free Lunch'' blog (LMSYS, Nov 2025). Lai et al., \href{https://arxiv.org/abs/2606.13392}{arXiv:2606.13392}. Bai et al., ``IndexCache,'' \href{https://arxiv.org/abs/2603.12201}{arXiv:2603.12201}. Tang et al., \href{https://arxiv.org/abs/2406.10774}{arXiv:2406.10774}.}
+    \src{Lai et al., ``MiniMax Sparse Attention,'' \href{https://arxiv.org/abs/2606.13392}{arXiv:2606.13392}. Bai et al., ``IndexCache,'' \href{https://arxiv.org/abs/2603.12201}{arXiv:2603.12201}. Tang et al., \href{https://arxiv.org/abs/2406.10774}{arXiv:2406.10774}.}
 \end{frame}
 
-\subsection{Ring Attention and Context Parallelism}
-
-\begin{frame}{Ring Attention: One Sequence, Many GPUs}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.56\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item Everything so far saves compute on \emph{one} device. Training on million-token sequences needs the opposite: \textbf{split one sequence across devices}.
-            \item Each device keeps its own block of queries. Key and value blocks \textbf{travel around a ring}.
-            \item FlashAttention's blockwise softmax makes the order of arrival irrelevant, so the result is exact.
-            \item Sending a block overlaps with computing on the previous one. Communication is free if each block is large enough: about 1,000 tokens on an A100.
-            \item Memory per device no longer depends on total sequence length.
-        \end{itemize}
-        \column{0.42\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{images/next-gen-architectures/ring_attention_fig2a_kv_blocks_traverse_ring.png}
-    \end{columns}
-    \src{Liu, Zaharia, Abbeel, ``Ring Attention with Blockwise Transformers for Near-Infinite Context,'' \href{https://arxiv.org/abs/2310.01889}{arXiv:2310.01889}, Figure 2.}
-\end{frame}
+\subsection{Context Parallelism}
 
 \begin{frame}{Context Parallelism in Practice}
     \begin{itemize}\itemsep0.5em
-        \item \textbf{Problem with a plain ring under a causal mask:} the device holding the last tokens has far more work than the one holding the first. \emph{Striped Attention} interleaves tokens across devices to even the load.
+        \item \textbf{A plain ring is unbalanced under a causal mask.} When Ring Attention splits one sequence across devices, the device holding the last tokens has far more work than the one holding the first. \emph{Striped Attention} interleaves tokens across devices to even the load.
         \item \textbf{What Meta did for Llama 3.} No ring at all. Each device simply gathers all keys and values. Two reasons: with grouped-query attention the KV tensors are small, and the gather is $O(S)$ under an $O(S^2)$ computation.
     \end{itemize}
     \begin{center}

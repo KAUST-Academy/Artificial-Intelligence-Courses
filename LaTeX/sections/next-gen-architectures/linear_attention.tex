@@ -7,7 +7,7 @@
     \normalsize Does the sequence mixer have to be attention at all?
 \end{frame}
 
-\subsection{Linear Attention}
+\subsection{Gated Linear Recurrences}
 
 \begin{frame}{Attention's Two Bills}
     \begin{itemize}\itemsep0.5em
@@ -33,149 +33,31 @@
     \src{Table after Nayebi and Gormley, CMU 10-423 Lecture 21 (2026). Gu, ``On the Tradeoffs of State Space Models and Transformers'' (2025), \url{https://goombalab.github.io/blog/2025/tradeoffs/}.}
 \end{frame}
 
-\begin{frame}{Linear Attention: Move One Bracket}
-    \begin{itemize}\itemsep0.4em
-        \item Replace the softmax similarity with a kernel, $\mathrm{sim}(q,k)=\phi(q)^\top\phi(k)$. The sum over keys then factors out of the query:
+\begin{frame}{Decay Gates on a Matrix State}
+    \begin{itemize}\itemsep0.3em
+        \item Linear attention keeps a matrix state $S_t\in\mathbb{R}^{d\times d}$ per head, written with key $k_t$ and value $v_t$, read by query $q_t$ into the output $o_t$. Gated variants decay the old state by $G_t$ first:
     \end{itemize}
     \[
-        o_i \;=\; \frac{\sum_{j\leq i}\phi(q_i)^\top\phi(k_j)\,v_j}{\sum_{j\leq i}\phi(q_i)^\top\phi(k_j)}
-        \;=\; \frac{\phi(q_i)^\top \overbrace{\textstyle\sum_{j\leq i}\phi(k_j)\,v_j^\top}^{\text{does not depend on } i\text{'s query}}}{\phi(q_i)^\top\sum_{j\leq i}\phi(k_j)}
+        S_t \;=\; \textcolor{KAred}{G_t}\; S_{t-1} \;+\; v_t k_t^\top, \qquad o_t \;=\; S_t\, q_t
     \]
-    \begin{itemize}\itemsep0.4em
-        \item In matrix form this is only associativity: $(QK^\top)V = Q\,(K^\top V)$.
-        \item Cost falls from $O(L^2 d)$ to $O(L d^2)$. Stanford's CS336 calls the trick \emph{``very silly, but surprisingly important''}.
-        \item Modern variants drop the normaliser and the feature map, and normalise the output instead.
-    \end{itemize}
-    \src{Katharopoulos et al., ``Transformers are RNNs,'' ICML 2020, \href{https://arxiv.org/abs/2006.16236}{arXiv:2006.16236}. Hashimoto, Stanford CS336 Lecture 4 (2026). Yang et al., \href{https://arxiv.org/abs/2406.06484}{arXiv:2406.06484}.}
-\end{frame}
-
-\begin{frame}{The Same Layer Is an RNN with a Matrix State}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.52\textwidth}
-        Read the sum causally and it becomes a recurrence:
-        \[
-            S_t = S_{t-1} + v_t k_t^\top, \qquad o_t = S_t\, q_t
-        \]
-        \begin{itemize}\itemsep0.45em
-            \item $S_t \in \mathbb{R}^{d\times d}$ is a \textbf{fast-weight matrix}. Each token writes one rank-1 update into it.
-            \item \textbf{Train} in the parallel form. \textbf{Decode} in the recurrent form, with no cache that grows.
-            \item Every model in this section changes only two things: what multiplies $S_{t-1}$, and what gets written.
-        \end{itemize}
-        \column{0.45\textwidth}
-        \centering
-        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth]
-            % KV cache
-            \node[font=\footnotesize\bfseries] at (1.5,3.0) {Softmax attention};
-            \foreach \i in {0,...,5} {
-                \draw[fill=KAUSTcyan!25] (0.5*\i,2.1) rectangle (0.5*\i+0.42,2.6);
-            }
-            \node at (3.35,2.35) {$\cdots$};
-            \node[gray] at (1.5,1.8) {one $(k,v)$ per past token};
-            % matrix state
-            \node[font=\footnotesize\bfseries] at (1.5,1.1) {Linear attention};
-            \draw[fill=darkorange!25] (0.9,-0.5) rectangle (2.1,0.7);
-            \node at (1.5,0.1) {$S_t$};
-            \draw[->, thick] (-0.2,0.1) -- (0.85,0.1) node[midway, above] {$v_t k_t^\top$};
-            \draw[->, thick] (2.15,0.1) -- (3.2,0.1) node[midway, above] {$S_t q_t$};
-            \node[gray] at (1.5,-0.8) {one $d\times d$ matrix, any length};
-        \end{tikzpicture}\end{adjustbox}
-    \end{columns}
-    \src{Katharopoulos et al., \href{https://arxiv.org/abs/2006.16236}{arXiv:2006.16236}. Notation follows Yang et al., ``Parallelizing Linear Transformers with the Delta Rule,'' \href{https://arxiv.org/abs/2406.06484}{arXiv:2406.06484}.}
-\end{frame}
-
-\begin{frame}{Why It Lost for Years: Recall}
-    \begin{itemize}\itemsep0.45em
-        \item Ask the state for the value stored under key $k_j$:
-    \end{itemize}
-    \[
-        S\,k_j \;=\; v_j \;+\; \underbrace{\textstyle\sum_{i\neq j}\,(k_i^\top k_j)\,v_i}_{\text{interference}}
-    \]
-    \begin{itemize}\itemsep0.45em
-        \item Retrieval is exact only for orthogonal keys, and $\mathbb{R}^d$ holds only $d$ of them. Errors pile up with length.
-        \item Writes are \textbf{additive}. The memory never forgets and never corrects a stale entry.
-        \item The loss is concentrated: \alert{6.4\% of tokens} are recall lookups, and they explain \alert{82\%} of the perplexity gap to attention.
-    \end{itemize}
-    \vspace{0.2em}
-    \takeaway{Two abilities are missing: \textbf{forgetting} and \textbf{overwriting}. The next two slides add them one at a time.}
-    \src{Yang, ``DeltaNet Explained (Part I)'' (2024), \url{https://sustcsonglin.github.io/blog/2024/deltanet-1/}. Arora et al., ``Zoology,'' \href{https://arxiv.org/abs/2312.04927}{arXiv:2312.04927}.}
-\end{frame}
-
-\begin{frame}{Fix 1: Learn to Forget}
-    \begin{itemize}\itemsep0.4em
-        \item Multiply the old state by a decay before writing:
-    \end{itemize}
-    \[
-        S_t \;=\; \textcolor{KAred}{G_t}\; S_{t-1} \;+\; v_t k_t^\top
-    \]
-    \begin{center}
-    \small
+    {\centering\footnotesize
     \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
         \toprule
         \textbf{Model} & \textbf{Decay $G_t$} & \textbf{Depends on the input?} \\
         \midrule
+        Linear attention & none, $G_t=I$: the memory never forgets & n/a \\
         RetNet (2023) & one fixed scalar $\gamma$ per head & no \\
         Mamba-2 (2024) & scalar $\gamma_t$ & yes \\
         Gated Linear Attention (2023) & per-channel $\mathrm{Diag}(\alpha_t)$ & yes \\
         \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.4em
+    \end{tabular}\end{adjustbox}\par}
+    \vspace{0.2em}
+    \begin{itemize}\itemsep0.2em
         \item Data-dependent gates close most of the language-modelling gap. At 1.3B parameters GLA reaches perplexity 17.22 against 16.85 for a tuned Transformer.
         \item Fixed decay did not survive. In a 2025 study, RetNet gives near-zero recall inside hybrids.
-        \item \textbf{What a gate cannot do:} it scales the whole memory. It cannot fix one wrong association.
+        \item \textbf{What a gate cannot do:} fix one wrong association. The delta rule's erase term $(I-\beta_t k_t k_t^\top)$ can ($\beta_t$: write strength).
     \end{itemize}
     \src{Yang et al., ``Gated Linear Attention Transformers,'' \href{https://arxiv.org/abs/2312.06635}{arXiv:2312.06635}, Table 2. ``A Systematic Analysis of Hybrid Linear Attention,'' \href{https://arxiv.org/abs/2507.06457}{arXiv:2507.06457}.}
-\end{frame}
-
-\begin{frame}{Fix 2: Learn to Overwrite (the Delta Rule)}
-    \begin{itemize}\itemsep0.4em
-        \item Treat the state as a regression model that should map $k_t \mapsto v_t$, and take \textbf{one gradient step per token} on
-        $\mathcal{L}_t(S)=\tfrac12\lVert S k_t - v_t\rVert^2$:
-    \end{itemize}
-    \[
-        S_t \;=\; S_{t-1} - \beta_t\,(S_{t-1}k_t - v_t)\,k_t^\top
-        \;=\; S_{t-1}\,\textcolor{KAred}{(I-\beta_t k_t k_t^\top)} \;+\; \beta_t\, v_t k_t^\top
-    \]
-    \begin{itemize}\itemsep0.4em
-        \item The red factor \textbf{erases} whatever was stored along the current key. Then the new value is written.
-        \item Plain linear attention is the same step on a loss that never looks at what is already stored.
-        \item \textbf{DeltaNet} solves the hardest synthetic recall setting (MQAR) at 100\%.
-        \item Its weakness mirrors Fix 1. With no decay, clearing the whole memory takes $d$ steps.
-    \end{itemize}
-    \src{Schlag et al., ``Linear Transformers Are Secretly Fast Weight Programmers,'' ICML 2021. Yang et al., ``Parallelizing Linear Transformers with the Delta Rule over Sequence Length,'' NeurIPS 2024, \href{https://arxiv.org/abs/2406.06484}{arXiv:2406.06484}.}
-\end{frame}
-
-\begin{frame}{Gated DeltaNet: Forget \emph{and} Overwrite}
-    \[
-        S_t \;=\; S_{t-1}\,\big(\textcolor{KAUSTblue}{\alpha_t}\,\textcolor{KAred}{(I-\beta_t k_t k_t^\top)}\big) \;+\; \beta_t\, v_t k_t^\top
-    \]
-    \begin{columns}[T,onlytextwidth]
-        \column{0.47\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item \textcolor{KAUSTblue}{Gate}: fast, global erase.
-            \item \textcolor{KAred}{Delta rule}: targeted edit of one key.
-            \item The two are complementary, not alternatives.
-            \item This is the mixer inside \textbf{Qwen3-Next} and \textbf{Qwen3.5}. Kimi's \textbf{KDA} uses a per-channel gate in place of the scalar.
-        \end{itemize}
-        \column{0.5\textwidth}
-        \centering
-        \footnotesize
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
-            \toprule
-            \textbf{1.3B, 100B tokens} & \textbf{PPL} $\downarrow$ & \textbf{Recall} $\uparrow$ & \textbf{Long} $\uparrow$ \\
-            \midrule
-            Mamba-2 & 16.56 & 29.8 & 13.5 \\
-            DeltaNet & 17.72 & 26.2 & 13.6 \\
-            Gated DeltaNet & 16.42 & 30.6 & 16.6 \\
-            \rowcolor{KAUSTcyan!12} + sliding-window attn. & 16.07 & 40.1 & 17.8 \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-
-        \vspace{0.5em}
-        \scriptsize Recall: average of recall-intensive tasks. Long: LongBench average.
-    \end{columns}
-    \vspace{0.3em}
-    \src{Yang, Kautz, Hatamizadeh, ``Gated Delta Networks,'' ICLR 2025, \href{https://arxiv.org/abs/2412.06464}{arXiv:2412.06464}. Table as compiled in Yang's DeltaNet talk (2025), slide 27. Kimi Team, \href{https://arxiv.org/abs/2510.26692}{arXiv:2510.26692}.}
 \end{frame}
 
 \begin{frame}{Making It Fast: Chunkwise Training}

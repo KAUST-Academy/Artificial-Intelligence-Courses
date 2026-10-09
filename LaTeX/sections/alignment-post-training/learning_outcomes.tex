@@ -2,14 +2,16 @@
 
 \begin{frame}{Learning Outcomes}
     By the end of this session, you should be able to:
-    \vspace{0.4em}
-    \begin{itemize}\itemsep0.4em
-        \item \textbf{Place} IPO, SimPO, ORPO, KTO and the GRPO family on one map, and name the failure each variant fixes.
-        \item \textbf{Explain} why frontier recipes moved from offline preferences to on-policy RL with verifiable rewards.
+    \vspace{0.2em}
+    \begin{itemize}\small\itemsep0.15em
+        \item \textbf{Place} IPO, SimPO, length-normalised DPO and GRPO variants on one map, with the failure each fixes.
+        \item \textbf{Explain} why frontier recipes moved from offline preferences to on-policy RL with verifiers.
         \item \textbf{Design} a reward for RL post-training, and predict how it will be over-optimised or hacked.
-        \item \textbf{Compare} scalable-oversight protocols: debate, weak-to-strong generalisation, critics and specifications.
+        \item \textbf{Compare} oversight protocols: debate, weak-to-strong generalisation, critics and specifications.
         \item \textbf{Build} a synthetic data pipeline with the right quality controls, and state when it collapses.
         \item \textbf{Analyse} self-improvement loops: what bounds them and how their evaluations mislead.
         \item \textbf{Plan} continual updates, merging and an open-source post-training run end to end.
     \end{itemize}
+    \vspace{0.3em}
+    {\scriptsize \textbf{Prerequisite knowledge:} the RLHF pipeline, Bradley--Terry reward models, reward over-optimisation; PPO with a value model; DPO, ORPO, KTO, and DPO as offline optimisation; GRPO, GSPO, RL with verifiable rewards, DeepSeek-R1; process and outcome reward models; entropy collapse in RL; Constitutional AI, RLAIF; LLM-as-a-judge biases; knowledge and reasoning-trace distillation; benchmark contamination detection; Constitutional Classifiers; fine-tuning attacks on safety training; catastrophic forgetting, replay, EWC, LoRA; continued pre-training with re-warming and replay; task vectors, TIES and DARE merging.\par}
 \end{frame}

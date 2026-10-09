@@ -153,6 +153,10 @@
 \begin{frame}[allowframebreaks]{Self-Consistency (SC)}
     \begin{itemize}
         \item Self-consistency samples several reasoning paths for the same prompt, then keeps the answer the paths agree on.
+        \item Why it works: greedy decoding finds the most likely \emph{pair} of reasoning $r$ and answer $a$, but we want the most likely \emph{answer}. So sum over reasoning paths, estimate the sum by sampling, and take $\arg\max_a$:
+        \[
+            \mathbb{P}(a\mid q)=\sum_{r}\mathbb{P}(r,a\mid q)\approx\frac{\#\{i:\ a_i=a\}}{N}
+        \]
         \item The figures below give the empirical picture from Wang et al. (2022): consistent gains across arithmetic and commonsense benchmarks, growing with the number of sampled paths, at a linear increase in inference cost.
         \item Sampling many paths at inference time is an early form of test-time compute scaling, the same trade later used by dedicated reasoning models.
     \end{itemize}

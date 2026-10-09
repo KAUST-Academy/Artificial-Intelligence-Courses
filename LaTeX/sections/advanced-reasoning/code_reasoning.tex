@@ -11,8 +11,7 @@
     \begin{columns}[T,onlytextwidth]
         \column{0.55\textwidth}
         \begin{itemize}\itemsep0.45em
-            \item \textbf{Program-aided Language models (PAL)} and \textbf{Program of Thoughts (PoT)} arrived together in 2022 with one idea: the model writes Python, and an interpreter does the computation.
-            \item Zero-shot, it beats CoT on every benchmark tested (right). It is within 0.4 points of PAL on GSM8K.
+            \item \textbf{Program of Thoughts (PoT)} appeared alongside PAL in 2022. Zero-shot, it beats CoT on every benchmark tested (right). It is within 0.4 points of PAL on GSM8K.
             \item \textbf{What lasts is the ablation.} GSM8K: full method 71.6. Variables renamed to a, b, c: 60.2. One direct equation: 45.8. Multi-step programs and \emph{semantic binding} do the work.
             \item \textbf{And the error analysis.} Of 198 failures on one benchmark, 47\% are \emph{value grounding}. Code does not fix that.
         \end{itemize}

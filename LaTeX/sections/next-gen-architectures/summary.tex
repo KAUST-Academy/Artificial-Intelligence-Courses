@@ -1,6 +1,6 @@
 \section{Summary}
 
-\begin{frame}{Day 1 in One Table}
+\begin{frame}{Next-Generation Architectures in One Table}
     \begin{center}
     \footnotesize
     \renewcommand{\arraystretch}{1.15}
@@ -10,10 +10,10 @@
         \midrule
         KV cache grows with context & hybrids: recurrent mixers plus a few attention layers & recall and state tracking in a fixed state \\
         Every token pays for every weight & MoE with 3 to 5\% of weights active & routing score, shared experts, serving at small batch \\
-        Attention is quadratic & FlashAttention-3 and 4, learned sparse attention & the cost of the selector itself \\
+        Attention is quadratic & FlashAttention-3 and 4, windows, compressed sparse attention & the cost of the selector itself \\
         Context beyond training length & YaRN, NoPE layers, explicit sinks, staged training & uniform quality across 1M tokens \\
-        Finite compute and data & over-train small models, curate data, shift compute to RL and inference & laws for post-training and for verifiers \\
-        Inputs beyond text & one natively multimodal model, fused early & unified generation, encoder-free inputs \\
+        Finite compute and data & over-train small models, repeat data up to about 4 epochs, shift compute to post-training & laws for post-training and for verifiers \\
+        Inputs beyond text & one natively multimodal model, vision added early in training & unified generation, encoder-free inputs \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
@@ -29,8 +29,4 @@
         \item Sparse models lose on reading comprehension at matched loss. \textbf{What does loss fail to measure?}
         \item Is there a scaling law that jointly allocates compute between \textbf{pre-training, reinforcement learning and inference}?
     \end{itemize}
-    \vspace{0.5em}
-    \begin{block}{Tomorrow}
-        Day 2 picks up the last question: reasoning, search and verification at test time.
-    \end{block}
 \end{frame}

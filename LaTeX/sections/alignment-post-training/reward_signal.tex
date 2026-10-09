@@ -1,28 +1,10 @@
-\section{The Reward Signal: AI Feedback, Process Supervision and Reward Shaping}
+\section{The Reward Signal: AI Feedback, Reward Shaping and Reward Hacking}
 
 \begin{frame}{}
     \LARGE Alignment and Post-Training: \textbf{The Reward Signal}
 
     \vspace{1em}
     \normalsize The optimiser is only as good as its reward. Where does the reward come from, and how does it break?
-\end{frame}
-
-\begin{frame}{RLAIF in One Slide (Recap)}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.6\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item \textbf{RLAIF} keeps the RLHF pipeline and changes one thing: an off-the-shelf LLM writes the preference labels.
-            \item \textbf{The headline result is parity.} Against an SFT baseline, humans prefer RLAIF 71\% of the time on summarisation and RLHF 73\%.
-            \item On harmlessness the AI labeller was better: 88\% harmless against 76\% for RLHF.
-            \item LLM labellers have \textbf{position bias}. Label each pair in both orders and average.
-        \end{itemize}
-        \column{0.38\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.55\textheight,keepaspectratio]{images/alignment-post-training/rlaif_fig1_win_rates.png}
-    \end{columns}
-    \vspace{0.3em}
-    \takeaway{The question for today is what AI feedback became once RL moved on-policy and to reasoning tasks.}
-    \src{Lee et al., ``RLAIF vs. RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback,'' \href{https://arxiv.org/abs/2309.00267}{arXiv:2309.00267}, Figure 1. Recap of the KAUST Academy LLM course.}
 \end{frame}
 
 \begin{frame}{AI Feedback in 2026: Cheap, Consistent, Biased}
@@ -33,7 +15,7 @@
         \toprule
         & \textbf{Human feedback} & \textbf{AI feedback} \\
         \midrule
-        Cost per preference & 1 dollar or more & under 0.01 dollar \\
+        Cost per preference & 5 to 20 dollars & under 0.01 dollar \\
         Error profile & high noise, low bias & \alert{low noise, high bias} \\
         \bottomrule
     \end{tabular}\end{adjustbox}
@@ -44,30 +26,7 @@
         \item \textbf{Preference leakage.} When the data generator and the judge are related models, the judge favours the students of its relative. This bias is hard to detect.
         \item \textbf{Where it is used now.} As the reward for tasks with no verifier: a self-critique rubric in Kimi K2, an LM-judge score in $[0,1]$ for chat in Olmo 3.
     \end{itemize}
-    \src{Lambert, RLHF Book, ``Synthetic Data and Distillation''. Cui et al., ``UltraFeedback,'' \href{https://arxiv.org/abs/2310.01377}{arXiv:2310.01377}, Table 4. NVIDIA, \href{https://arxiv.org/abs/2406.11704}{arXiv:2406.11704}. Li et al., ``Preference Leakage,'' ICLR 2026, \href{https://arxiv.org/abs/2502.01534}{arXiv:2502.01534}.}
-\end{frame}
-
-\begin{frame}{Process Supervision: Won at Test Time, Dropped in Training}
-    \begin{itemize}\itemsep0.4em
-        \item \textbf{Yesterday:} a process reward model (PRM) scores each reasoning step, and is a strong \emph{verifier} for search at test time.
-        \item \textbf{Today's question:} why not use the same PRM as the \emph{training} reward?
-    \end{itemize}
-    \vspace{0.2em}
-    \begin{center}
-    \small
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{5.6cm}>{\raggedright\arraybackslash}p{7.7cm}}
-        \toprule
-        \textbf{DeepSeek-R1's three objections} & \textbf{What theory and later work say} \\
-        \midrule
-        A fine-grained ``step'' is hard to define & Outcome supervision is ``no more statistically difficult'', up to polynomial factors in the horizon \\
-        Judging steps is hard, even for humans & The advantage function of any policy is an optimal PRM \\
-        A learned PRM invites reward hacking & PRIME derives \emph{implicit} process rewards from outcome labels \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \vspace{0.2em}
-    \takeaway{PRMs win at \textbf{test-time verification}. Outcome rewards won \textbf{training-time RL} at frontier scale. R1-Zero used only accuracy and format rewards.}
-    \src{DeepSeek-AI, ``DeepSeek-R1,'' \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. Jia, Rakhlin, Xie, ``Do We Need to Verify Step by Step?'' \href{https://arxiv.org/abs/2502.10581}{arXiv:2502.10581}. Cui et al., ``PRIME,'' \href{https://arxiv.org/abs/2502.01456}{arXiv:2502.01456}.}
+    \src{Lambert, ``The state of post-training in 2025'' (Interconnects, 2025), and RLHF Book, ``Synthetic Data and Distillation''. Cui et al., ``UltraFeedback,'' \href{https://arxiv.org/abs/2310.01377}{arXiv:2310.01377}, Table 4. NVIDIA, \href{https://arxiv.org/abs/2406.11704}{arXiv:2406.11704}. Li et al., ``Preference Leakage,'' ICLR 2026, \href{https://arxiv.org/abs/2502.01534}{arXiv:2502.01534}.}
 \end{frame}
 
 \begin{frame}{Reward Shaping for Verifiable Rewards}
@@ -209,7 +168,7 @@
 \begin{frame}{The Reward Signal: What to Remember}
     \begin{itemize}\itemsep0.4em
         \item AI feedback is \textbf{low noise, high bias}. Use a judge from a different model family than the generator.
-        \item Process rewards are for \textbf{search}. Outcome rewards are for \textbf{training}. Shaping adds format, length and language terms, and nothing learned.
+        \item A verifiable reward is \textbf{shaped} with format, length and language terms. Adding a learned reward model's score only added noise.
         \item A learned reward obeys an over-optimisation law. \textbf{KL only stops you early.} A verifier removes the need for it.
     \end{itemize}
     \vspace{0.3em}

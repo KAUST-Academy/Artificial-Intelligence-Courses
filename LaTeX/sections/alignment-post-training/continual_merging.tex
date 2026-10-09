@@ -7,66 +7,27 @@
     \normalsize A deployed model is never finished. How do you add to it without breaking what it knew?
 \end{frame}
 
-\begin{frame}{Recap, and Three Axes for the Rest}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.5\textwidth}
-        \textbf{Recap: four defences against forgetting}
-        \begin{itemize}\itemsep0.4em
-            \item \textbf{Replay.} Mix a slice of the old data into every new run.
-            \item \textbf{Regularise.} Penalise movement along directions that mattered, as in elastic weight consolidation.
-            \item \textbf{Constrain.} LoRA learns less than full fine-tuning, and forgets less.
-            \item \textbf{Merge.} Train the new skill separately, then combine weights.
-        \end{itemize}
-        \column{0.47\textwidth}
-        \textbf{A 2026 map of continual learning}
-        \begin{center}
-        \small
-        \renewcommand{\arraystretch}{1.25}
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{4.3cm}}
-            \toprule
-            \textbf{When} & pre-training, post-training, inference time \\
-            \textbf{How} & off-policy, on-policy, beyond gradients \\
-            \textbf{Where} & parameters, or memory, skills and protocols \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-        \end{center}
-    \end{columns}
-    \vspace{0.6em}
+\begin{frame}{A 2026 Map of Continual Learning}
+    \begin{itemize}\itemsep0.4em
+        \item A 2026 survey sorts continual learning for LLMs along three axes:
+    \end{itemize}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.3}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{7.6cm}}
+        \toprule
+        \textbf{When} & pre-training, post-training, inference time \\
+        \textbf{How} & off-policy, on-policy, beyond gradients \\
+        \textbf{Where} & parameters, or memory, skills and protocols \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.4em}
     \begin{itemize}\itemsep0.4em
         \item The survey's thesis: adaptation is moving from the \textbf{parameters} to the \textbf{system} around them.
+        \item This section stays with the parameters: continued pre-training, fine-tuning, RL and merging.
     \end{itemize}
-    \src{Recap of the KAUST Academy LLM course (replay, EWC, LoRA, merging). Hou et al., ``Continual Learning in Transition,'' \href{https://arxiv.org/abs/2608.06216}{arXiv:2608.06216} (abstract).}
-\end{frame}
-
-\begin{frame}{Continual Pre-Training: Re-Warm, Re-Decay, Replay}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.55\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item \textbf{Claim.} Re-warm the learning rate, decay it again, and replay a little old data. The result matches re-training on the union of both corpora, at a fraction of the compute.
-            \item Final validation loss at 10B parameters: \textbf{1.89} continual against \textbf{1.87} re-trained.
-            \item \textbf{How much replay?} 5\% for a weak shift, 25\% for a strong one. Even 0.5\% sharply reduces forgetting.
-            \item \textbf{Two sources of forgetting.} Re-warming causes a loss spike \emph{even on the same data}. That part is optimisation, not distribution shift.
-        \end{itemize}
-        \column{0.43\textwidth}
-        \centering
-        \small
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lr}
-            \toprule
-            \textbf{Recipe} & \textbf{Replay share} \\
-            \midrule
-            Ibrahim et al., weak shift & 5\% \\
-            Ibrahim et al., strong shift & 25\% \\
-            Code Llama & 7\% \\
-            Llemma & 5\% \\
-            AdaptLLM (instructions) & 50 to 67\% \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-
-        \vspace{0.5em}
-        {\scriptsize Share of general-domain data kept in the continued run.}
-    \end{columns}
-    \vspace{0.3em}
-    \src{Ibrahim et al., ``Simple and Scalable Strategies to Continually Pre-train Large Language Models,'' \href{https://arxiv.org/abs/2403.08763}{arXiv:2403.08763}, Table 4 and Figure 8. Replay shares from the Code Llama, Llemma and AdaptLLM papers (cited on the next slide).}
+    \src{Hou et al., ``Continual Learning in Transition,'' \href{https://arxiv.org/abs/2608.06216}{arXiv:2608.06216} (abstract).}
 \end{frame}
 
 \begin{frame}{Domain Adaptation: What It Buys and What It Costs}
@@ -82,47 +43,28 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \begin{itemize}\itemsep0.45em
+    \begin{itemize}\small\itemsep0.2em
         \item A 7\% replay share protected language, but not every off-domain skill: Code Llama lost 9.5 points of maths.
         \item Raw domain text can teach facts and still damage the ability to \emph{answer questions}. AdaptLLM's fix: turn the documents into reading-comprehension tasks, mixed with general instructions.
+        \item \textbf{Part of the forgetting is optimisation.} Re-warming the learning rate raises the loss even on the \emph{same} data. Replay of only 1\% already reduces forgetting.
     \end{itemize}
-    \src{Rozi\`ere et al., ``Code Llama,'' \href{https://arxiv.org/abs/2308.12950}{arXiv:2308.12950}, Tables 1 and 12. Azerbayev et al., ``Llemma,'' ICLR 2024, \href{https://arxiv.org/abs/2310.10631}{arXiv:2310.10631}. Cheng, Huang, Wei, ``Adapting LLMs to Domains via Reading Comprehension,'' ICLR 2024, \href{https://arxiv.org/abs/2309.09530}{arXiv:2309.09530}.}
+    \src{Rozi\`ere et al., ``Code Llama,'' \href{https://arxiv.org/abs/2308.12950}{arXiv:2308.12950}, Tables 1 and 12. Azerbayev et al., ``Llemma,'' \href{https://arxiv.org/abs/2310.10631}{arXiv:2310.10631}. Cheng, Huang, Wei, ``AdaptLLM,'' ICLR 2024, \href{https://arxiv.org/abs/2309.09530}{arXiv:2309.09530}. Ibrahim et al., \href{https://arxiv.org/abs/2403.08763v4}{arXiv:2403.08763v4}, Sections 6.2 and 7.1.}
 \end{frame}
 
-\begin{frame}{Fine-Tuning Forgets by Law, and Safety Goes First}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.5\textwidth}
-        \textbf{A scaling law for forgetting}
-        \[
-            \mathcal{L}_{f}=-c\,\mathcal{L}_{ft}+s
-        \]
-        \begin{itemize}\itemsep0.4em
-            \item Forgetting $\mathcal{L}_f$ is \emph{linear} in the fine-tuning loss, with $R^2$ of 0.95 and 0.97 on two datasets.
-            \item Neither early stopping nor a different LoRA rank escapes the line.
-            \item For RL, LoRA matches full fine-tuning even at rank 1. Policy gradient absorbs only about $O(1)$ bits per episode.
-        \end{itemize}
-        \column{0.47\textwidth}
-        \textbf{Safety is the most fragile behaviour}
-        \begin{center}
-        \small
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lr}
-            \toprule
-            \textbf{GPT-3.5 Turbo, fine-tuned on} & \textbf{Harmful} \\
-            \midrule
-            nothing (baseline) & 1.8\% \\
-            10 harmful examples & 88.8\% \\
-            benign Alpaca data & 31.8\% \\
-            Alpaca plus 250 safety samples & 21.8\% \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-        \end{center}
-        \begin{itemize}\itemsep0.4em
-            \item The 10 examples cost under 0.20 dollars.
-            \item Benign data alone erodes safety. Mixing safety data back restores it only partly.
-        \end{itemize}
-    \end{columns}
+\begin{frame}{Fine-Tuning Forgets by Law}
+    \begin{itemize}\itemsep0.4em
+        \item \textbf{A scaling law for forgetting.} $\mathcal{L}_{ft}$ is the fine-tuning loss. $\mathcal{L}_f$ measures forgetting as the cross-entropy of the fine-tuned model against the base model's next-token predictions on held-out text (WikiText-103). $c$ and $s$ are fitted constants per fine-tuning dataset:
+    \end{itemize}
+    \[
+        \mathcal{L}_{f}=-c\,\mathcal{L}_{ft}+s
+    \]
+    \begin{itemize}\itemsep0.4em
+        \item Forgetting is \emph{linear} in the fine-tuning loss, with $R^2$ of 0.95 and 0.97 on two datasets. The more the fine-tune learns, the more it forgets.
+        \item Neither early stopping nor a different LoRA rank escapes the line.
+        \item For RL, LoRA matches full fine-tuning even at rank 1. Policy gradient absorbs only about $O(1)$ bits per episode.
+    \end{itemize}
     \vspace{0.3em}
-    \src{Kalajdzievski, ``Scaling Laws for Forgetting When Fine-Tuning Large Language Models,'' \href{https://arxiv.org/abs/2401.05605}{arXiv:2401.05605}, Eq. 4 and Figure 2. Schulman, ``LoRA Without Regret'' (Thinking Machines, 2025). Qi et al., ``Fine-tuning Aligned Language Models Compromises Safety,'' \href{https://arxiv.org/abs/2310.03693}{arXiv:2310.03693}.}
+    \src{Kalajdzievski, ``Scaling Laws for Forgetting When Fine-Tuning Large Language Models,'' \href{https://arxiv.org/abs/2401.05605v1}{arXiv:2401.05605v1}, Sections 3.1 and 4.1, Eq. 4 and Figure 2. Schulman, ``LoRA Without Regret'' (Thinking Machines, 2025).}
 \end{frame}
 
 \begin{frame}{SFT or RL: Which Forgets Less?}
@@ -149,19 +91,6 @@
     \vspace{0.2em}
     \caveat{This holds for a \textbf{single} new task. In sequential multi-task RL, the drift happens on old tasks and RL does forget (2026).}
     \src{Shenfeld, Pari, Agrawal, ``RL's Razor: Why Online RL Forgets Less,'' \href{https://arxiv.org/abs/2509.04259}{arXiv:2509.04259}, Figure 1. Chen et al., ``Retaining by Doing,'' \href{https://arxiv.org/abs/2510.18874}{arXiv:2510.18874}. Luo et al., ``RL Forgets! Towards Continual Policy Optimization,'' \href{https://arxiv.org/abs/2607.04364}{arXiv:2607.04364}.}
-\end{frame}
-
-\begin{frame}{Model Merging in One Slide (Recap)}
-    \centering
-    \includegraphics[width=0.8\linewidth,height=0.26\textheight,keepaspectratio]{images/alignment-post-training/task_arithmetic_fig1.png}
-    \begin{itemize}\itemsep0.3em
-        \item \textbf{Task vector.} What a fine-tune learned is a direction in weight space: $\tau=\theta_{\text{ft}}-\theta_{\text{pre}}$. Negate it, add it, or combine several: $\theta_{\text{new}}=\theta_{\text{pre}}+\lambda\sum_i\tau_i$.
-        \item \textbf{Recipes.} Linear averaging (soup), SLERP, TIES (trim, elect sign, merge) and DARE (drop and rescale).
-        \item \textbf{Two rules.} Merge only models that share a pre-trained checkpoint. Evaluate the merge itself.
-    \end{itemize}
-    \vspace{0.1em}
-    \takeaway{Next: where merging sits inside the pipelines of 2024 to 2026.}
-    \src{Ilharco et al., ``Editing Models with Task Arithmetic,'' ICLR 2023, \href{https://arxiv.org/abs/2212.04089}{arXiv:2212.04089}, Figure 1. Yadav et al., ``TIES-Merging,'' \href{https://arxiv.org/abs/2306.01708}{arXiv:2306.01708}. Recap of the KAUST Academy LLM course.}
 \end{frame}
 
 \begin{frame}{Merging Inside Real Recipes}
@@ -197,7 +126,6 @@
         \textbf{System} & \textbf{What is updated, and when} & \textbf{Evidence} \\
         \midrule
         \rowcolor{KAUSTcyan!12} Cursor Tab (production) & policy gradient on live user data, a new checkpoint every 1.5 to 2 hours & 21\% fewer suggestions, 28\% higher accept rate \\
-        Sparse memory fine-tuning & only the most relevant slots of a memory layer & old-task F1 drop: 11\%, against 71\% for LoRA and 89\% for full fine-tuning \\
         SEAL & the model writes its own fine-tuning data, rewarded by RL if the update helps & no-context question answering: 32.7 to 47.0\% \\
         \bottomrule
     \end{tabular}\end{adjustbox}
@@ -205,14 +133,14 @@
     \begin{itemize}\itemsep0.4em
         \item \textbf{Reward design as product design.} Cursor pays $+0.75$ for an accepted suggestion, $-0.25$ for a rejected one, 0 for silence. The policy then speaks only when $P(\text{accept})>25\%$.
     \end{itemize}
-    \src{Cursor, ``Improving Cursor Tab with online RL'' (2025). Lin et al., ``Continual Learning via Sparse Memory Finetuning,'' \href{https://arxiv.org/abs/2510.15103}{arXiv:2510.15103}. Zweiger et al., ``Self-Adapting Language Models,'' \href{https://arxiv.org/abs/2506.10943}{arXiv:2506.10943}.}
+    \src{Cursor, ``Improving Cursor Tab with online RL'' (2025). Zweiger et al., ``Self-Adapting Language Models,'' \href{https://arxiv.org/abs/2506.10943}{arXiv:2506.10943}.}
 \end{frame}
 
 \begin{frame}{Continual Post-Training: What to Remember}
     \begin{itemize}\itemsep0.6em
-        \item Continual pre-training works with three ingredients: \textbf{re-warm, re-decay, replay}. A few per cent of replay goes a long way.
+        \item Part of the forgetting in continued pre-training is \textbf{optimisation}: re-warming the learning rate raises the loss even on the same data. Even 1\% replay helps.
         \item Domain adaptation has a bill. Check \textbf{off-domain skills} and \textbf{prompting ability}, not only the target benchmark.
-        \item Forgetting is linear in how much you learn. \textbf{Safety behaviour erodes first}, even under benign fine-tuning.
+        \item Forgetting is \textbf{linear} in the fine-tuning loss. Early stopping and a different LoRA rank stay on the same line.
         \item On-policy updates forget less for a single task. Sequential RL still forgets.
         \item Merging is now a routine pipeline step: against the alignment tax, across data orders, and to recover a lost skill.
     \end{itemize}

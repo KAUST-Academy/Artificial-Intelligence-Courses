@@ -1,46 +1,29 @@
-\subsection{State-Space Models}
+\subsection{One Family of Matrix-State Mixers}
 
-\begin{frame}{A Second Road to the Same Place: State-Space Models}
-    \begin{itemize}\itemsep0.5em
-        \item Linear attention started from attention and removed the cache. State-space models (SSMs) started from \textbf{control theory} and arrived at the same recurrence.
-        \item Discretise a linear system $h'(t)=Ah(t)+Bx(t),\; y(t)=Ch(t)$:
-        \[
-            h_t=\bar{A}\,h_{t-1}+\bar{B}\,x_t, \qquad y_t = C\,h_t
-        \]
-        \item \textbf{S4} (2021): fixed $A,B,C$ make the whole map one long convolution, so training is parallel. It solved long-range benchmarks that Transformers failed, such as Path-X at length 16k.
-        \item The catch is \emph{time-invariance}. One kernel treats every token alike. The model cannot keep or drop a token because of \textbf{what it is}.
+\begin{frame}{One Family, One Table}
+    Linear attention, gated recurrences, state-space models and the delta rule are all rules for updating a matrix state, read out as $o_t=S_tq_t$.
+    \vspace{0.3em}
+    \begin{center}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
+        \toprule
+        \textbf{Model} & \textbf{State update} & \textbf{What it adds} \\
+        \midrule
+        Linear attention & $S_t=S_{t-1}+v_tk_t^\top$ & nothing: write only \\
+        RetNet & $S_t=\gamma\, S_{t-1}+v_tk_t^\top$ & fixed decay \\
+        Mamba-2 & $S_t=\gamma_t\, S_{t-1}+v_tk_t^\top$ & input-dependent decay \\
+        GLA & $S_t=S_{t-1}\mathrm{Diag}(\alpha_t)+v_tk_t^\top$ & per-channel decay \\
+        DeltaNet & $S_t=S_{t-1}(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$ & targeted overwrite \\
+        \rowcolor{KAUSTcyan!12} Gated DeltaNet & $S_t=S_{t-1}\,\alpha_t(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$ & decay and overwrite \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.2em}
+    \begin{itemize}
+        \item Each transition stays \textbf{diagonal plus low-rank}. That structure is what keeps chunkwise training possible.
     \end{itemize}
-    \src{Gu et al., ``Efficiently Modeling Long Sequences with Structured State Spaces,'' \href{https://arxiv.org/abs/2111.00396}{arXiv:2111.00396}.}
-\end{frame}
-
-\begin{frame}{Mamba: Let the Input Choose What to Remember}
-    \begin{itemize}\itemsep0.35em
-        \item \textbf{One change}: make $B$, $C$ and the step size $\Delta$ functions of the current token.
-        \item Read $\Delta_t$ as a gate. Large: reset the state toward this token. Small: ignore it and hold.
-        \item Selectivity breaks the convolution, so Mamba runs a \textbf{hardware-aware parallel scan} instead.
-        \item Payoff reported in the paper: about 5$\times$ the generation throughput of a same-size Transformer.
-    \end{itemize}
-    \centering
-    \includegraphics[width=0.86\linewidth,height=0.34\textheight,keepaspectratio]{images/next-gen-architectures/mamba_paper_fig1_selective_ssm_overview.png}
-    \src{Gu and Dao, ``Mamba: Linear-Time Sequence Modeling with Selective State Spaces,'' \href{https://arxiv.org/abs/2312.00752}{arXiv:2312.00752}, Figure 1.}
-\end{frame}
-
-\begin{frame}{Mamba-2: The Two Roads Meet}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.62\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item Write an SSM's whole sequence map as one matrix, $y = Mx$. That matrix is \textbf{semiseparable}.
-            \item Apply it as a recurrence: linear time. Apply it as a masked attention matrix: quadratic time. \textbf{Same function, two algorithms.}
-            \item In our notation Mamba-2 is simply
-            \[ S_t=\gamma_t\,S_{t-1}+v_tk_t^\top \]
-            which is \emph{gated linear attention} with a scalar gate.
-            \item So ``attention versus SSM'' is a choice of \textbf{mask structure} inside one family.
-        \end{itemize}
-        \column{0.36\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{images/next-gen-architectures/mamba2_ssd_fig1_duality_roadmap.png}
-    \end{columns}
-    \src{Dao and Gu, ``Transformers are SSMs: Generalized Models and Efficient Algorithms Through Structured State Space Duality,'' \href{https://arxiv.org/abs/2405.21060}{arXiv:2405.21060}, Figure 1.}
+    \src{After Yang et al., \href{https://arxiv.org/abs/2406.06484}{arXiv:2406.06484}, Table 2, and Yang, Kautz, Hatamizadeh, \href{https://arxiv.org/abs/2412.06464}{arXiv:2412.06464}.}
 \end{frame}
 
 \begin{frame}{Mamba-3 (2026): Designed for Inference First}
@@ -68,48 +51,4 @@
     \vspace{0.2em}
     \caveat{Results stop at 1.5B parameters. No shipped production model used Mamba-3 as of October 2026.}
     \src{Lahoti et al., ``Mamba-3: Improved Sequence Modeling using State Space Principles,'' ICLR 2026, \href{https://arxiv.org/abs/2603.15569}{arXiv:2603.15569}. Figure: Goomba Lab blog, ``Mamba-3 Part 1'' (2026).}
-\end{frame}
-
-\begin{frame}{One Family, One Table}
-    Every mixer so far is a rule for updating a matrix state, read out as $o_t=S_tq_t$.
-    \vspace{0.3em}
-    \begin{center}
-    \small
-    \renewcommand{\arraystretch}{1.25}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
-        \toprule
-        \textbf{Model} & \textbf{State update} & \textbf{What it adds} \\
-        \midrule
-        Linear attention & $S_t=S_{t-1}+v_tk_t^\top$ & nothing: write only \\
-        RetNet & $S_t=\gamma\, S_{t-1}+v_tk_t^\top$ & fixed decay \\
-        Mamba-2 & $S_t=\gamma_t\, S_{t-1}+v_tk_t^\top$ & input-dependent decay \\
-        GLA & $S_t=S_{t-1}\mathrm{Diag}(\alpha_t)+v_tk_t^\top$ & per-channel decay \\
-        DeltaNet & $S_t=S_{t-1}(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$ & targeted overwrite \\
-        \rowcolor{KAUSTcyan!12} Gated DeltaNet & $S_t=S_{t-1}\,\alpha_t(I-\beta_tk_tk_t^\top)+\beta_tv_tk_t^\top$ & decay and overwrite \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \vspace{0.2em}
-    \begin{itemize}
-        \item Each transition stays \textbf{diagonal plus low-rank}. That structure is what keeps chunkwise training possible.
-    \end{itemize}
-    \src{After Yang et al., \href{https://arxiv.org/abs/2406.06484}{arXiv:2406.06484}, Table 2, and Yang, Kautz, Hatamizadeh, \href{https://arxiv.org/abs/2412.06464}{arXiv:2412.06464}.}
-\end{frame}
-
-\begin{frame}{What a Fixed State Cannot Do}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.4\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item A fixed-size state is a \textbf{summary}. What the summary drops is gone.
-            \item \textbf{Theory:} any recurrent model needs $\Omega(N)$ bits of state to solve multi-query recall over $N$ pairs.
-            \item \textbf{Practice:} Transformers learn to copy from far fewer examples and generalise to longer strings.
-            \item Better update rules raise the ceiling. They do not remove it.
-        \end{itemize}
-        \column{0.58\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.52\textheight,keepaspectratio]{images/next-gen-architectures/repeat_after_me_fig1_copying_and_lookup.png}
-
-        {\scriptsize Transformers (blue) against fixed-state models (red) on copying and lookup.}
-    \end{columns}
-    \src{Jelassi et al., ``Repeat After Me: Transformers are Better than State Space Models at Copying,'' \href{https://arxiv.org/abs/2402.01032}{arXiv:2402.01032}, Figure 1. Arora et al., ``Simple Linear Attention Language Models Balance the Recall-Throughput Tradeoff,'' \href{https://arxiv.org/abs/2402.18668}{arXiv:2402.18668}, Theorem 3.1.}
 \end{frame}

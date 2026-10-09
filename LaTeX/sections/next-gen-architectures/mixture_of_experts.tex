@@ -7,41 +7,6 @@
     \normalsize Must every token use every weight?
 \end{frame}
 
-\begin{frame}{MoE in One Slide (Recap)}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.55\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item In GPT-3, the feed-forward layers hold 116B of 175B parameters, about \textbf{two thirds}.
-            \item MoE replaces one large FFN with $N$ small \emph{experts}. A \textbf{router} sends each token to only $k$ of them:
-            \[
-                y=\sum_{i\in \mathrm{TopK}(x)} g_i(x)\,\mathrm{FFN}_i(x)
-            \]
-            \item \textbf{Memory} scales with total parameters. \textbf{Compute} scales with active parameters.
-        \end{itemize}
-        \column{0.42\textwidth}
-        \centering
-        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize, >=Stealth,
-            ex/.style={draw, rounded corners=1.5pt, minimum width=0.85cm, minimum height=0.6cm}]
-            \node[draw, rounded corners=1.5pt, fill=gray!12, minimum width=1.4cm, minimum height=0.5cm] (x) at (2.1,0) {token $x$};
-            \node[draw, rounded corners=1.5pt, fill=KAUSTcyan!25, minimum width=1.4cm, minimum height=0.5cm] (r) at (2.1,1.0) {\textbf{Router}};
-            \node[ex, fill=gray!10] (e1) at (0.3,2.3) {$E_1$};
-            \node[ex, fill=darkorange!35] (e2) at (1.5,2.3) {$E_2$};
-            \node[ex, fill=gray!10] (e3) at (2.7,2.3) {$E_3$};
-            \node[ex, fill=darkorange!35] (e4) at (3.9,2.3) {$E_4$};
-            \node[draw, circle, inner sep=1.5pt] (s) at (2.1,3.5) {$+$};
-            \draw[->, thick] (x) -- (r);
-            \draw[->, thick, darkorange!80!black] (r) -- (e2);
-            \draw[->, thick, darkorange!80!black] (r) -- (e4);
-            \draw[->, gray!50, dashed] (r) -- (e1);
-            \draw[->, gray!50, dashed] (r) -- (e3);
-            \draw[->, thick, darkorange!80!black] (e2) -- (s);
-            \draw[->, thick, darkorange!80!black] (e4) -- (s);
-            \node[gray] at (2.1,4.0) {weighted sum of 2 of 4 experts};
-        \end{tikzpicture}\end{adjustbox}
-    \end{columns}
-    \src{Parameter split: Gormley and Virtue, CMU 10-423 Lecture 16 (2025), slides 7 to 8. Gate equation after Jiang et al., ``Mixtral of Experts,'' \href{https://arxiv.org/abs/2401.04088}{arXiv:2401.04088}.}
-\end{frame}
-
 \begin{frame}{What Changed Since Mixtral}
     \begin{center}
     \small
@@ -62,7 +27,7 @@
     \end{center}
     \begin{itemize}\itemsep0.35em
         \item \textbf{Sparser:} the active share fell from 28\% to between 3 and 5\% in about two and a half years.
-        \item \textbf{Finer:} from 8 experts to hundreds. Why? Choosing 2 of 8 gives 28 combinations. Choosing 4 of 16 half-size experts gives 1,820, at the same active size.
+        \item \textbf{Finer:} from 8 experts to hundreds. Choosing 2 of 8 gives 28 combinations. Choosing 4 of 16 half-size experts gives 1,820, at the same active size.
     \end{itemize}
     \src{Official configuration files and technical reports of each model. Combination count: Welleck, CMU 11-711 Lecture 21 (2026). Kimi Team, ``Kimi K2: Open Agentic Intelligence,'' \href{https://arxiv.org/abs/2507.20534}{arXiv:2507.20534}.}
 \end{frame}
@@ -165,8 +130,7 @@
     \centering
     \includegraphics[width=0.95\linewidth,height=0.52\textheight,keepaspectratio]{images/next-gen-architectures/qwen_global_lbl_fig.png}
     \begin{itemize}\itemsep0.2em
-        \item \textbf{2024 answer (Mixtral):} no clear domain specialisation. arXiv, biology and philosophy text route alike.
-        \item \textbf{2025 answer:} it depends on training. With batch-level balancing, domain experts appear (above, right). OLMoE, trained from scratch, shows the same.
+        \item \textbf{2025 answer:} it depends on training. Mixtral's experts showed no domain specialisation, but with batch-level balancing domain experts appear (above, right). OLMoE, trained from scratch, shows the same.
     \end{itemize}
     \src{Figure: Qiu et al., \href{https://arxiv.org/abs/2501.11873}{arXiv:2501.11873}. Jiang et al., \href{https://arxiv.org/abs/2401.04088}{arXiv:2401.04088}, Section 5. Muennighoff et al., ``OLMoE: Open Mixture-of-Experts Language Models,'' \href{https://arxiv.org/abs/2409.02060}{arXiv:2409.02060}.}
 \end{frame}
@@ -179,7 +143,7 @@
             L_z=\frac1B\sum_{i=1}^{B}\Big(\log\sum_{j=1}^{N}e^{x^{(i)}_j}\Big)^2
         \]
         \item The habit survives in 2026. Experts are stored in \textbf{4-bit} formats, while routers stay in higher precision.
-        \item \textbf{Token dropping.} Early MoEs gave each expert a fixed capacity and dropped the overflow. Another user's request could cost you a token.
+        \item \textbf{Token dropping.} With a fixed expert capacity, another user's request could cost you a token.
         \item Modern training is \textbf{dropless}. Block-sparse kernels let each expert take any number of tokens, and DeepSeek-V3 drops none in training or inference.
     \end{itemize}
     \src{Zoph et al., ``ST-MoE: Designing Stable and Transferable Sparse Expert Models,'' \href{https://arxiv.org/abs/2202.08906}{arXiv:2202.08906}. Gale et al., ``MegaBlocks,'' \href{https://arxiv.org/abs/2211.15841}{arXiv:2211.15841}. DeepSeek-AI, \href{https://arxiv.org/abs/2412.19437}{arXiv:2412.19437}. Hashimoto, Stanford CS336 Lecture 4 (2026).}
@@ -220,7 +184,7 @@
 \begin{frame}{Serving a Trillion-Parameter MoE}
     \begin{itemize}\itemsep0.3em
         \item \textbf{MoE is a throughput play at large batch.} At batch size 1 you pay memory for every expert and save only FLOPs.
-        \item \textbf{Expert parallelism.} Experts live on different GPUs, so every MoE layer is an all-to-all exchange of tokens. DeepSeek serves V3 with experts spread over 144 GPUs in decode.
+        \item \textbf{Expert parallelism at scale.} DeepSeek serves V3 with experts spread over 144 GPUs in decode, so each MoE layer is an all-to-all across all of them.
         \item \textbf{The batch must be large.} With 8 of 256 experts active, each expert sees few tokens unless many requests are pooled. In SGLang's tests, overlapping two batches in decode pays off only above 64 to 128 tokens per device.
         \item \textbf{Low-bit experts.} Experts are most of the weights, and each is used rarely. gpt-oss stores them at 4.25 bits per parameter, so the 120B model fits on one 80 GB GPU.
         \item \textbf{Co-design.} \emph{LatentMoE} (NVIDIA, Kimi K3) projects each token to a smaller latent space before dispatch, and the experts compute there. The smaller payload pays for more experts and a larger top-$k$.

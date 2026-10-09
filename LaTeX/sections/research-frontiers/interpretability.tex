@@ -149,13 +149,11 @@
         \column{0.54\textwidth}
         \[
             h_\ell \leftarrow h_\ell + \alpha\, v_\ell
-            \qquad\quad
-            x' = x - \hat{r}\hat{r}^\top x
         \]
         \vspace{-0.6em}
         \begin{itemize}\itemsep0.35em
-            \item \textbf{Where $v$ comes from:} the mean activation difference between prompts with and without a behaviour.
-            \item \textbf{Refusal is one direction.} In 13 chat models, ablating $\hat r$ largely removes refusal. Adding it makes the model refuse harmless requests.
+            \item Add a direction $v_\ell$ to the hidden state $h_\ell$ of layer $\ell$, with strength $\alpha$. A negative $\alpha$ suppresses the behaviour.
+            \item \textbf{Where $v$ comes from:} the mean activation difference between prompts with and without a behaviour. The refusal direction is the best-known example.
             \item \textbf{Persona vectors:} the projection \emph{before} the response predicts the trait (right).
         \end{itemize}
         \column{0.44\textwidth}
@@ -182,23 +180,19 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \begin{itemize}\itemsep0.4em
-        \item What audits now look for: \textbf{evaluation awareness}. GPT-6 Astra shows it in 9.6\% of trajectories, against 2.8\% for its predecessor.
-        \item Day 4 used probes as a safeguard layer for agents. This is the evidence behind it.
-    \end{itemize}
-    \src{MacDiarmid et al., ``Simple probes can catch sleeper agents'' (Anthropic, 2024). Marks et al., \href{https://arxiv.org/abs/2503.10965}{arXiv:2503.10965}. Goldowsky-Dill et al., \href{https://arxiv.org/abs/2502.03407}{arXiv:2502.03407}. Kram\'ar et al., \href{https://arxiv.org/abs/2601.11516}{arXiv:2601.11516}. OpenAI, ``GPT-6 Astra System Card'' (2026-09-03).}
+    \vspace{0.2em}
+    \takeaway{Probes now run in production as a cheap first filter. Whether they catch \emph{natural} deception, outside planted or curated settings, is not yet shown.}
+    \src{MacDiarmid et al., ``Simple probes can catch sleeper agents'' (Anthropic, 2024). Marks et al., \href{https://arxiv.org/abs/2503.10965}{arXiv:2503.10965}. Goldowsky-Dill et al., \href{https://arxiv.org/abs/2502.03407}{arXiv:2502.03407}. Kram\'ar et al., \href{https://arxiv.org/abs/2601.11516}{arXiv:2601.11516}.}
 \end{frame}
 
 \begin{frame}{The 2026 Frontier: Let the Activations Speak}
     \begin{itemize}\itemsep0.5em
         \item \textbf{Natural Language Autoencoders (May 2026).} One model writes a text description of an activation. A second reconstructs the activation from that text. In the audit of Claude Opus 4.6 it surfaced \emph{unverbalised} evaluation awareness. Risk: the verbaliser can confabulate.
         \item \textbf{A ``global workspace'' (July 2026).} A small subspace, under 10\% of activation variance, carries what the model can report. Swapping a concept there redirects the answer in 88\% of cases, against 5\% elsewhere.
-        \item \textbf{Chain of thought as a monitor (Day 2).} Reasoning models mention a hint they used in under 20\% of cases, and Astra's monitorability fell.
-
     \end{itemize}
     \vspace{0.2em}
     \takeaway{The arc: dictionaries of features, then circuits, then natural-language readouts. The test moved from proxy metrics to ``did it help an audit?''}
-    \src{Fraser-Taliente et al., ``Natural Language Autoencoders'' (Anthropic, 2026). Gurnee et al., ``Verbalizable Representations Form a Global Workspace'' (Anthropic, 2026). Chen et al., \href{https://arxiv.org/abs/2505.05410}{arXiv:2505.05410}. OpenAI, ``GPT-6 Astra System Card.''}
+    \src{Fraser-Taliente et al., ``Natural Language Autoencoders'' (Anthropic, 2026). Gurnee et al., ``Verbalizable Representations Form a Global Workspace'' (Anthropic, 2026).}
 \end{frame}
 
 \begin{frame}{Interpretability: What to Remember}

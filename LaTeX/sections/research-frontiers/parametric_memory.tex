@@ -115,7 +115,7 @@
 
 \begin{frame}{Memory Layers: a Second Axis of Sparsity}
     \begin{itemize}\itemsep0.3em
-        \item Day 1's MoE made \emph{computation} sparse. Memory layers make \emph{storage} sparse: a huge trainable key-value table, of which each token reads only a few rows:
+        \item Mixture-of-experts makes \emph{computation} sparse. Memory layers make \emph{storage} sparse: a huge trainable key-value table, of which each token reads only a few rows:
         $I=\mathrm{TopK}(Kq)$, \ $y=\mathrm{Softmax}(K_I\,q)\,V_I$.
     \end{itemize}
     \begin{center}
@@ -158,21 +158,6 @@
     \src{Yang et al., ``Memory3: Language Modeling with Explicit Memory,'' \href{https://arxiv.org/abs/2407.01178}{arXiv:2407.01178}, Figure 4. Zhoubian, Zhang, Kharlamov, Tang, ``Memory for Large Language Models,'' \href{https://arxiv.org/abs/2607.25380}{arXiv:2607.25380}.}
 \end{frame}
 
-\begin{frame}{Memory-Augmented Networks: Learning to Memorise at Test Time}
-    \centering
-    \includegraphics[width=0.9\linewidth,height=0.3\textheight,keepaspectratio]{images/research-frontiers/titans_fig2_mac_architecture.png}
-    \begin{itemize}\itemsep0.3em
-        \item \textbf{Titans:} a small network $\mathcal{M}$ is the long-term memory. It is \emph{trained during inference} to map keys to values:
-        \[
-            \mathcal M_t=(1-\alpha_t)\,\mathcal M_{t-1}+S_t, \qquad S_t=\eta_t S_{t-1}-\theta_t\nabla\lVert\mathcal M_{t-1}(k_t)-v_t\rVert_2^2
-        \]
-        \item This is Day 1's delta rule with \textbf{momentum} $\eta_t$, \textbf{forgetting} $\alpha_t$ and a \textbf{deep} memory in place of a matrix.
-        \item Needle retrieval at 16K tokens: Mamba2 5.4, DeltaNet 71.4, Titans 98.4.
-
-    \end{itemize}
-    \src{Behrouz, Zhong, Mirrokni, ``Titans: Learning to Memorize at Test Time,'' \href{https://arxiv.org/abs/2501.00663}{arXiv:2501.00663}, architecture figure, Eqs. 9 to 14 and Table 2. Note: all results are below about 1B parameters, and no production model is known to ship it.}
-\end{frame}
-
 \begin{frame}{Limit 1: Freshness}
     \begin{center}
     \small
@@ -183,7 +168,6 @@
         \midrule
         The model does not know where its knowledge ends & RedPajama reports a cutoff of January 2023. Its \emph{effective} cutoff, measured on dated Wikipedia, is mid-2019 \\
         Fine-tuning is a poor way to add facts & RAG consistently beats unsupervised fine-tuning \\
-        Learning new facts raises hallucination & unknown facts are learned slowly, and hallucination rises linearly as they are learned \\
         Putting the index in the weights does not help & generative retrieval beats a dual encoder on small corpora, and stalls at millions of passages \\
         \bottomrule
     \end{tabular}\end{adjustbox}
@@ -192,13 +176,13 @@
         \item Old pages inside new crawls pull the effective cutoff backwards.
         \item \textbf{``Retrieval-free'' inherits every limit of parametric memory}: staleness, bounded capacity, no provenance.
     \end{itemize}
-    \src{Cheng et al., ``Dated Data,'' \href{https://arxiv.org/abs/2403.12958}{arXiv:2403.12958}. Ovadia et al., \href{https://arxiv.org/abs/2312.05934}{arXiv:2312.05934}. Gekhman et al., \href{https://arxiv.org/abs/2405.05904}{arXiv:2405.05904}. Tay et al., ``DSI,'' \href{https://arxiv.org/abs/2202.06991}{arXiv:2202.06991}. Pradeep et al., EMNLP 2023.}
+    \src{Cheng et al., ``Dated Data,'' \href{https://arxiv.org/abs/2403.12958}{arXiv:2403.12958}. Ovadia et al., \href{https://arxiv.org/abs/2312.05934}{arXiv:2312.05934}. Tay et al., ``DSI,'' \href{https://arxiv.org/abs/2202.06991}{arXiv:2202.06991}. Pradeep et al., EMNLP 2023.}
 \end{frame}
 
 \begin{frame}{Limit 2: Attribution}
     \begin{itemize}\itemsep0.5em
         \item \textbf{Question:} which source supports this sentence? A parametric answer carries none.
-        \item \textbf{Ask the model to cite.} Even the best models lack complete citation support \alert{50\%} of the time on long-form questions.
+        \item \textbf{Ask the model to cite}, and the best models still lack complete citation support on \alert{50\%} of long-form answers.
         \item \textbf{Ask the training data, causally.} Influence functions scale to a 52B model. Influence falls to near zero when the order of key phrases is flipped, which echoes the reversal curse.
         \item \textbf{Ask the training data, verbatim.} OLMoTrace matches output spans against all 4.6T training tokens in real time. It needs fully open data, and it shows overlap, \emph{not} a cause.
     \end{itemize}
@@ -211,8 +195,8 @@
     \begin{itemize}\itemsep0.55em
         \item Facts sit mostly in feed-forward layers, at about \textbf{2 bits per parameter}, and only if seen often enough.
         \item \textbf{Editing} recalls the edited fact, fails on its consequences, and collapses after many edits.
-        \item \textbf{Memory layers} and \textbf{test-time memory} move knowledge into addressable, updatable stores. Not yet in production.
-        \item \textbf{Freshness:} models do not know their own cutoff, and learning new facts raises hallucination.
+        \item \textbf{Memory layers} move knowledge into addressable, updatable stores. Not yet in production.
+        \item \textbf{Freshness:} models do not know their own cutoff, and fine-tuning is a poor way to add facts.
         \item \textbf{Attribution:} citations are incomplete half the time, and tracing is verbatim, not causal.
     \end{itemize}
     \vspace{0.4em}

@@ -130,22 +130,12 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}[allowframebreaks]{DeepSeekMoE: Fine-Grained and Shared Experts}
+\begin{frame}{DeepSeekMoE: Fine-Grained and Shared Experts}
     \textbf{Design:} DeepSeek-V3 has 671B total parameters and activates 37B of them per token; DeepSeek-R1 is trained from it and inherits the same architecture. Every feed-forward layer except the first three is an MoE layer holding 1 shared expert and 256 routed experts, of which 8 are activated per token.
 
     \begin{itemize}
         \item \textbf{Fine-grained segmentation:} each expert is made smaller and more of them are activated. Splitting $N$ experts into $mN$ smaller ones and activating $mk$ instead of $k$ leaves the active parameter count unchanged, but gives far more distinct combinations of experts, so each one can specialise more narrowly.
         \item \textbf{Shared experts:} a small number of experts are always active for every token. They absorb the knowledge every token needs, which keeps that knowledge from being duplicated inside every routed expert.
-    \end{itemize}
-
-\framebreak
-
-    \textbf{Auxiliary-loss-free load balancing:}
-    \begin{itemize}
-        \item An auxiliary loss balances experts, but it competes with the language-modelling objective: too large a coefficient costs quality.
-        \item DeepSeek-V3 instead keeps a bias $b_i$ per expert and adds it to the affinity score when choosing the top-$k$. Overloaded experts have their bias decreased and underloaded experts increased, by a fixed step at each training step.
-        \item The bias only decides \emph{which} experts are selected. The gating value that multiplies an expert's output is still computed from the original affinity score, so the forward pass is left undistorted.
-        \item A sequence-wise balance loss is retained with a very small weight ($\alpha = 10^{-4}$), only to rule out extreme imbalance inside a single sequence.
     \end{itemize}
 \end{frame}
 

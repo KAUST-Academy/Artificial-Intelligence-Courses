@@ -58,7 +58,7 @@
         Apple on-device (2025) & about 3B & 14T & 2-bit weights, shared KV cache \\
         BitNet b1.58 (Apr 2025) & 2B & 4T & ternary weights, trained natively \\
         LFM2 (Nov 2025) & 0.35 to 2.6B & 10T + 1T & convolutions and a little attention \\
-        Qwen3.5 Small (Mar 2026) & 0.8 to 9B & not disclosed & 3:1 Gated DeltaNet hybrid (Day 1) \\
+        Qwen3.5 Small (Mar 2026) & 0.8 to 9B & not disclosed & 3:1 Gated DeltaNet hybrid \\
         \rowcolor{KAUSTcyan!12} Gemma 4 E2B, E4B (2026) & 2.3B, 4.5B eff. & not disclosed & per-layer embeddings, KV sharing \\
         \bottomrule
     \end{tabular}\end{adjustbox}
@@ -78,18 +78,16 @@
         \toprule
         \textbf{Recipe} & \textbf{Where} & \textbf{What the report shows} \\
         \midrule
-        Synthetic data, repeated & Phi-4 & about 400B synthetic tokens. Several epochs over them beat adding fresh web tokens \\
         Curation instead of volume & MobileLLM-R1 & 4.2T tokens, 11.7\% of Qwen3's 36T. Wins AIME24 (15.5 against 11.3), loses MATH500 (26.8 against 29.8) \\
         Sampled-logit distillation & Gemma 3 & 256 teacher logits sampled per token. A small teacher is better for short runs, a large one for long runs \\
-        On-policy distillation & Qwen3 & the student generates and matches teacher logits. One tenth of the GPU hours of the RL pipeline \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.3em
         \item \textbf{LFM2 refines top-$K$ distillation:} match the teacher's \emph{total mass} on its top-32 tokens, and its \emph{distribution inside} that set, as two terms: $\mathcal{L}_{DTK}=\mathcal{L}_{B}+\mathcal{L}_{T}$.
-        \item Microsoft's 2026 verdict on its own line: \emph{``data quality remains the primary lever''}.
+        \item Microsoft's 2026 verdict on its Phi small models: \emph{``data quality remains the primary lever''}.
     \end{itemize}
-    \src{Microsoft, ``Phi-4 Technical Report,'' \href{https://arxiv.org/abs/2412.08905}{arXiv:2412.08905}. Meta, \href{https://arxiv.org/abs/2509.24945}{arXiv:2509.24945}. Gemma 3, \href{https://arxiv.org/abs/2503.19786}{arXiv:2503.19786}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Liquid AI, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Aneja et al., \href{https://arxiv.org/abs/2603.03975}{arXiv:2603.03975}.}
+    \src{Meta, \href{https://arxiv.org/abs/2509.24945}{arXiv:2509.24945}. Gemma 3, \href{https://arxiv.org/abs/2503.19786}{arXiv:2503.19786}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Liquid AI, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Aneja et al., \href{https://arxiv.org/abs/2603.03975}{arXiv:2603.03975}.}
 \end{frame}
 
 \begin{frame}{Lever 2: Fewer Bits, Trained In}
@@ -126,7 +124,6 @@
         \toprule
         \textbf{Design choice} & \textbf{Model} & \textbf{Effect} \\
         \midrule
-        Five local layers per global layer & Gemma 3 & KV memory under 15\% of global-only \\
         Later block reuses the earlier block's KV & Apple (2025) & KV memory and first-token time down 37.5\% \\
         Per-layer embeddings off the accelerator & Gemma 4 E2B & 2,340M of about 5B parameters offloaded \\
         Convolutions plus a few attention blocks & LFM2 & found by search with phones in the loop \\
@@ -134,10 +131,10 @@
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.4em
-        \item These are Day 1's ideas under a \textbf{memory budget of a few GB}.
+        \item \textbf{The shared goal:} fit weights, KV cache and buffers into a \textbf{memory budget of a few GB}.
         \item \textbf{An open disagreement.} LFM2's search found that linear-attention operators hurt on-device latency without improving quality. Qwen3.5 Small ships one anyway.
     \end{itemize}
-    \src{Gemma 3, \href{https://arxiv.org/abs/2503.19786}{arXiv:2503.19786}. Apple, \href{https://arxiv.org/abs/2507.13575}{arXiv:2507.13575}. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Table 1. LFM2, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Qwen3.5-2B model card (2026).}
+    \src{Apple, \href{https://arxiv.org/abs/2507.13575}{arXiv:2507.13575}. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Table 1. LFM2, \href{https://arxiv.org/abs/2511.23404}{arXiv:2511.23404}. Qwen3.5-2B model card (2026).}
 \end{frame}
 
 \begin{frame}{Lever 4: Edge Physics}
@@ -196,7 +193,7 @@
             \item \textbf{Knowledge and instructions:} a 9B model matches one more than ten times its size.
             \item \textbf{Hard maths and code:} the gap is still 7 to 17 points.
             \item \textbf{The agent argument (NVIDIA).} A 7B model costs 10 to 30 times less to serve than a 70 to 175B one. In three open agents, 40 to 70\% of LLM calls could go to a small model.
-            \item \textbf{The condition:} \emph{fine-tuned} small models inside a mixed system, not a small orchestrator (Day 4).
+            \item \textbf{The condition:} \emph{fine-tuned} small models inside a mixed system, not a small model as the orchestrator.
         \end{itemize}
     \end{columns}
     \vspace{0.2em}

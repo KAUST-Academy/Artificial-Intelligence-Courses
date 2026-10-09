@@ -111,11 +111,7 @@
 
 \begin{frame}{Inside RL, Outcome Rewards Won}
     \begin{itemize}\itemsep0.3em
-        \item A denser reward should help. Why did DeepSeek-R1 and Kimi k1.5 refuse PRMs? Steps are hard to define and judge, and:
-        \begin{itemize}\itemsep0.1em
-            \item a model-based reward invites \alert{reward hacking}
-            \item a wrong step followed by recovery is useful exploration. Per-step credit would punish it
-        \end{itemize}
+        \item A denser reward should help. Yet DeepSeek-R1 and Kimi k1.5 trained without a PRM. What happens when one is used?
     \end{itemize}
     \begin{center}
     \small
@@ -131,9 +127,12 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
+    \begin{itemize}\itemsep0.3em
+        \item \textbf{Theory agrees.} Outcome supervision is ``no more statistically difficult'' than process supervision, and the advantage function of any policy is an optimal PRM.
+    \end{itemize}
     \vspace{-0.2em}
-    \takeaway{For Day 3: under mild assumptions, GRPO with an outcome reward \emph{already is} a Monte Carlo PRM.}
-    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. Kimi Team, \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}. Ye et al. (PROF), \href{https://arxiv.org/abs/2509.03403}{arXiv:2509.03403}, Table 2. Tiwari et al., ``Reward Under Attack,'' \href{https://arxiv.org/abs/2603.06621}{arXiv:2603.06621}. Sullivan and Koller, ``GRPO is Secretly a Process Reward Model,'' \href{https://arxiv.org/abs/2509.21154}{arXiv:2509.21154}.}
+    \takeaway{Under mild assumptions, GRPO with an outcome reward \emph{already is} a Monte Carlo PRM.}
+    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. Kimi Team, \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}. Ye et al. (PROF), \href{https://arxiv.org/abs/2509.03403}{arXiv:2509.03403}, Table 2. Tiwari et al., ``Reward Under Attack,'' \href{https://arxiv.org/abs/2603.06621}{arXiv:2603.06621}. Jia, Rakhlin, Xie, ``Do We Need to Verify Step by Step?'' \href{https://arxiv.org/abs/2502.10581}{arXiv:2502.10581}. Sullivan and Koller, ``GRPO is Secretly a Process Reward Model,'' \href{https://arxiv.org/abs/2509.21154}{arXiv:2509.21154}.}
 \end{frame}
 
 \begin{frame}{Reward Models: What to Remember}

@@ -9,18 +9,6 @@
 
 \subsection{Speculative Decoding Without a Draft Model}
 
-\begin{frame}{Speculative Decoding in One Slide}
-    \begin{itemize}\itemsep0.5em
-        \item \textbf{The idea.} A small \emph{draft} model proposes $K$ tokens one by one. The large \emph{target} model then checks all $K$ in a single forward pass, which costs about the same as generating one token.
-        \item \textbf{The rule.} Draft token $\tilde x$ is kept with probability $\min\!\big(1,\, q(\tilde x)/p(\tilde x)\big)$, where $p$ is the draft's distribution and $q$ the target's. At the first rejection, that position is resampled from the normalised positive part of $q-p$ and the rest of the draft is discarded.
-        \item \textbf{The guarantee.} The output distribution is exactly the target model's. Speed comes only from accepting several tokens per target pass.
-        \item \textbf{The original result.} 2 to 3x faster decoding with no change in output quality.
-    \end{itemize}
-    \vspace{0.3em}
-    \takeaway{The methods on the next slides remove the separate draft model (Medusa, EAGLE) or make the verification cheaper. The acceptance rule stays the same.}
-    \src{Leviathan, Kalman, Matias, ``Fast Inference from Transformers via Speculative Decoding,'' \href{https://arxiv.org/abs/2211.17192}{arXiv:2211.17192}. Chen et al., ``Accelerating Large Language Model Decoding with Speculative Sampling,'' \href{https://arxiv.org/abs/2302.01318}{arXiv:2302.01318}.}
-\end{frame}
-
 \begin{frame}{Speculative Decoding Pays Off Only at Small Batch}
     \begin{itemize}\itemsep0.2em
         \item \textbf{Why it works.} Generating one token per sequence reads all the weights for one small matrix-vector product, so the GPU waits on memory and its compute sits idle. Verifying several drafted tokens in one pass uses that idle compute for free.
@@ -146,31 +134,6 @@
     \src{Chen, Liang, Liu, ``DFlash,'' \href{https://arxiv.org/abs/2602.06036}{arXiv:2602.06036}. Kumar, Dao, May, ``Speculative Speculative Decoding,'' \href{https://arxiv.org/abs/2603.03251}{arXiv:2603.03251}. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}, Figure 1. NVIDIA developer blog (June 2026).}
 \end{frame}
 
-\subsection{Token Pruning and KV-Cache Compression}
-
-\begin{frame}{Token Pruning: Three Places to Drop Tokens}
-    \begin{center}
-    \footnotesize
-    \renewcommand{\arraystretch}{1.15}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{1.7cm}>{\raggedright\arraybackslash}p{2.0cm}>{\raggedright\arraybackslash}p{5.4cm}>{\raggedright\arraybackslash}p{3.1cm}}
-        \toprule
-        \textbf{Where} & \textbf{Method} & \textbf{Rule} & \textbf{Reported result} \\
-        \midrule
-        Prompt text & LLMLingua-2 & a small classifier keeps or drops each token & 2x to 5x shorter prompts \\
-        KV cache & SnapKV & keep what the last 32 prompt tokens attend to & 8.2x less memory at 16K \\
-        KV cache & PyramidKV & keep more in low layers, less in high ones & full quality with 12\% of the cache \\
-        Attention & DeepSeek DSA & a trained indexer picks the top 2,048 keys & in production (Day 1) \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.4em
-        \item \textbf{The failure nobody tested at first.} SnapKV keeps what \emph{this} question needs. The next turn may need what was evicted. On SCBench, methods that drop KV entries struggle in multi-turn use.
-
-        \item \textbf{Trend:} selection moved into training. DeepSeek-V4.1-Flash reports about 890 bytes of KV per token.
-    \end{itemize}
-    \src{Pan et al., \href{https://arxiv.org/abs/2403.12968}{arXiv:2403.12968}. Li et al., ``SnapKV,'' \href{https://arxiv.org/abs/2404.14469}{arXiv:2404.14469}. Cai et al., ``PyramidKV,'' \href{https://arxiv.org/abs/2406.02069}{arXiv:2406.02069}. Li, Jiang et al., ``SCBench,'' \href{https://arxiv.org/abs/2412.10319}{arXiv:2412.10319}. DeepSeek-AI, \href{https://arxiv.org/abs/2609.19969}{arXiv:2609.19969}.}
-\end{frame}
-
 \subsection{Compression Beyond Quantisation}
 
 \begin{frame}{Pruning Weights: ``50\% Sparse'' Is Not ``2x Faster''}
@@ -250,7 +213,6 @@
     \begin{itemize}\itemsep0.55em
         \item Speculation moved \textbf{inside the model}: heads (Medusa), feature drafters (EAGLE-3), trained multi-token modules, block-diffusion drafters (DFlash).
         \item Its gains are real at batch size 1 and \textbf{shrink at high batch}. Always ask for the serving regime.
-        \item Post-hoc KV eviction fails in \textbf{multi-turn} use. Production systems train the selection in.
         \item For pruning and low-rank methods, measured end-to-end gains are \textbf{1.2x to 1.5x}, far from the FLOP count.
         \item What ships is \textbf{prune, then distil}: a smaller dense model that needs no special kernel.
     \end{itemize}

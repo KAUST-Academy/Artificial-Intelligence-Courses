@@ -29,7 +29,7 @@
     \vspace{0.3em}
     \begin{itemize}\itemsep0.35em
         \item By late 2026, thinking \textbf{cannot be switched off} on Claude Opus 5.5, Grok 4.5 and later, Kimi K3 or the open Qwen3.8.
-        \item ``Reasoning model'' is no longer a category. Compare \textbf{how effort is trained}, \textbf{how state persists}, and \textbf{cost per solved task}.
+        \item ``Reasoning model'' is no longer a category. Compare \textbf{how effort is trained}, \textbf{how the harness was set}, and \textbf{cost per solved task}.
     \end{itemize}
     \src{OpenAI system cards and Deployment Safety Hub. DeepSeek release notes and \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Kimi K3 and Qwen3.8 model cards. Anthropic and Google launch posts (Sep 2026). xAI reasoning guide.}
 \end{frame}
@@ -44,7 +44,7 @@
         \midrule
         DeepSeek-R1 & cold-start SFT, then RL with rule-based outcome rewards & R1-Zero: RL alone, no human traces \\
         Kimi k1.5 & long-context RL, then long-to-short compression & no MCTS, value function or PRM \\
-        \rowcolor{KAUSTcyan!12} Qwen3 & four stages. Reasoning RL on 3,995 query and verifier pairs, 170 steps & AIME 2024: 70.1 to 85.1 \\
+        \rowcolor{KAUSTcyan!12} Qwen3 & four stages, with a reasoning-RL stage of only 170 steps & AIME 2024: 70.1 to 85.1 \\
         Phi-4-reasoning & SFT on 1.4M traces from o3-mini. About 90 RL steps for the plus model & 14B model. AIME 2025: 63.1, then 78.0 \\
         MiniMax-M1 & CISPO, a new RL objective & the RL run cost \$534,700 \\
         \bottomrule
@@ -52,10 +52,8 @@
     \end{center}
     \begin{itemize}\itemsep0.3em
         \item \textbf{Shared core:} a verifiable outcome reward, a light supervised start, and a \textbf{small RL stage}.
-        \item \textbf{Most of the gain is optimisation hygiene.} DAPO's fixes take naive GRPO from 30 to 50 on AIME 2024. \emph{Tomorrow's topic.}
-        \item \textbf{For small models, distil first.} Qwen3's distillation needs about a tenth of the GPU hours of RL.
     \end{itemize}
-    \src{\href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Phi-4-reasoning, \href{https://arxiv.org/abs/2504.21318}{arXiv:2504.21318}. MiniMax-M1, \href{https://arxiv.org/abs/2506.13585}{arXiv:2506.13585}. Yu et al., ``DAPO,'' \href{https://arxiv.org/abs/2503.14476}{arXiv:2503.14476}.}
+    \src{\href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}. \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}. Qwen3, \href{https://arxiv.org/abs/2505.09388}{arXiv:2505.09388}. Phi-4-reasoning, \href{https://arxiv.org/abs/2504.21318}{arXiv:2504.21318}. MiniMax-M1, \href{https://arxiv.org/abs/2506.13585}{arXiv:2506.13585}.}
 \end{frame}
 
 \begin{frame}{2026: Specialists, Distillation, and a Trained Dial}
@@ -78,10 +76,7 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \begin{itemize}\itemsep0.35em
-        \item \textbf{State that survives.} Thinking is interleaved with tool calls and kept across turns: 200 to 300 consecutive calls for Kimi K2 Thinking.
-    \end{itemize}
-    \src{DeepSeek-AI, DeepSeek-V4 report, \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Raschka, ``Controlling Reasoning Effort in LLMs'' (Jul 2026). Kimi-K2-Thinking model card.}
+    \src{DeepSeek-AI, DeepSeek-V4 report, \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Raschka, ``Controlling Reasoning Effort in LLMs'' (Jul 2026).}
 \end{frame}
 
 \begin{frame}{Parallel Thinking in Production}
@@ -110,30 +105,30 @@
     \src{Google DeepMind, Gemini 2.5 Deep Think model card (Aug 2025). Kimi-K2-Thinking model card. Anthropic, Claude Opus 5.5 system card (Sep 2026), Section 8.12.}
 \end{frame}
 
-\begin{frame}{An Independent Scoreboard (3 October 2026)}
+\begin{frame}{An Independent Maths Scoreboard (3 October 2026)}
     \begin{center}
     \small
     \renewcommand{\arraystretch}{1.1}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
         \toprule
-        \textbf{Model (setting)} & \textbf{MathArena} & \textbf{Cost per problem} & \textbf{AA Index} \\
+        \textbf{Model (setting)} & \textbf{MathArena} & \textbf{Cost per problem} \\
         \midrule
-        GPT-6.1 Sol (max) & \textbf{90.1} & \$0.55 & 52 \\
-        GPT-6 Astra (max) & 88.0 & \$2.42 & 53 \\
-        Claude Opus 5.5 (high, max for AA) & 83.3 & \$0.84 & \textbf{58} \\
-        Claude Fable 5.1 (max) & 82.6 & \$30.31 & 53 \\
-        Kimi K3 & 50.5 & & 44 \\
-        DeepSeek-V4.1-Flash (max) & 43.3 & \$0.17 & 39 \\
+        GPT-6.1 Sol (max) & \textbf{90.1} & \$0.55 \\
+        GPT-6 Astra (max) & 88.0 & \$2.42 \\
+        Claude Opus 5.5 (high) & 83.3 & \$0.84 \\
+        Claude Fable 5.1 (max) & 82.6 & \$30.31 \\
+        Kimi K3 & 50.5 & \\
+        DeepSeek-V4.1-Flash (max) & 43.3 & \$0.17 \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.35em
-        \item \textbf{The ranking depends on the evaluator.} GPT-6 leads on new maths competitions. Anthropic leads the Artificial Analysis and Epoch indices.
         \item \textbf{Effort is part of the model name.} GPT-6 Astra at low effort scores 82.3 for \$0.44.
+        \item \textbf{The four leaders lie within 8 points,} yet their cost per problem differs 55-fold.
     \end{itemize}
     \vspace{0.05em}
     \takeaway{Every number needs four labels: evaluator, date, effort setting, harness.}
-    \src{MathArena leaderboard (ETH SRI Lab), 4 runs per problem. Artificial Analysis Intelligence Index v4.3.2, rounded. Epoch AI Benchmarking Hub. All fetched 3 Oct 2026.}
+    \src{MathArena leaderboard (ETH SRI Lab), 4 runs per problem, fetched 3 Oct 2026.}
 \end{frame}
 
 \begin{frame}{Tokens, Dollars and Seconds Rank Models Differently}
@@ -165,30 +160,6 @@
     \src{Artificial Analysis, data embedded in the home page (fetched 3 Oct 2026), computed for the course knowledge base. Raschka, ``GPT-6 Astra, Looped Transformers, and Hidden Reasoning'' (Sep 2026).}
 \end{frame}
 
-\begin{frame}{Can We Trust the Chain of Thought?}
-    \begin{itemize}\itemsep0.35em
-        \item \textbf{Faithfulness: does the trace state the real reason?} Slip a hint into the prompt. Does the reasoning admit using it?
-    \end{itemize}
-    \begin{center}
-    \small
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
-        \toprule
-        & \textbf{Claude 3.7 Sonnet} & \textbf{DeepSeek R1} \\
-        \midrule
-        Hint acknowledged, on average & 25\% & 39\% \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.35em
-        \item With a planted reward hack, models used it in over 99\% of examples and mentioned it in under 2\%.
-        \item \textbf{Monitorability: is the trace still useful for oversight?} A weaker model reading the trace catches reward hacking far better than one watching actions alone.
-        \item \alert{But do not train against the monitor.} Put it in the reward and the policy learns \emph{obfuscated} reward hacking.
-    \end{itemize}
-    \vspace{0.05em}
-    \takeaway{A trace can be an imperfect explanation and still a useful alarm.}
-    \src{Chen et al. (Anthropic), ``Reasoning Models Don't Always Say What They Think,'' \href{https://arxiv.org/abs/2505.05410}{arXiv:2505.05410}. Baker et al. (OpenAI), \href{https://arxiv.org/abs/2503.11926}{arXiv:2503.11926}. Korbak et al., ``Chain of Thought Monitorability,'' \href{https://arxiv.org/abs/2507.11473}{arXiv:2507.11473}.}
-\end{frame}
-
 \begin{frame}{What the 2026 System Cards Reveal, and What They Leave Out}
     \begin{columns}[T,onlytextwidth]
         \column{0.5\textwidth}
@@ -201,7 +172,7 @@
         \column{0.47\textwidth}
         \textbf{Not disclosed: how the models are made}
         \begin{itemize}\itemsep0.35em
-            \item Astra's card gives no context window, parameter count, compute or architecture.
+            \item Astra's system card gives no parameter count, compute or architecture.
             \item Anthropic's API never returns the raw chain of thought, only a summary written by another model.
             \item Even open-weight labs now withhold RL recipes: Kimi K3, Qwen3.8.
         \end{itemize}
@@ -238,11 +209,11 @@
 \begin{frame}{Reasoning Paradigms: What to Remember}
     \begin{itemize}\itemsep0.6em
         \item The shared recipe: \textbf{verifiable outcome rewards and RL}, started from light supervision, with distillation for small models and, in 2026, for merging specialists.
-        \item The product surface converged on \textbf{always-on thinking with an effort dial}, tools inside the reasoning, and optional parallel modes.
-        \item \textbf{Independent, dated, multi-run evaluations} disagree with each other and with lab tables. Read the harness.
+        \item The product surface converged on \textbf{always-on thinking with an effort dial}, plus optional parallel modes.
+        \item \textbf{Independent, dated, multi-run evaluations} can disagree with lab tables. Read the harness and the effort setting.
         \item Closed labs now publish \textbf{safety measurements of the reasoning}, not training recipes. Monitorability is measured, and it has started to fall.
     \end{itemize}
     \vspace{0.3em}
     \vspace{0.2em}
-    \takeaway{\textbf{Next.} The day in one table, and the questions it leaves open.}
+    \takeaway{\textbf{Next.} Everything in one table, and the questions it leaves open.}
 \end{frame}

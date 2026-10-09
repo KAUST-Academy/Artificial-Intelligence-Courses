@@ -55,45 +55,28 @@
     \src{Official model cards and configuration files (Qwen, Moonshot AI, NVIDIA, AI21, IBM, TII), 2025 to 2026. Raschka, ``LLM Architecture Gallery: Hybrid Attention'' (2026).}
 \end{frame}
 
-\begin{frame}{Case Study: Qwen3-Next and Kimi Linear}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.37\textwidth}
-        \centering
-        \begin{adjustbox}{max width=\linewidth}\begin{tikzpicture}[font=\scriptsize,
-            lyr/.style={draw, rounded corners=1.5pt, minimum width=3.2cm, minimum height=0.44cm}]
-            \node[lyr, fill=darkorange!22] (a) at (0,0) {Gated DeltaNet $\rightarrow$ MoE};
-            \node[lyr, fill=darkorange!22] (b) at (0,0.56) {Gated DeltaNet $\rightarrow$ MoE};
-            \node[lyr, fill=darkorange!22] (c) at (0,1.12) {Gated DeltaNet $\rightarrow$ MoE};
-            \node[lyr, fill=KAUSTcyan!30] (d) at (0,1.68) {\textbf{Gated attention} $\rightarrow$ MoE};
-            \draw[thick] (1.85,-0.25) -- (1.85,1.93);
-            \draw[thick] (1.8,-0.25) -- (1.9,-0.25);
-            \draw[thick] (1.8,1.93) -- (1.9,1.93);
-            \node[rotate=90] at (2.15,0.84) {$\times 12$};
-            \node[gray] at (0,-0.65) {Qwen3-Next: 48 layers, 80B total, 3B active};
-        \end{tikzpicture}\end{adjustbox}
-        \column{0.6\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item \textbf{Qwen3-Next} (Sep 2025) took Gated DeltaNet to production. Its makers claim 10$\times$ the throughput of Qwen3-32B beyond 32K tokens. Qwen3.5 keeps the backbone.
-            \item \textbf{Kimi Linear} ran the cleanest test: same data, same recipe, against a full-attention baseline.
-        \end{itemize}
-        \vspace{0.2em}
-        \centering
-        \footnotesize
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
-            \toprule
-            & \textbf{Kimi Linear} & \textbf{Full attention} \\
-            \midrule
-            MMLU-Pro (4K) & 51.0 & 47.2 \\
-            RULER (128K) & 84.3 & 81.3 \\
-            Decode at 1M, ms/token & 1.84 & 11.48 \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-    \end{columns}
-    \vspace{0.4em}
-    \begin{itemize}
+\begin{frame}{Kimi Linear: A Same-Recipe Test}
+    \begin{itemize}\itemsep0.5em
+        \item Most hybrid claims compare models trained on different data. \textbf{Kimi Linear} ran the cleanest test: same data, same recipe, against a full-attention baseline.
+    \end{itemize}
+    \vspace{0.3em}
+    \begin{center}
+    \small
+    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
+        \toprule
+        & \textbf{Kimi Linear} & \textbf{Full attention} \\
+        \midrule
+        MMLU-Pro (4K) & 51.0 & 47.2 \\
+        RULER (128K) & 84.3 & 81.3 \\
+        \bottomrule
+    \end{tabular}\end{adjustbox}
+    \end{center}
+    \vspace{0.3em}
+    \begin{itemize}\itemsep0.5em
+        \item The hybrid is ahead on short-context knowledge and on long-context retrieval at once. In this comparison the recurrent layers cost no quality.
         \item Serving had to change too. vLLM added a \textbf{hybrid cache manager} so a recurrent state and a KV block share the same memory pool.
     \end{itemize}
-    \src{Qwen3-Next-80B-A3B model card (2025). Kimi Team, ``Kimi Linear: An Expressive, Efficient Attention Architecture,'' \href{https://arxiv.org/abs/2510.26692}{arXiv:2510.26692}. vLLM blog, ``vLLM Now Supports Qwen3-Next'' (Sep 2025).}
+    \src{Kimi Team, ``Kimi Linear: An Expressive, Efficient Attention Architecture,'' \href{https://arxiv.org/abs/2510.26692}{arXiv:2510.26692}. vLLM blog, ``vLLM Now Supports Qwen3-Next'' (Sep 2025).}
 \end{frame}
 
 \begin{frame}{The Counter-Trend: Two Labs Walked Back}
@@ -109,7 +92,6 @@
                 \item higher sensitivity to numerical precision
                 \item no mature prefix caching or speculative decoding for linear layers
             \end{itemize}
-            \item \textbf{M3} (2026): efficiency returns, but as \emph{sparse} attention, not linear.
         \end{itemize}
         \column{0.41\textwidth}
         \textbf{IBM}
@@ -121,12 +103,11 @@
         \caveat{Hybrids are a \textbf{contested} default, not a settled one.}
     \end{columns}
     \vspace{0.3em}
-    \src{MiniMax, ``Why Did MiniMax M2 End Up as a Full Attention Model?'' (2025). Lai et al., ``MiniMax Sparse Attention,'' \href{https://arxiv.org/abs/2606.13392}{arXiv:2606.13392}. IBM, ``Granite 4.1 LLMs: How They're Built'' (Apr 2026).}
+    \src{MiniMax, ``Why Did MiniMax M2 End Up as a Full Attention Model?'' (2025). IBM, ``Granite 4.1 LLMs: How They're Built'' (Apr 2026).}
 \end{frame}
 
 \begin{frame}{Where the Mixer Stands (October 2026)}
     \begin{itemize}\itemsep0.55em
-        \item \textbf{Attention was not replaced.} What survived is a \emph{layer type}. Recurrent layers carry most of the depth, and a few attention layers keep exact retrieval available.
         \item \textbf{Live designs:} delta-rule linear attention (Qwen, Kimi) and Mamba-2 (NVIDIA, AI21, TII). RWKV, xLSTM and Hyena keep niches.
         \item \textbf{Open problem 1, recall.} A fixed state has a capacity bound. Hybrids work around it. They do not solve it.
         \item \textbf{Open problem 2, state tracking.} Scalar decay cannot do parity or permutations. Mamba-3's rotations and RWKV-7's delta rule both attack this.

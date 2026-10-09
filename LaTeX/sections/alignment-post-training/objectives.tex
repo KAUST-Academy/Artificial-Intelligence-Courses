@@ -7,30 +7,6 @@
     \normalsize What replaced RLHF and DPO at the frontier, and why?
 \end{frame}
 
-\begin{frame}{Recap: The Starting Point}
-    \begin{center}
-    \small
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{l>{\raggedright\arraybackslash}p{4.0cm}c>{\raggedright\arraybackslash}p{5.6cm}}
-        \toprule
-        \textbf{Method} & \textbf{Data it needs} & \textbf{Models} & \textbf{Main risk} \\
-        \midrule
-        RLHF with PPO & pairs for a reward model, then rollouts & 4 & instability, reward over-optimisation \\
-        DPO & preference pairs $(x, y_w, y_l)$ & 2 & offline, sensitive to the SFT start \\
-        ORPO & preference pairs & 1 & no reference policy, so no KL leash \\
-        KTO & unpaired thumbs up or down & 2 & weights must match the class balance \\
-        \rowcolor{KAUSTcyan!12} GRPO & prompts and a reward function & no critic & today's topic \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \[
-        \mathcal{L}_{\text{DPO}}=-\,\mathbb{E}\Big[\log\sigma\Big(\beta\log\tfrac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)}-\beta\log\tfrac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}\Big)\Big]
-    \]
-    \begin{itemize}\itemsep0.3em
-        \item Today: what these methods \textbf{get wrong}, and what replaced them.
-    \end{itemize}
-    \src{Table after the KAUST Academy LLM course, ``Choosing a Preference Method''. DPO loss as written in Park et al., \href{https://arxiv.org/abs/2403.19159}{arXiv:2403.19159}. GRPO: Shao et al., ``DeepSeekMath,'' \href{https://arxiv.org/abs/2402.03300}{arXiv:2402.03300}.}
-\end{frame}
-
 \begin{frame}{One Map for Every Objective}
     \begin{itemize}\itemsep0.3em
         \item DeepSeekMath's \emph{unified paradigm}: every method has the same gradient, and differs in three choices.
@@ -62,11 +38,11 @@
     \begin{columns}[T,onlytextwidth]
         \column{0.56\textwidth}
         \begin{itemize}\itemsep0.4em
-            \item Let $\rho$ be the log-ratio gap between winner and loser. Each offline loss is $f(\beta\rho)$ for a convex $f$, a surrogate of the 0-1 loss.
+            \item Let $\rho=\log\tfrac{\pi_\theta(y_w|x)}{\pi_{\text{ref}}(y_w|x)}-\log\tfrac{\pi_\theta(y_l|x)}{\pi_{\text{ref}}(y_l|x)}$, the log-ratio gap between winner and loser. Each offline loss is $f(\beta\rho)$ for a convex $f$, a surrogate of the 0-1 loss.
             \item \textbf{Why IPO exists.} A preference observed once looks deterministic. Under Bradley-Terry that pushes $r(y_w)-r(y_l)\to\infty$, so $\pi(y_l)\to 0$ \emph{whatever} the regularisation strength.
-            \item \textbf{IPO} regresses the gap onto a finite target instead:
+            \item \textbf{IPO} regresses the gap onto a finite target set by the regularisation strength $\tau$:
             \[
-                \mathcal{L}_{\text{IPO}}=\mathbb{E}\Big[\big(h_\pi(y_w,y_l,x)-\tfrac{1}{2\tau}\big)^2\Big]
+                \mathcal{L}_{\text{IPO}}=\mathbb{E}\Big[\big(\rho-\tfrac{1}{2\tau}\big)^2\Big]
             \]
         \end{itemize}
         \column{0.42\textwidth}
@@ -166,18 +142,15 @@
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.4em
-        \item \textbf{Theory.} The policies PPO can reach are a proper subset of those DPO can reach. DPO is free to exploit out-of-distribution responses.
         \item \textbf{The counterpoint is cost.} In T\"ulu 3, PPO took about 28 hours on two nodes against 4 hours on one for DPO, for similar scores.
     \end{itemize}
     \takeaway{A spectrum, not a binary: offline DPO, iterative DPO, online DPO, PPO and GRPO. On-policy pays most when the reward is \textbf{accurate} and the task is \textbf{hard}.}
     \src{Xu et al., ``Is DPO Superior to PPO for LLM Alignment?'' ICML 2024, \href{https://arxiv.org/abs/2404.10719}{arXiv:2404.10719}, Tables 6 to 8. Guo et al., ``Direct Language Model Alignment from Online AI Feedback,'' \href{https://arxiv.org/abs/2402.04792}{arXiv:2402.04792}. T\"ulu 3, \href{https://arxiv.org/abs/2411.15124}{arXiv:2411.15124}.}
 \end{frame}
 
-\begin{frame}{From PPO to GRPO: Delete the Critic}
+\begin{frame}{The GRPO Objective and Its Three Questioned Terms}
     \begin{itemize}\itemsep0.35em
-        \item PPO for LLMs keeps \textbf{four or five models} in memory: policy, old policy, reference, value and reward model.
-        \item GAE needs one value call per token. With 512 prompts, 16 responses and about 2,000 tokens each, that is roughly \alert{16 million value forward passes per step}.
-        \item \textbf{GRPO} replaces the critic with the statistics of a group of $G$ samples for the same prompt:
+        \item Every fix in the rest of this section starts from the same objective:
     \end{itemize}
     {\footnotesize\[
         \mathcal{J}=\mathbb{E}\Big[\frac{1}{G}\sum_{i}\frac{1}{|o_i|}\sum_t\min\big(r_{i,t}\hat A_{i,t},\,\mathrm{clip}(r_{i,t},1-\varepsilon,1+\varepsilon)\hat A_{i,t}\big)\Big]-\beta D_{KL},
@@ -185,10 +158,10 @@
         \hat A_{i,t}=\frac{R_i-\mathrm{mean}(\{R_j\})}{\mathrm{std}(\{R_j\})}
     \]}
     \begin{itemize}\itemsep0.35em
-        \item $r_{i,t}$ is the token probability ratio to the policy that sampled. Every token of a response gets the same advantage.
+        \item $G$ responses $o_i$ per prompt, with rewards $R_i$. $r_{i,t}$ is the token probability ratio to the policy that sampled.
         \item Three terms have since been \textbf{questioned}: $1/|o_i|$, the division by std, and the KL term.
     \end{itemize}
-    \src{Choi, Stanford CS224N Lecture 12 (2026). Hashimoto, Stanford CS336 Lecture 16 (2025). Objective as written in ``DAPO,'' \href{https://arxiv.org/abs/2503.14476}{arXiv:2503.14476}, Eqs. 8 to 9, after Shao et al., \href{https://arxiv.org/abs/2402.03300}{arXiv:2402.03300}.}
+    \src{Objective as written in ``DAPO,'' \href{https://arxiv.org/abs/2503.14476}{arXiv:2503.14476}, Eqs. 8 to 9, after Shao et al., \href{https://arxiv.org/abs/2402.03300}{arXiv:2402.03300}.}
 \end{frame}
 
 \begin{frame}{GRPO's Hidden Biases (Dr. GRPO)}
@@ -214,7 +187,6 @@
     \]
     \begin{itemize}\itemsep0.35em
         \item Result: a 7B model reaches 43.3\% on AIME 2024 in 27 hours on 8 A100 GPUs.
-        \item A side finding that deflates a famous story: the base model already shows the ``aha moment'' before any RL.
     \end{itemize}
     \src{Liu et al., ``Understanding R1-Zero-Like Training: A Critical Perspective,'' COLM 2025, \href{https://arxiv.org/abs/2503.20783}{arXiv:2503.20783}, Sec. 3.1 and Table 2. Hashimoto, Stanford CS336 Lecture 16 (2025).}
 \end{frame}

@@ -63,50 +63,29 @@
     \src{OpenAI API model documentation, changelog and ``GPT-6 Astra System Card.'' Anthropic, Claude models overview and release posts. Google, Gemini 4 Argon and 3.8 Flash posts. Epoch AI, all-models dataset. All accessed 2026-10-03.}
 \end{frame}
 
-\begin{frame}{The Open-Weight Frontier: Day 1's Designs at Trillion Scale}
+\begin{frame}{The Open-Weight Frontier at Trillion Scale}
     \begin{center}
     \footnotesize
     \renewcommand{\arraystretch}{1.1}
-    \setlength{\tabcolsep}{4pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lllll}
+    \setlength{\tabcolsep}{6pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{llll}
         \toprule
-        \textbf{Model (date)} & \textbf{Total, active} & \textbf{Sequence mixer} & \textbf{Context} & \textbf{Licence} \\
+        \textbf{Model (date)} & \textbf{Total, active} & \textbf{Context} & \textbf{Licence} \\
         \midrule
-        DeepSeek-V4-Pro (2026) & 1.6T, 49B & compressed sparse attention & 1M & MIT \\
-        Kimi K3 (Jul 2026) & 2.8T, 104B & delta and latent attention, 69:24 & 1M & custom \\
-        Qwen3.8-2.4T (Aug 2026) & 2.4T, 95B & Gated DeltaNet and attention, 3:1 & 262K & custom \\
-        MiniMax-M3 (Jul 2026) & 428B, 23B & sparse attention & 1M & community \\
-        Nemotron 3 Ultra (Jun 2026) & 550B, 55B & Mamba and attention & 1M & permissive \\
-        Mistral Large 3 (Dec 2025) & 675B, 41B & attention & 256K & Apache 2.0 \\
-        Gemma 4 31B (2026) & 31B, dense & local and global attention & 256K & Apache 2.0 \\
+        DeepSeek-V4-Pro (2026) & 1.6T, 49B & 1M & MIT \\
+        Kimi K3 (Jul 2026) & 2.8T, 104B & 1M & custom \\
+        Qwen3.8-2.4T (Aug 2026) & 2.4T, 95B & 262K & custom \\
+        MiniMax-M3 (Jul 2026) & 428B, 23B & 1M & community \\
+        Nemotron 3 Ultra (Jun 2026) & 550B, 55B & 1M & permissive \\
+        Mistral Large 3 (Dec 2025) & 675B, 41B & 256K & Apache 2.0 \\
+        Gemma 4 31B (2026) & 31B, dense & 256K & Apache 2.0 \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.35em
-        \item \textbf{MoE is the default} above 100B, with 3 to 10\% of weights active. The architectural contest is \textbf{long context}.
         \item \textbf{Where is Llama?} Meta's newest open weights are still Llama 4 (April 2025). Its 2026 model, Muse Spark, is served by API.
         \item \textbf{``Open weights'' is not open source.} Fully open data and recipes: OLMo 3 and Apertus.
     \end{itemize}
     \src{DeepSeek-AI, ``DeepSeek-V4,'' \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Hugging Face model cards: Kimi-K3, Qwen3.8-2.4T-A95B, MiniMax-M3, Mistral-Large-3, DeepSeek-V4-Pro-0813. NVIDIA Nemotron page. Gemma 4, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}.}
-\end{frame}
-
-\begin{frame}{The Week in the Models: Each Day Shows Up at the Frontier}
-    \begin{center}
-    \small
-    \renewcommand{\arraystretch}{1.08}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{10.6cm}}
-        \toprule
-        \textbf{Day} & \textbf{What the October 2026 models do} \\
-        \midrule
-        1. Architectures & sparse MoE everywhere. A 1M context is standard, bought with sparse attention and hybrids \\
-        2. Reasoning & reasoning is a dial: effort levels, always-on adaptive thinking, a 1 to 100 scale in DeepSeek-V4.1 \\
-        3. Post-training & RL at scale on agent tasks. System cards report monitorability and evaluation awareness \\
-        4. Agents & launch tables lead with Terminal-Bench, DeepSWE and OSWorld. One index gives agents 30\% of its weight \\
-        5. Frontiers & built-in drafters (DeepSeek, Gemma 4), N-gram memory tables (Qwen3.8-Flash-Next) \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \takeaway{What is a research paper one year is a line in a model card the next.}
-    \src{OpenAI and Anthropic documentation and system cards (Sep 2026). DeepSeek-V4.1-Flash and Qwen3.8-Flash-Next model cards. Z.ai, ``GLM-5,'' \href{https://arxiv.org/abs/2602.15763}{arXiv:2602.15763}. Artificial Analysis methodology (v4.3.2).}
 \end{frame}
 
 \begin{frame}{Who Is Number One? It Depends on the Instrument}
@@ -161,6 +140,7 @@
             \midrule
             Epoch, Nov 2024 & 5 to 22 months \\
             Epoch, Oct 2025 & about 3 months \\
+            Epoch, May 2026 & about 4 months \\
             DeepSeek on itself, 2026 & 3 to 6 months \\
             Lambert, Sep 2026 & 2 to 5 months \\
             \bottomrule
@@ -171,7 +151,7 @@
         \end{itemize}
     \end{columns}
     \vspace{0.2em}
-    \src{Epoch AI, ECI scores and all-models datasets (Oct 2026), ``How far behind are open models?'' (2024), and Emberson (2025). The 10-point gap is derived from Epoch's table. DeepSeek-V4, \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Lambert, Interconnects (2026-09-21).}
+    \src{Epoch AI, ECI scores and all-models datasets (Oct 2026), ``How far behind are open models?'' (2024), Emberson (2025), and Edwards, Emberson, \href{https://epoch.ai/data-insights/open-closed-eci-gap}{``Open models lag state-of-the-art closed models by 4 months''} (2026). The 10-point gap is derived from Epoch's table. DeepSeek-V4, \href{https://arxiv.org/abs/2606.19348}{arXiv:2606.19348}. Lambert, Interconnects (2026-09-21).}
 \end{frame}
 
 \begin{frame}{Arabic-Capable Models: a Different Scale}
@@ -199,7 +179,7 @@
 \begin{frame}{Frontier Models: What to Remember}
     \begin{itemize}\itemsep0.55em
         \item \textbf{Closed flagships} share a shape: 1M context, graded always-on reasoning, staged access. No architecture is disclosed.
-        \item \textbf{Open flagships} are trillion-parameter sparse MoEs whose mixers come straight from Day 1.
+        \item \textbf{Open flagships} are trillion-parameter sparse MoEs with open weights, but rarely open data.
         \item \textbf{No leaderboard defines ``best''.} Three trackers give three orders, and each has a known weakness.
         \item Open models are \textbf{months behind in time} and about \textbf{10 index points behind in level}.
         \item \textbf{Arabic-capable open models} are orders of magnitude smaller, with short context.

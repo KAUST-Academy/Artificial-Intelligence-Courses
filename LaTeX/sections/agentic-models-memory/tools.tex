@@ -262,7 +262,7 @@
     \src{Huang et al., ``CRITICTOOL,'' \href{https://arxiv.org/abs/2506.13977}{arXiv:2506.13977}. Zhu et al., ``ToolMaze,'' \href{https://arxiv.org/abs/2606.05806}{arXiv:2606.05806}. Yin et al., ``The Reasoning Trap,'' \href{https://arxiv.org/abs/2510.22977}{arXiv:2510.22977}. Liu et al., ``MCPEvol-Bench,'' \href{https://arxiv.org/abs/2607.14642}{arXiv:2607.14642}. Lu et al., ``ToolSandbox,'' \href{https://arxiv.org/abs/2408.04682}{arXiv:2408.04682}.}
 \end{frame}
 
-\begin{frame}{Five Axes, and the Benchmark for Each}
+\begin{frame}{Six Axes, and the Benchmark for Each}
     \begin{center}
     \small
     \renewcommand{\arraystretch}{1.12}
@@ -275,7 +275,7 @@
         Argument correctness & ComplexFuncBench, NESTFUL & nested sequences: best full match 28\% \\
         Execution feedback & backend state checks (BFCL v3, $\tau$-bench) & state, not the transcript, is graded \\
         Recovery & error injection (BFCL v4), ToolMaze & recovery down 37\% on implicit failures \\
-        \rowcolor{KAUSTcyan!12} Reliability & pass\textasciicircum$k$ & 48.7 falls to 32.0 over four trials \\
+        \rowcolor{KAUSTcyan!12} Reliability & pass\textasciicircum$k$ over repeated trials & the gap to one trial has not closed \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}

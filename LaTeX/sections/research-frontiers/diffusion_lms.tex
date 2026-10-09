@@ -7,15 +7,16 @@
     \normalsize Must text be generated one token at a time?
 \end{frame}
 
-\begin{frame}{Where We Left LLaDA, and What Changed}
-    \centering
-    \includegraphics[width=0.9\linewidth,height=0.34\textheight,keepaspectratio]{images/research-frontiers/llada_overview_reused.png}
+\begin{frame}{Five Open Problems of 2025, and Who Closed Them}
+    \begin{itemize}\itemsep0.3em
+        \item LLaDA (2025) scaled masked diffusion to 8B parameters and left five problems open. This section follows each one.
+    \end{itemize}
     \begin{center}
-    \footnotesize
-    \renewcommand{\arraystretch}{1.1}
+    \small
+    \renewcommand{\arraystretch}{1.25}
     \setlength{\tabcolsep}{4pt}\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lll}
         \toprule
-        \textbf{Open problem on the LLaDA slide} & \textbf{Status, Oct 2026} & \textbf{What addressed it} \\
+        \textbf{Open problem in 2025} & \textbf{Status, Oct 2026} & \textbf{What addressed it} \\
         \midrule
         Answer length fixed in advance & largely solved & block diffusion, in all 2026 products \\
         No KV cache & solved in part & approximate caches, exact for finished blocks \\
@@ -25,10 +26,10 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \src{Figure: Nie et al., ``Large Language Diffusion Models,'' NeurIPS 2025, \href{https://arxiv.org/abs/2502.09992}{arXiv:2502.09992}, Figure 2 (reused from the recent-advances deck). Status: \href{https://arxiv.org/abs/2503.09573}{arXiv:2503.09573}, \href{https://arxiv.org/abs/2505.22618}{arXiv:2505.22618}, \href{https://arxiv.org/abs/2504.12216}{arXiv:2504.12216}, \href{https://arxiv.org/abs/2602.08676}{arXiv:2602.08676}, \href{https://arxiv.org/abs/2606.19475}{arXiv:2606.19475}.}
+    \src{Problems: Nie et al., ``Large Language Diffusion Models,'' NeurIPS 2025, \href{https://arxiv.org/abs/2502.09992}{arXiv:2502.09992}. Status: \href{https://arxiv.org/abs/2503.09573}{arXiv:2503.09573}, \href{https://arxiv.org/abs/2505.22618}{arXiv:2505.22618}, \href{https://arxiv.org/abs/2504.12216}{arXiv:2504.12216}, \href{https://arxiv.org/abs/2602.08676}{arXiv:2602.08676}, \href{https://arxiv.org/abs/2606.19475}{arXiv:2606.19475}.}
 \end{frame}
 
-\begin{frame}{The Theory in One Slide: Masked Diffusion Is Weighted Masked LM}
+\begin{frame}{The Theory: Masked Diffusion Is Weighted Masked LM}
     \begin{itemize}\itemsep0.35em
         \item \textbf{D3PM (2021)} defined diffusion on discrete tokens. Its \emph{absorbing} variant sends tokens to a mask state.
         \item \textbf{MDLM and MD4 (2024)} showed that the continuous-time training bound is simply
@@ -36,7 +37,7 @@
             \mathcal{L}^{\infty}_{\text{NELBO}} = \mathbb{E}_q \int_{0}^{1} \frac{\alpha'_t}{1-\alpha_t}\,\log\big\langle \mathbf{x}_\theta(\mathbf{z}_t,t),\,\mathbf{x}\big\rangle\,dt
         \]
         a \emph{weighted mixture of masked-language-modelling losses}. BERT with a random mask rate.
-        \item \textbf{The likelihood gap is real at small scale.} Perplexity on LM1B: autoregressive 20.86, MDLM at most 23.00, the earlier SEDD at most 32.79. A 2026 controlled study still finds GPT-2 at 20.98 against MDLM at 28.45 on OpenWebText.
+        \item \textbf{The likelihood gap is real at small scale.} Perplexity on LM1B after 33B training tokens: autoregressive 22.32, MDLM at most 27.04, the earlier SEDD at most 32.79. After 327B: 20.86 against at most 23.00. A 2026 controlled study still finds GPT-2 at 20.98 against MDLM at 28.45 on OpenWebText.
         \item \textbf{Noise is a design choice.} Masking trains faster. Uniform noise lets any token be revised later.
     \end{itemize}
     \src{Austin et al., \href{https://arxiv.org/abs/2107.03006}{arXiv:2107.03006}. Sahoo et al., ``MDLM,'' \href{https://arxiv.org/abs/2406.07524}{arXiv:2406.07524}, Eq. 12 and Table 1. Shi et al., ``MD4,'' \href{https://arxiv.org/abs/2406.04329}{arXiv:2406.04329}. Bertolani et al., \href{https://arxiv.org/abs/2606.19475}{arXiv:2606.19475}. Kuleshov, ``How to Build a Diffusion Language Model'' (2026).}
@@ -141,7 +142,7 @@
 
 \begin{frame}{RL for Diffusion LMs: the Likelihood Problem}
     \begin{itemize}\itemsep0.35em
-        \item Day 3's policy-gradient methods need $\log \pi_\theta(\text{output})$. A diffusion LM has no cheap exact token likelihood.
+        \item Policy-gradient methods such as GRPO need $\log \pi_\theta(\text{output})$. A diffusion LM has no cheap exact token likelihood.
         \item \textbf{d1 (2025)} estimates it in \emph{one unmasking step} with a mean-field sum $\sum_k \log\pi_\theta(o^k\mid q)$, and runs a GRPO-style update (diffu-GRPO).
     \end{itemize}
     \begin{center}

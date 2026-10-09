@@ -2,15 +2,16 @@
 
 \begin{frame}{Learning Outcomes}
     By the end of this session, you should be able to:
-    \vspace{0.3em}
-    \begin{itemize}\itemsep0.15em
+    \begin{itemize}\small\itemsep0.05em
         \item \textbf{Explain} what makes a small model strong in 2026, and what limits it on a device.
-        \item \textbf{Compare} drafter-free speculative decoding, token pruning and weight compression by their \emph{realised} speedups.
-        \item \textbf{Describe} how diffusion language models are built and accelerated, and where they trail autoregression.
+        \item \textbf{Compare} drafter-free speculation, pruning and low-rank methods by \emph{realised} speedup.
+        \item \textbf{Describe} how diffusion LMs are built and sped up, and where they trail AR models.
         \item \textbf{Analyse} parametric memory: its capacity, and its freshness and attribution limits.
-        \item \textbf{Derive} why binary grading rewards guessing, and choose an uncertainty estimator.
+        \item \textbf{Explain} why stronger reasoners can hallucinate more, and choose an uncertainty estimator.
         \item \textbf{Evaluate} what probes, sparse autoencoders and steering vectors can and cannot show.
-        \item \textbf{Assess} judges, reward models and leaderboards as instruments that degrade when optimised.
+        \item \textbf{Assess} judges, reward models and leaderboards, which degrade when optimised.
         \item \textbf{Formulate} a research question from the October 2026 frontier.
     \end{itemize}
+    \vspace{0.2em}
+    {\scriptsize \textbf{Prerequisite knowledge:} speculative decoding; KV caching, GQA and sliding-window attention; prompt compression and KV-cache eviction; quantization, pruning and distillation, including on-policy distillation; mixture-of-experts, delta-rule linear attention and Titans; masked diffusion LMs (LLaDA); GRPO; reward models, LLM-as-a-judge and Chatbot Arena; binary grading and guessing, semantic entropy, Chain-of-Verification, fine-tuning on unknown facts; the refusal direction; chain-of-thought monitoring; agent time horizons; scaling laws and synthetic data.\par}
 \end{frame}

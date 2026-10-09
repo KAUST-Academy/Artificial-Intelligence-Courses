@@ -77,18 +77,18 @@
         \end{tabular}\end{adjustbox}
 
         \vspace{0.5em}
-        {\scriptsize The winner is a simple fastText classifier trained on about 400k documents.}
+        {\scriptsize The winner is a simple fastText classifier trained on about 400k documents. The resulting 7B model is comparable to Llama 3 8B on MMLU with 6.6$\times$ less compute.}
         \column{0.55\textwidth}
-        \begin{itemize}\itemsep0.4em
+        \begin{itemize}\small\itemsep0.3em
             \item \textbf{DCLM} fixes the model and training recipe and varies only the data. It keeps about 10\% of a 240T-token pool.
-            \item \textbf{FineWeb-Edu.} An LLM scores educational value from 0 to 5. A small regressor on embeddings copies the scores to the whole corpus. MMLU 33 to 37\%, ARC 46 to 57\%.
+            \item \textbf{FineWeb-Edu.} An LLM scores educational value from 0 to 5. A small regressor on embeddings copies the scores to the whole corpus. MMLU 33 to 37\%, ARC 46 to 57\%. It matches the Matrix corpus on MMLU with almost 10$\times$ fewer tokens.
             \item \textbf{What counts as quality?} DCLM's positive examples are instruction data and top ELI5 posts. ``Quality'' partly means ``looks like what benchmarks reward''.
         \end{itemize}
     \end{columns}
     \begin{itemize}\itemsep0.4em
         \item \textbf{The cost shows at long horizons.} Keeping 10\% leaves too few unique tokens for a 15T-token run. Nemotron-CC ensembles three classifiers (their top picks overlap by only 10.1\%), keeps the lower tiers too, and adds 1.9T tokens of \emph{rephrased} text. Result: four times more unique real tokens, and MMLU 59.0 against 53.4.
     \end{itemize}
-    \src{Li et al., ``DataComp-LM,'' \href{https://arxiv.org/abs/2406.11794}{arXiv:2406.11794}, Table 4. Penedo et al., \href{https://arxiv.org/abs/2406.17557}{arXiv:2406.17557}. Su et al., ``Nemotron-CC,'' ACL 2025, \href{https://arxiv.org/abs/2412.02595}{arXiv:2412.02595}.}
+    \src{Li et al., ``DataComp-LM,'' \href{https://arxiv.org/abs/2406.11794}{arXiv:2406.11794}, Table 4 and abstract. Penedo et al., \href{https://arxiv.org/abs/2406.17557v2}{arXiv:2406.17557v2}, Section 4. Su et al., ``Nemotron-CC,'' ACL 2025, \href{https://arxiv.org/abs/2412.02595}{arXiv:2412.02595}.}
 \end{frame}
 
 \begin{frame}{How Much of Each Domain? Mixing Becomes a Law}

@@ -101,8 +101,6 @@
       reads and writes both modalities.
     \item[{\color{red}\textbullet}] \textbf{Llama 4} (Apr 2025): Meta's first open-weight family pretrained
       with early fusion, jointly on text, image and video data.
-    \item[{\color{red}\textbullet}] Across 457 trained models, late fusion showed no inherent advantage;
-      early fusion is stronger at small scales and cheaper to train (Shukor et al., ICCV 2025).
   \end{itemize}
   \begin{figure}
     \centering
@@ -306,9 +304,7 @@
       not in the image, especially objects that are frequent in, or co-occur with, what they saw in
       training. POPE (EMNLP 2023) measures this with polling-style yes/no probes.
     \item[{\color{red}\textbullet}] \textbf{Visual tokens are expensive.} A long webpage screenshot costs
-      11{,}427 tokens in Qwen3-VL's own example. DeepSeek-OCR (Oct 2025) inverts the problem, rendering
-      text as an image and reading it back: at a compression ratio below $10\times$ it decodes with
-      97\% precision (``contexts optical compression'').
+      11{,}427 tokens in Qwen3-VL's own example.
     \item[{\color{red}\textbullet}] \textbf{Evaluation is fragile.} Benchmark questions leak into training
       data, and multiple-choice scores overstate perception: MMMU-Pro's vision-only setting exists
       because models were often reading the question, not the image.
@@ -317,8 +313,7 @@
       covered later in the course.
   \end{itemize}
   \vspace{0.3em}
-  {\scriptsize Li et al., \href{https://arxiv.org/abs/2305.10355}{arXiv:2305.10355};
-  Wei et al., \href{https://arxiv.org/abs/2510.18234}{arXiv:2510.18234}.}
+  {\scriptsize Li et al., \href{https://arxiv.org/abs/2305.10355}{arXiv:2305.10355}.}
 \end{frame}
 
 \begin{frame}{Mitigating Hallucination}

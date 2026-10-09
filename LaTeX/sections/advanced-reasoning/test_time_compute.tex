@@ -31,9 +31,9 @@
 
 \begin{frame}{Coverage Is Not Accuracy}
     \begin{itemize}\itemsep0.35em
-        \item Sample $k$ answers. \textbf{Coverage} is the chance that at least one is right. With $C_i$ correct among $N$ samples of problem $i$:
+        \item Sample $k$ answers. \textbf{Coverage} $c(k)$ is the fraction of problems where at least one is right, measured as pass@$k$. It fits
         \[
-            \text{pass@}k=\frac{1}{\#\text{problems}}\sum_i\left[1-\binom{N-C_i}{k}\Big/\binom{N}{k}\right], \qquad c(k)\approx \exp\!\big(a\,k^{b}\big)
+            c(k)\approx \exp\!\big(a\,k^{b}\big)
         \]
         \item Coverage grows roughly \textbf{log-linearly over four orders of magnitude}.
         \begin{itemize}\itemsep0.15em
@@ -68,12 +68,11 @@
 \begin{frame}{Inference Has Its Own Scaling Laws}
     \begin{itemize}\itemsep0.55em
         \item \textbf{Small models can be compute-optimal.} Llemma-7B with tree search consistently beats Llemma-34B on MATH. Larger models win only after smaller ones saturate.
-        \item \textbf{Voting saturates, provably.} Majority and weighted voting converge exponentially fast to a limit fixed by the model's answer distribution. More samples cannot pass it.
         \item \textbf{No strategy dominates.} A replication over 30B generated tokens, 8 open models and 4 datasets finds no single best test-time strategy.
         \item \textbf{2026: training and inference are one budget.} Train-to-Test laws optimise model size, training tokens and inference samples together. Once inference cost is counted, the optimum shifts ``radically into the overtraining regime''.
     \end{itemize}
     \vspace{0.2em}
-    \takeaway{Three steps. Chinchilla optimises training FLOPs. Wu et al. optimise inference FLOPs for a given model. Train-to-Test optimises both, and lands on yesterday's over-trained small models.}
+    \takeaway{Three steps. Chinchilla optimises training FLOPs. Wu et al. optimise inference FLOPs for a given model. Train-to-Test optimises both, and lands on over-trained small models.}
     \src{Wu et al., ``Inference Scaling Laws,'' \href{https://arxiv.org/abs/2408.00724}{arXiv:2408.00724}. Agarwal et al., ``The Art of Scaling Test-Time Compute for LLMs,'' \href{https://arxiv.org/abs/2512.02008}{arXiv:2512.02008}. Roberts et al., ``Test-Time Scaling Makes Overtraining Compute-Optimal,'' \href{https://arxiv.org/abs/2604.01411}{arXiv:2604.01411}.}
 \end{frame}
 
@@ -102,10 +101,9 @@
         \column{0.52\textwidth}
         \begin{itemize}\itemsep0.45em
             \item Prompting a model to think longer does little. \textbf{Training it with outcome rewards} is what makes length pay.
-            \item \textbf{DeepSeek-R1-Zero:} response length rises steadily during RL, and so does the word ``wait''. AIME 2024 pass@1 climbs from 15.6\% to 77.9\%.
-            \item \textbf{Kimi k1.5:} long context RL with no tree search, no value function, no process reward model. AIME 77.5.
+            \item \textbf{DeepSeek-R1-Zero,} AIME 2024: 77.9\% pass@1, 86.7\% with a vote over 16. Parallel scaling still stacks on top.
+            \item \textbf{Kimi k1.5:} long-context RL reaches AIME 77.5.
             \item \textbf{Qwen3, Gemini 2.5, gpt-oss:} smooth gains as the thinking budget grows.
-            \item Parallel scaling still stacks on top: R1-Zero reaches 86.7\% with a vote over 16.
         \end{itemize}
     \end{columns}
     \vspace{0.1em}
@@ -116,12 +114,13 @@
     \begin{itemize}\itemsep0.45em
         \item \textbf{Within a trained model, length is a noisy signal.} For QwQ, R1 and LIMO, correct solutions are often \emph{shorter} than incorrect ones.
         \item \textbf{An inverted U.} Accuracy peaks at an optimal chain length. It grows with difficulty and \emph{shrinks} with capability.
-        \item \textbf{Overthinking.} Asked ``2+3'', QwQ-32B-Preview spends 1,953\% more tokens than a conventional LLM and writes 13 solutions. The first is right in over 92\% of cases.
         \item \textbf{Attractors (2026).} 53.8\% of sequential scaling runs enter, within four iterations, a set of answers they never leave. Mixing models lowers that rate by 21.2 points.
+        \item \textbf{Inverse scaling.} With longer reasoning, nine models get worse on some tasks.
+        \item \textbf{Knowledge tasks.} More thinking often adds hallucinations. It cannot add facts.
     \end{itemize}
     \vspace{0.1em}
-    \takeaway{Overthinking, and its opposite (switching thoughts too often), are two failures of one allocation problem.}
-    \src{Zeng et al., \href{https://arxiv.org/abs/2502.12215}{arXiv:2502.12215}. Wu et al., ``When More is Less,'' \href{https://arxiv.org/abs/2502.07266}{arXiv:2502.07266}. Chen et al., ``Do NOT Think That Much for 2+3=?'' \href{https://arxiv.org/abs/2412.21187}{arXiv:2412.21187}. Wang et al., \href{https://arxiv.org/abs/2501.18585}{arXiv:2501.18585}. Rance et al., \href{https://arxiv.org/abs/2609.39632}{arXiv:2609.39632}.}
+    \takeaway{Chain length is an allocation problem. Too long wastes tokens and can lower accuracy; switching thoughts too often fails as well.}
+    \src{Zeng et al., \href{https://arxiv.org/abs/2502.12215}{arXiv:2502.12215}. Wu et al., ``When More is Less,'' \href{https://arxiv.org/abs/2502.07266}{arXiv:2502.07266}. Rance et al., \href{https://arxiv.org/abs/2609.39632}{arXiv:2609.39632}. Gema, H\"agele et al., \href{https://arxiv.org/abs/2507.14417}{arXiv:2507.14417}. Knowledge tasks: \href{https://arxiv.org/abs/2509.06861}{arXiv:2509.06861}. Switching thoughts: Wang et al., \href{https://arxiv.org/abs/2501.18585}{arXiv:2501.18585}.}
 \end{frame}
 
 \begin{frame}{Controlling the Budget: From Forcing to Training}
@@ -169,18 +168,6 @@
         \item Three generations of control: decode-time forcing, trained length conditioning, then a \textbf{coarse dial with the model deciding} how much to think.
     \end{itemize}
     \src{Anthropic, extended thinking and effort documentation. OpenAI, reasoning models guide. Google, Gemini API thinking documentation. xAI, reasoning guide. Qwen3 blog (Apr 2025). DeepSeek-V4.1-Flash release note (Sep 2026). All accessed 3 Oct 2026.}
-\end{frame}
-
-\begin{frame}{When More Thinking Hurts}
-    \centering
-    \includegraphics[width=0.98\linewidth,height=0.34\textheight,keepaspectratio]{images/advanced-reasoning/illusion_three_regimes_claude.png}
-    \begin{itemize}\itemsep0.3em
-        \item \textbf{``The Illusion of Thinking'':} three regimes on puzzles. Easy: thinking is wasted. Medium: it helps. Hard: both variants collapse.
-        \item \textbf{The rebuttal:} move lists exceed the output limit, and some instances are impossible.
-        \item \textbf{Inverse scaling:} with longer reasoning, nine models get worse on some tasks.
-        \item \textbf{Knowledge tasks:} more thinking often adds hallucinations. It cannot add facts.
-    \end{itemize}
-    \src{Figure: Shojaee et al. (Apple), \href{https://arxiv.org/abs/2506.06941}{arXiv:2506.06941}. Lawsen, \href{https://arxiv.org/abs/2506.09250}{arXiv:2506.09250}. Dellibarda Varela et al., \href{https://arxiv.org/abs/2507.01231}{arXiv:2507.01231}. Gema, H\"agele et al., \href{https://arxiv.org/abs/2507.14417}{arXiv:2507.14417}. Knowledge tasks: \href{https://arxiv.org/abs/2509.06861}{arXiv:2509.06861}.}
 \end{frame}
 
 \begin{frame}{Test-Time Compute: What to Remember}

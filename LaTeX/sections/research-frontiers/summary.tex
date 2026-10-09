@@ -1,6 +1,6 @@
 \section{Summary}
 
-\begin{frame}{Day 5 in One Table}
+\begin{frame}{Emerging Research Frontiers in One Table}
     \begin{center}
     \footnotesize
     \renewcommand{\arraystretch}{1.13}
@@ -9,7 +9,7 @@
         \textbf{Topic} & \textbf{The 2026 answer} & \textbf{Still open} \\
         \midrule
         Small models, edge & curated data, distillation, trained-in low precision, KV-aware design & hard code and maths, NPUs, undisclosed recipes \\
-        Efficiency & drafters inside the model, prune then distil & gains at high batch, multi-turn KV compression \\
+        Efficiency & drafters inside the model, prune then distil & gains at high batch, end-to-end speedups from sparsity \\
         Diffusion LMs & converted from AR, block-wise, about 2x faster & reasoning gap, RL without likelihoods \\
         Parametric memory & addressable memory layers, retrieval for freshness & compositional updates, provenance \\
         Hallucination & abstention-aware scoring and rewards & precision against coverage \\
@@ -20,19 +20,19 @@
     \end{tabular}\end{adjustbox}
     \end{center}
     \vspace{0.1em}
-    \takeaway{The common thread of the week: \textbf{decide where state lives, and never trust a measurement you have optimised against.}}
+    \takeaway{The common thread: \textbf{decide where state lives, and never trust a measurement you have optimised against.}}
 \end{frame}
 
 \begin{frame}{Research Questions to Take with You}
     \begin{itemize}\itemsep0.45em
-        \item Speculative decoding, KV compression and diffusion decoding are reported at low batch. \textbf{What survives at production batch sizes?}
+        \item Speculative decoding and diffusion decoding are reported at low batch. \textbf{What survives at production batch sizes?}
         \item Can a model be \textbf{updated at Wikipedia's rate}, half a million facts in five months, with consequences propagated and sources attached?
         \item \textbf{What training objective connects uncertainty to abstention} without collapsing coverage?
         \item \textbf{What makes a judge safe to optimise against?}
         \item For Arabic and its dialects: \textbf{where in the network is the knowledge lost}, and does a targeted intervention beat more data?
     \end{itemize}
     \vspace{0.3em}
-    \begin{block}{The week, in a phrase per day}
-        Architecture: what a model can hold. Reasoning: how it spends compute. Post-training: what it is rewarded for. Agents: what it can touch. Today: how we know any of it works.
+    \begin{block}{Three questions, one lesson}
+        Where computation lives: on the device, in a drafter, in a parallel denoiser. Where memory lives: in weights, in tables, in context. How it is checked: by uncertainty, from inside, by judges, and never by a number the model was trained to raise.
     \end{block}
 \end{frame}

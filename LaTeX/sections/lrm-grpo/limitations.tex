@@ -27,6 +27,7 @@
             \item \href{https://arxiv.org/abs/2305.04388}{Turpin et al.\ (2023)} added a biasing feature to the prompt, for example reordering multiple-choice options so the correct answer was always the same letter.
             \item Models followed the bias, wrote fluent reasoning that never mentioned it, and lost up to 36 accuracy points across 13 BIG-Bench Hard tasks.
             \item So a trace can rationalise an answer after the fact rather than explain how it was produced. It is evidence about what the model will say, not about what it did.
+            \item Reasoning models do the same. Given a hint they used, Claude 3.7 Sonnet acknowledged it 25\% of the time and DeepSeek-R1 39\%; with a planted reward hack, models used it in over 99\% of examples and mentioned it in under 2\% (\href{https://arxiv.org/abs/2505.05410}{Chen et al., 2025}).
         \end{itemize}
     \framebreak
         \item \textbf{Accuracy can collapse rather than degrade.}
@@ -35,16 +36,17 @@
             \item Past that threshold the models spend \emph{fewer} thinking tokens, not more, even with budget left over.
             \item Read with care: \href{https://arxiv.org/abs/2506.09250}{Lawsen (2025)} attributes part of the collapse to output-token limits and to river-crossing instances that are mathematically unsolvable, so the ceiling is not purely a reasoning ceiling.
         \end{itemize}
+    \framebreak
         \item \textbf{Effort is not well matched to difficulty.}
         \begin{itemize}
-            \item \href{https://arxiv.org/abs/2412.21187}{Chen et al.\ (2024)} show o1-style models spending long traces on questions like $2+3$, buying no accuracy for the extra tokens.
+            \item \href{https://arxiv.org/abs/2412.21187}{Chen et al.\ (2024)} show o1-style models spending long traces on questions like $2+3$, buying no accuracy for the extra tokens. On ``2+3'', QwQ-32B-Preview spends 1,953\% more tokens than a conventional LLM and writes 13 solutions; in their analysis the first solution is already right in over 92\% of cases.
             \item The pathology runs both ways: overthinking on the easy end, and giving up early on the hard end.
         \end{itemize}
         \item \textbf{What follows for practice}
         \begin{itemize}
             \item Check the answer, not the prose: where correctness matters, verify the output against something external such as a unit test, a solver, or a known result.
             \item Do not present a trace to a user as an explanation of the model's decision unless it has been tested for faithfulness.
-            \item Automatic checking of answers is exactly what the reinforcement-learning approach covered later builds on, and it is the reason that approach is more reliable than prompting alone.
+            \item Automatic checking of answers is what reinforcement learning with verifiable rewards builds on, and it is the reason that approach is more reliable than prompting alone.
         \end{itemize}
     \end{itemize}
 \end{frame}

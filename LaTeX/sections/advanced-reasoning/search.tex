@@ -29,11 +29,7 @@
             \underbrace{\arg\max_a \sum_{i} v\big(y^{(i)}\big)\,\mathbb{1}[a_i=a]}_{\text{weighted vote}}
         \]
         \item \textbf{A limit theorem.} As $N\to\infty$, voting accuracy converges to a value fixed by the generator $g$ and the scorer $v$. To pass it, improve $v$ or $g$.
-        \item \textbf{Best-of-N is optimisation against a proxy.} With $d=\sqrt{D_{\mathrm{KL}}(\pi\,\|\,\pi_{\text{init}})}$ and $\mathrm{KL}_{\text{bon}}=\log n-\tfrac{n-1}{n}$, the \emph{true} reward follows
-        \[
-            R_{\text{bon}}(d)=d\,(\alpha_{\text{bon}}-\beta_{\text{bon}}\,d)
-        \]
-        It rises, peaks, then \alert{falls}: with a large enough $N$ you select what fools the scorer.
+        \item \textbf{Best-of-N is optimisation against a proxy}: as $N$ grows, the \emph{true} reward rises, peaks, then \alert{falls}, because a large enough $N$ selects what fools the scorer.
         \item \textbf{A ceiling from false positives.} Resampling cannot lower a verifier's false-positive rate. The optimal number of attempts is then rarely above 10.
     \end{itemize}
     \vspace{0.1em}
@@ -77,13 +73,13 @@
             \bottomrule
         \end{tabular}\end{adjustbox}
         \column{0.48\textwidth}
-        \begin{itemize}\itemsep0.4em
-            \item \textbf{The mapping.} A node is a partial reasoning trace. An action is the next step. The value comes from rollouts, self-evaluation or a learned model.
+        \begin{itemize}\itemsep0.3em
+            \item \textbf{The mapping.} A node is a partial trace, its state defined per task. An action is the next step. The value comes from rollouts, self-evaluation or a learned model.
             \item \textbf{Selection} balances value against novelty:
             \[
                 a^*=\arg\max_{a}\Big[Q(s,a)+w\sqrt{\tfrac{\ln N(s)}{N(c(s,a))}}\Big]
             \]
-            \item \textbf{RAP:} the LLM plays two roles. It proposes actions, and it is the \emph{world model} that predicts the next state.
+            \item \textbf{RAP:} one frozen LLM proposes actions and, as the \emph{world model}, predicts the next state.
             \item A small model with search beats GPT-4 with CoT: 64\% average.
         \end{itemize}
     \end{columns}
@@ -112,11 +108,10 @@
             \item capping the expansions per node traps the search in local optima
         \end{itemize}
         \item \textbf{Kimi k1.5:} planning can be \emph{approximated inside the context}. Thought tokens play the role of a planning budget.
-        \item \textbf{The verdict in the lecture halls:} R1 ``ended speculations on the necessity of MCTS''. Later models for hard maths do add structure, though not classical MCTS.
     \end{itemize}
     \vspace{0.1em}
     \takeaway{\textbf{Where explicit search survives:} where a terminal check is cheap and exact (code, formal maths), and as a \emph{generator of training data}.}
-    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}, Appendix G.2 (v2). Kimi Team, \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}, Sections 2.3 and 4. Hashimoto, Stanford CS336 Lecture 16 (2025). Choi, Stanford CS224N Lecture 12 (2026). Rush and Ritter (2024).}
+    \src{DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}, Appendix G.2 (v2). Kimi Team, \href{https://arxiv.org/abs/2501.12599}{arXiv:2501.12599}, Sections 2.3 and 4. Rush and Ritter, ``Speculations on Test-Time Scaling'' (2024).}
 \end{frame}
 
 \begin{frame}{Better Selectors for Parallel Samples (2025)}

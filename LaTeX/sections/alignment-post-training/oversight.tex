@@ -1,23 +1,10 @@
-\section{Constitutional AI and Scalable Oversight}
+\section{Specifications and Scalable Oversight}
 
 \begin{frame}{}
-    \LARGE Alignment and Post-Training: \textbf{Constitutional AI and Scalable Oversight}
+    \LARGE Alignment and Post-Training: \textbf{Specifications and Scalable Oversight}
 
     \vspace{1em}
     \normalsize How do you supervise a model that knows more than its supervisor?
-\end{frame}
-
-\begin{frame}{Constitutional AI in One Slide (Recap)}
-    \centering
-    \includegraphics[width=0.8\linewidth,height=0.39\textheight,keepaspectratio]{images/alignment-post-training/cai_fig1_two_stages.png}
-    \begin{itemize}\itemsep0.3em
-        \item \textbf{The idea.} Replace harmlessness labels with a written list of principles, and have the model apply them to itself.
-        \item \textbf{Stage 1.} Self-critique and revision against a sampled principle, then SFT on the revisions.
-        \item \textbf{Stage 2.} AI-labelled preferences train a preference model, then RL against it.
-    \end{itemize}
-    \vspace{0.1em}
-    \takeaway{In 2022 the constitution was used only to \emph{make labels}. Where did it go next?}
-    \src{Bai et al., ``Constitutional AI: Harmlessness from AI Feedback,'' \href{https://arxiv.org/abs/2212.08073}{arXiv:2212.08073}, Figure 1. Recap of the KAUST Academy LLM course.}
 \end{frame}
 
 \begin{frame}{Beyond CAI: Teach the Model to Reason with the Specification}
@@ -57,22 +44,10 @@
 \end{frame}
 
 \begin{frame}{Constitutions as Safeguards and as Public Documents}
-    \begin{center}
-    \small
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lcc}
-        \toprule
-        \textbf{Constitutional Classifiers} & \textbf{2025} & \textbf{2026 (++)} \\
-        \midrule
-        Inference overhead & 23.7\% & about 1\% \\
-        Extra refusals on production traffic & 0.38\% & 0.05\% \\
-        Universal jailbreak found by red-teamers & none & none \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
     \begin{itemize}\itemsep0.35em
-        \item A constitution of allowed and disallowed content drives \textbf{synthetic data} to train input and streaming output classifiers. Automated jailbreak success fell from 86\% to about 4.4\%.
-        \item The 2026 version adds a two-stage cascade and \textbf{linear probes on activations}. Cheap enough to run on all traffic.
+        \item \textbf{Constitutional Classifiers++ (2026)} add a two-stage cascade and \textbf{linear probes on activations}: about 1\% inference overhead and 0.05\% extra refusals on production traffic, cheap enough to run on all traffic. Red-teamers found no universal jailbreak.
     \end{itemize}
+    \vspace{0.3em}
     \begin{center}
     \small
     \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{9.7cm}}
@@ -82,7 +57,7 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \src{Anthropic, ``Constitutional Classifiers,'' \href{https://arxiv.org/abs/2501.18837}{arXiv:2501.18837}. Cunningham et al., ``Constitutional Classifiers++,'' \href{https://arxiv.org/abs/2601.04603}{arXiv:2601.04603}. Anthropic, ``Claude's new constitution'' (2026). OpenAI Model Spec (2026-08-18).}
+    \src{Cunningham et al., ``Constitutional Classifiers++,'' \href{https://arxiv.org/abs/2601.04603}{arXiv:2601.04603}. Anthropic, ``Claude's new constitution'' (2026). OpenAI Model Spec (2026-08-18).}
 \end{frame}
 
 \begin{frame}{Why Oversight Must Scale: Sandwiching}

@@ -9,11 +9,7 @@
 
 \begin{frame}{The Textbook Story, and What 2024 Corrected}
     \begin{itemize}\itemsep0.5em
-        \item \textbf{Recap.} Loss follows a power law in parameters $N$ and tokens $D$. For a compute budget $C\approx 6ND$ there is an optimal split.
-        \begin{itemize}\itemsep0.2em
-            \item Kaplan et al. (2020): grow the model faster, $N^*\propto C^{0.73}$.
-            \item Chinchilla (2022): grow both equally, $N^*\propto C^{0.5}$. About \textbf{20 tokens per parameter}.
-        \end{itemize}
+        \item \textbf{Notation.} Loss is a power law in parameters $N$ and tokens $D$, with compute $C\approx 6ND$. The compute-optimal model size grows as $N^*\propto C^{a}$.
         \item \textbf{Correction 1.} Chinchilla's own parametric fit was wrong. Taken literally it implies about 70 tokens per parameter. A careful refit recovers 20, and shows the reported confidence intervals were implausibly tight.
         \item \textbf{Correction 2.} Kaplan and Chinchilla never disagreed about Transformers. The gap is a \emph{measurement artefact}, as the next slide shows.
     \end{itemize}
@@ -22,7 +18,7 @@
     \src{Hoffmann et al., \href{https://arxiv.org/abs/2203.15556}{arXiv:2203.15556}. Besiroglu et al., ``Chinchilla Scaling: A replication attempt,'' \href{https://arxiv.org/abs/2404.10102}{arXiv:2404.10102}. Pearce and Song, \href{https://arxiv.org/abs/2406.12907}{arXiv:2406.12907}.}
 \end{frame}
 
-\begin{frame}{From Kaplan to Chinchilla in Four Fixes}
+\begin{frame}{From Kaplan to Chinchilla: Three Corrections}
     \begin{columns}[T,onlytextwidth]
         \column{0.5\textwidth}
         \centering
@@ -30,23 +26,23 @@
             \begin{axis}[ybar, width=7.2cm, height=5.6cm, bar width=0.55cm,
                 ymin=0.4, ymax=0.95, ylabel={\scriptsize exponent $a$ in $N^*\propto C^{a}$},
                 symbolic x coords={A,B,C,D,E}, xtick=data,
-                xticklabels={Kaplan setup, + head FLOPs, + scaled warmup, + cosine decay, + tuned optimiser},
+                xticklabels={Kaplan setup, + head FLOPs, + scaled warmup, + cosine decay, tuned; no decay},
                 x tick label style={font=\tiny, rotate=25, anchor=east},
                 y tick label style={font=\scriptsize},
                 nodes near coords, nodes near coords style={font=\scriptsize},
                 axis lines=left, enlarge x limits=0.15]
-                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,0.88) (B,0.70) (C,0.60) (D,0.57) (E,0.50)};
+                \addplot[fill=KAUSTcyan!55, draw=KAUSTcyan!70!black] coordinates {(A,0.84) (B,0.71) (C,0.60) (D,0.57) (E,0.50)};
             \end{axis}
         \end{tikzpicture}\end{adjustbox}
         \column{0.48\textwidth}
-        \begin{itemize}\itemsep0.5em
-            \item Over 900 training runs reproduce Kaplan's exponent, then remove it step by step.
-            \item The biggest single cause: \textbf{not counting the compute of the output layer}, which matters at small scale.
-            \item A side result against Chinchilla: learning-rate decay is \emph{not} needed for the 0.5 law.
-            \item \textbf{Lesson for your own fits:} scaling exponents are fragile to protocol. Small models and untuned hyperparameters bias them.
+        \begin{itemize}\itemsep0.35em
+            \item Over 900 runs reproduce Kaplan's setup (0.84 here, 0.88 in Kaplan et al.), then close the gap.
+            \item \textbf{Three corrections:} count the output layer's compute (the biggest), scale warmup with model size, tune the optimiser per scale.
+            \item Cosine decay barely moves $a$, and the final run uses a constant learning rate: decay is \emph{not} needed for the 0.5 law.
+            \item \textbf{Lesson for your own fits:} exponents are fragile to protocol. Small models and untuned hyperparameters bias them.
         \end{itemize}
     \end{columns}
-    \src{Porian et al., ``Resolving Discrepancies in Compute-Optimal Scaling of Language Models,'' \href{https://arxiv.org/abs/2406.19146}{arXiv:2406.19146}, Figure 1.}
+    \src{Porian et al., ``Resolving Discrepancies in Compute-Optimal Scaling of Language Models,'' \href{https://arxiv.org/abs/2406.19146}{arXiv:2406.19146}, Figure 1 and Table 1 (RefinedWeb).}
 \end{frame}
 
 \begin{frame}{Compute-Optimal Is Not Deployment-Optimal}
@@ -89,34 +85,11 @@
             D' = U_D + U_D\,R_D^*\big(1-e^{-R_D/R_D^*}\big), \qquad R_D^*\approx 15
         \]
         where $U_D$ is unique tokens and $R_D$ the number of repetitions.
-        \item \textbf{The stock is finite.} Epoch AI estimates about 300T tokens of usable public text, fully used some time between 2026 and 2032.
         \item \textbf{Responses:} stronger regularisation, synthetic data for maths and code, and compute spent on reinforcement learning instead of more text.
     \end{itemize}
     \vspace{0.07em}
     \takeaway{Sutskever, NeurIPS 2024: ``We've achieved peak data and there'll be no more. There's only one internet.''}
-    \src{Muennighoff et al., ``Scaling Data-Constrained Language Models,'' \href{https://arxiv.org/abs/2305.16264}{arXiv:2305.16264}. Villalobos et al., ``Will we run out of data?'' Epoch AI (2024). Kim et al., \href{https://arxiv.org/abs/2509.14786}{arXiv:2509.14786}. Quote as reported by The Verge (13 Dec 2024).}
-\end{frame}
-
-\begin{frame}{Data Quality Is a Compute Multiplier}
-    \begin{center}
-    \small
-    \renewcommand{\arraystretch}{1.05}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{5.2cm}>{\raggedright\arraybackslash}p{5.6cm}}
-        \toprule
-        \textbf{Study} & \textbf{What was done} & \textbf{Effect} \\
-        \midrule
-        FineWeb-Edu (2024) & keep web pages an LLM rates as educational & MMLU 33 to 37\%, ARC 46 to 57\%. Matches the baseline with about 10$\times$ fewer tokens \\
-        DCLM (2024) & a simple fastText quality classifier over a 240T-token pool & comparable to Llama 3 8B on MMLU with about 6.6$\times$ less compute \\
-        Data mixing laws (2025) & predict loss as a function of mixture proportions & the optimised mix matches the default mix trained 48\% longer \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.29em
-        \item Classical scaling laws have no term for quality. In practice it shifts the whole curve.
-        \item \textbf{The tension:} aggressive filtering shrinks the pool of unique tokens, which brings back the repetition problem of the previous slide.
-        \item The best filter depends on the budget. With more compute, filter less.
-    \end{itemize}
-    \src{Penedo et al., ``The FineWeb Datasets,'' \href{https://arxiv.org/abs/2406.17557}{arXiv:2406.17557}. Li et al., ``DataComp-LM,'' \href{https://arxiv.org/abs/2406.11794}{arXiv:2406.11794}. Ye et al., ``Data Mixing Laws,'' \href{https://arxiv.org/abs/2403.16952}{arXiv:2403.16952}. Goyal et al., \href{https://arxiv.org/abs/2404.07177}{arXiv:2404.07177}.}
+    \src{Muennighoff et al., ``Scaling Data-Constrained Language Models,'' \href{https://arxiv.org/abs/2305.16264}{arXiv:2305.16264}. Kim et al., \href{https://arxiv.org/abs/2509.14786}{arXiv:2509.14786}. Quote as reported by The Verge (13 Dec 2024).}
 \end{frame}
 
 \begin{frame}{Does Model Shape Matter?}
@@ -152,7 +125,7 @@
         \[
             N_{\text{eff}} = N\,\big(1-e^{-P_w/\gamma_w}\big)\big(1-e^{-P_a/\gamma_a}\big)\big(1-e^{-P_{kv}/\gamma_{kv}}\big)
         \]
-        Two consequences. About 7 to 8 bits is compute-optimal for training. And \alert{over-trained models quantise worse}, which is exactly the small deployed models of two slides ago.
+        Two consequences. About 7 to 8 bits is compute-optimal for training. And \alert{over-trained models quantise worse}, which hits small deployed models hardest.
         \item \textbf{Architecture.} Hybrids, MoE and multimodal models get their own fitted laws. The exponents stay close to the dense Transformer's.
         \item \textbf{Emergence.} Are sudden jumps in ability real? Two answers that fit together:
         \begin{itemize}\itemsep0.13em
@@ -164,48 +137,21 @@
     \src{Kumar et al., ``Scaling Laws for Precision,'' \href{https://arxiv.org/abs/2411.04330}{arXiv:2411.04330}. Schaeffer et al., \href{https://arxiv.org/abs/2304.15004}{arXiv:2304.15004}. Du et al., \href{https://arxiv.org/abs/2403.15796}{arXiv:2403.15796}. MiniMax, \href{https://arxiv.org/abs/2501.08313}{arXiv:2501.08313}.}
 \end{frame}
 
-\begin{frame}{A Third Place to Spend Compute: Inference}
-    \begin{itemize}\itemsep0.55em
-        \item Training laws trade training FLOPs for loss. Since 2024 there is a second curve: \textbf{inference FLOPs for task success}.
-        \item OpenAI's o1 on AIME 2024 mathematics problems:
-    \end{itemize}
-    \begin{center}
-    \small
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lc}
-        \toprule
-        \textbf{Setting} & \textbf{Problems solved} \\
-        \midrule
-        GPT-4o & 12\% \\
-        o1, one sample & 74\% \\
-        o1, majority vote over 64 samples & 83\% \\
-        o1, 1,000 samples re-ranked by a learned scorer & 93\% \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.55em
-        \item At matched FLOPs, a small model with well-allocated test-time compute can beat a model \textbf{14$\times$ larger}.
-        \item The catch: gains depend on a \textbf{verifier}. Without one, voting saturates after a few hundred samples.
-    \end{itemize}
-    \src{OpenAI, ``Learning to reason with LLMs'' (Sep 2024). Snell et al., \href{https://arxiv.org/abs/2408.03314}{arXiv:2408.03314}. Brown et al., ``Large Language Monkeys,'' \href{https://arxiv.org/abs/2407.21787}{arXiv:2407.21787}.}
-\end{frame}
-
 \begin{frame}{Limits: Where Scaling Stands in October 2026}
     \begin{itemize}\itemsep0.36em
         \item \textbf{Compute keeps growing.} Frontier training compute has risen about 5$\times$ per year since 2020. The largest estimated run so far is Grok 4, at about $5\times10^{26}$ FLOP.
-        \item \textbf{What binds next is power, then data.} Epoch AI projects runs near $2\times10^{29}$ FLOP as feasible by 2030, with electricity the first hard ceiling.
         \item \textbf{Pre-training alone pays less.} GPT-4.5 used roughly ten times GPT-4's compute for incremental gains. GPT-5 then used \emph{less} training compute than GPT-4.5: scaling post-training on a smaller model gave better returns.
-        \item \textbf{Reinforcement learning has its own curve.} It is sigmoidal in compute, not a power law. Most recipe choices change how fast you approach the ceiling. Few change the ceiling.
     \end{itemize}
-    \vspace{0.13em}
+    \vspace{0.3em}
     \caveat{Be careful with ``scaling has hit a wall''. No lab has published a frontier-scale loss curve that shows the power law breaking.}
-    \src{Epoch AI, trends dashboard (Feb 2026), ``Can AI scaling continue through 2030?'' (2024) and ``Why GPT-5 used less training compute than GPT-4.5'' (Sep 2025). Lambert, Interconnects (Feb 2025). Meta, ``The Art of Scaling RL Compute for LLMs,'' \href{https://arxiv.org/abs/2510.13786}{arXiv:2510.13786}.}
+    \src{Epoch AI, trends dashboard (Feb 2026) and ``Why GPT-5 used less training compute than GPT-4.5'' (Sep 2025). Lambert, Interconnects (Feb 2025).}
 \end{frame}
 
 \begin{frame}{Scaling: What to Remember}
     \begin{itemize}\itemsep0.6em
         \item The compute-optimal rule survives, but \textbf{its constants depend on protocol}. Fit your own.
         \item Deployed models are deliberately \textbf{over-trained}, because inference dominates lifetime cost.
-        \item \textbf{Data} is now a binding constraint: its quantity, its quality and how often it can be repeated.
+        \item \textbf{Data} is now a binding constraint: repeating it pays for about 4 epochs, then decays.
         \item Compute has three destinations: \textbf{pre-training, post-training and inference}. Each has a different curve.
     \end{itemize}
     \vspace{0.3em}

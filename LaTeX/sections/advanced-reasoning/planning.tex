@@ -110,27 +110,16 @@
     \src{Valmeekam et al., ``Planning in Strawberry Fields,'' \href{https://arxiv.org/abs/2410.02162}{arXiv:2410.02162}. Zhang et al., ``From Solver Feedback to Faithful Plans,'' \href{https://arxiv.org/abs/2608.21897}{arXiv:2608.21897}, Tables 1 and 3. Mangannavar et al. (HALO), \href{https://arxiv.org/abs/2606.21740}{arXiv:2606.21740} (abstract).}
 \end{frame}
 
-\begin{frame}{Are the Traces Deliberation? A Debate, and a Use}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.49\textwidth}
-        \textbf{The debate}
-        \begin{itemize}\itemsep0.4em
-            \item The popular frame: base LLMs are ``System 1'', reasoning models ``System 2''.
-            \item \textbf{The counter-position:} intermediate tokens are \emph{learned prompt augmentations}, not interpretable reasoning.
-            \item \textbf{Evidence:} transformers trained on \emph{corrupted} search traces do about as well as those trained on correct ones. GRPO raises answer accuracy without raising trace validity.
-            \item The other side sees a real, learned search. That is the next section.
-        \end{itemize}
-        \column{0.49\textwidth}
-        \textbf{The use: deliberative alignment}
-        \begin{itemize}\itemsep0.4em
-            \item Teach the model the \emph{text} of its safety specification, and train it to reason over that text before answering.
-            \item Pipeline: generate examples whose reasoning cites the policy, filter with a judge, fine-tune without the policy in context, then RL.
-            \item During RL the judge does \emph{not} see the chain of thought, to avoid rewarding deceptive reasoning.
-            \item Jailbreak robustness: o1 0.88, GPT-4o 0.37. With \emph{less} over-refusal as well.
-        \end{itemize}
-    \end{columns}
-    \vspace{0.2em}
-    \src{Li et al., ``From System 1 to System 2,'' \href{https://arxiv.org/abs/2502.17419}{arXiv:2502.17419}. Kambhampati et al., ``Stop Anthropomorphizing Intermediate Tokens as Reasoning/Thinking Traces!'' ICML 2026, \href{https://arxiv.org/abs/2504.09762}{arXiv:2504.09762}. Valmeekam et al., ``Beyond Semantics,'' \href{https://arxiv.org/abs/2505.13775}{arXiv:2505.13775}. Guan et al. (OpenAI), ``Deliberative Alignment,'' \href{https://arxiv.org/abs/2412.16339}{arXiv:2412.16339}.}
+\begin{frame}{Are the Traces Deliberation?}
+    \begin{itemize}\itemsep0.6em
+        \item The popular frame: base LLMs are ``System 1'', reasoning models ``System 2''.
+        \item \textbf{The counter-position:} intermediate tokens are \emph{learned prompt augmentations}, not interpretable reasoning.
+        \item \textbf{Evidence:} transformers trained on \emph{corrupted} search traces do about as well as those trained on correct ones. GRPO raises answer accuracy without raising trace validity.
+        \item The other side sees a real, learned search. That is the next section.
+    \end{itemize}
+    \vspace{0.4em}
+    \takeaway{A trace that improves the answer need not be a faithful record of how the answer was found.}
+    \src{Li et al., ``From System 1 to System 2,'' \href{https://arxiv.org/abs/2502.17419}{arXiv:2502.17419}. Kambhampati et al., ``Stop Anthropomorphizing Intermediate Tokens as Reasoning/Thinking Traces!'' ICML 2026, \href{https://arxiv.org/abs/2504.09762}{arXiv:2504.09762}. Valmeekam et al., ``Beyond Semantics,'' \href{https://arxiv.org/abs/2505.13775}{arXiv:2505.13775}.}
 \end{frame}
 
 \begin{frame}{Planning: What to Remember}

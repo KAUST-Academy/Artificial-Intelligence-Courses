@@ -7,28 +7,6 @@
     \normalsize What changes when the model must also see, hear and draw?
 \end{frame}
 
-\begin{frame}{Recap: Where Do Other Modalities Enter the Model?}
-    \begin{center}
-    \small
-    \renewcommand{\arraystretch}{1.3}
-    \begin{adjustbox}{max width=\linewidth}\begin{tabular}{>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{6.4cm}>{\raggedright\arraybackslash}p{4.2cm}}
-        \toprule
-        \textbf{Fusion} & \textbf{Mechanism} & \textbf{Examples} \\
-        \midrule
-        Mid-fusion & a separate encoder produces features, and a projector injects them into the LLM & LLaVA, Qwen3-VL, InternVL \\
-        Early fusion & one operator maps every modality into the same token space, and one backbone processes all & Chameleon, Transfusion \\
-        \bottomrule
-    \end{tabular}\end{adjustbox}
-    \end{center}
-    \begin{itemize}\itemsep0.5em
-        \item The question has moved from \emph{where} to fuse to \emph{when in training} to fuse, and \emph{how to share capacity} between modalities.
-        \item The output side opened up too. Models now generate images, speech and video.
-    \end{itemize}
-    \vspace{0.2em}
-    \caveat{Mind the vocabulary. Qwen calls joint multimodal pre-training ``early fusion'' even with a separate encoder. The survey definitions above would call the same model mid-fusion.}
-    \src{An et al., ``Toward Native Multimodal Modeling: A Roadmap,'' \href{https://arxiv.org/abs/2605.25343}{arXiv:2605.25343}. Qwen3.5 model card (2026).}
-\end{frame}
-
 \begin{frame}{2026: The Separate Vision Model Disappears}
     \begin{center}
     \small
@@ -39,7 +17,7 @@
         \midrule
         Kimi K2.5 (Jan 2026) & MoE, 1.04T / 32B active & a 400M native-resolution ViT, with 15T tokens of joint vision and text pre-training \\
         Qwen3.5 (Feb 2026) & 3:1 hybrid MoE, 397B / 17B & one checkpoint replaces the separate Qwen3-VL line \\
-        Gemma 4 (Jul 2026) & 2.3B to 31B, dense and MoE & a 550M ViT with selectable budgets of 70 to 1,120 tokens per image \\
+        Gemma 4 (Jul 2026) & 2.3B to 31B, dense and MoE & a 550M ViT in most sizes \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
@@ -50,21 +28,22 @@
     \src{Kimi Team, ``Kimi K2.5,'' \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}. Qwen3.5-397B-A17B model card. Gemma Team, ``Gemma 4,'' \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}.}
 \end{frame}
 
-\begin{frame}{Fuse Early: Two Independent Lines of Evidence}
+\begin{frame}{Vision Early: Two Independent Lines of Evidence}
+
+    {\footnotesize \textbf{Terms.} \emph{Early fusion}: image patches enter the first layer, with no vision encoder. \emph{Encoder-based}: a pre-trained vision encoder feeds the language model (Shukor et al.\ call it late fusion).\par}
+    \vspace{0.2em}
     \begin{columns}[T,onlytextwidth]
         \column{0.49\textwidth}
         \textbf{A vendor ablation (Kimi K2.5)}
-        \begin{itemize}\itemsep0.4em
-            \item Fixed total budget of vision and text tokens.
-            \item Adding vision \textbf{early, at only 10\%} of the mix, beats adding it \textbf{late at 50\%}.
+        \begin{itemize}\small\itemsep0.2em
+            \item With a fixed total budget of vision and text tokens, adding vision \textbf{early in training, at only 10\%} of the mix, beats adding it \textbf{late at 50\%}.
             \item The ratio matters little. The timing matters.
             \item A bonus: reinforcement learning on \emph{vision} tasks also raised \emph{text} scores, by about 2 points on GPQA-Diamond.
         \end{itemize}
         \column{0.49\textwidth}
         \textbf{An academic scaling study (Apple)}
-        \begin{itemize}\itemsep0.4em
-            \item 457 models, trained from scratch.
-            \item At equal compute, early fusion is \textbf{on par} with late fusion, and slightly better at small budgets.
+        \begin{itemize}\small\itemsep0.2em
+            \item 457 models, trained from scratch. At equal compute, early fusion is \textbf{on par} with the encoder-based design, and slightly better at small budgets.
             \item Both follow almost the same scaling exponent as text-only models:
         \end{itemize}
         \vspace{0.2em}
@@ -75,13 +54,13 @@
             & $L\propto C^{\,x}$ \\
             \midrule
             Early fusion & $-0.0492$ \\
-            Late fusion & $-0.0494$ \\
+            Encoder-based & $-0.0494$ \\
             GPT-3 (text) & $-0.048$ \\
             \bottomrule
         \end{tabular}\end{adjustbox}
     \end{columns}
-    \vspace{0.4em}
-    \takeaway{Late fusion's real advantage is \emph{reuse} of pre-trained parts. With enough native training, that advantage shrinks.}
+    \vspace{0.3em}
+    \takeaway{An encoder's real advantage is \emph{reuse} of pre-trained parts. Enough native training shrinks it.}
     \src{Kimi Team, \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}, Tables 1 and 2. Shukor et al., ``Scaling Laws for Native Multimodal Models,'' ICCV 2025, \href{https://arxiv.org/abs/2504.07951}{arXiv:2504.07951}.}
 \end{frame}
 
@@ -108,7 +87,7 @@
         \item \textbf{Does the encoder have to exist?} Gemma 4's 12B model has none. Raw 48$\times$48 pixel patches go through a single linear projection into the LLM. Audio chunks are projected the same way.
     \end{itemize}
     \vspace{0.2em}
-    \caveat{No published ablation yet compares encoder-free and encoder-based models at matched size. The other Gemma 4 sizes keep a ViT.}
+    \caveat{No published ablation yet compares encoder-free and encoder-based models at production scale. The other Gemma 4 sizes keep a ViT.}
     \src{Gemma Team, \href{https://arxiv.org/abs/2607.02770}{arXiv:2607.02770}. Kimi Team, \href{https://arxiv.org/abs/2602.02276}{arXiv:2602.02276}. Wei et al., ``DeepSeek-OCR: Contexts Optical Compression,'' \href{https://arxiv.org/abs/2510.18234}{arXiv:2510.18234}.}
 \end{frame}
 
@@ -137,7 +116,7 @@
 \begin{frame}{Multimodal: What to Remember}
     \begin{itemize}\itemsep0.6em
         \item The flagship of 2026 is \textbf{one natively multimodal model}, built on the same hybrid and MoE backbones as text models.
-        \item \textbf{Fuse early in training.} A vendor ablation and a 457-model scaling study point the same way.
+        \item \textbf{Bring vision in early.} Adding it early in training beats adding it late, and an encoder-free model matches an encoder-based one at equal compute.
         \item \textbf{Specialise capacity, share attention.} Modality-specific experts with global mixing.
         \item \textbf{Visual tokens are a budget} to be compressed and chosen, like context length.
         \item \textbf{Unified generation is unsettled.} Autoregression, flow matching and discrete diffusion all remain in play.

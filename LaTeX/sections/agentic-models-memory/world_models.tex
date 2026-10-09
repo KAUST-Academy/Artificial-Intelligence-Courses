@@ -11,44 +11,10 @@
     \centering
     \includegraphics[width=0.9\linewidth,height=0.42\textheight,keepaspectratio]{images/agentic-models-memory/webdreamer_fig1_paradigms.png}
     \begin{itemize}\itemsep0.35em
-        \item A \textbf{world model} predicts transitions, $T:\mathcal{S}\times\mathcal{A}\rightarrow\mathcal{S}$: ``if I do this now, what happens next''. For LLM agents it predicts state changes \emph{in text}.
+        \item For LLM agents, a \textbf{world model} predicts state changes \emph{in text}.
         \item Reactive agents are greedy. Real tree search is systematic, but real actions can be \alert{irreversible, unsafe and slow}. So simulate first.
     \end{itemize}
     \src{Figure: Gu et al., ``Is Your LLM Secretly a World Model of the Internet?'' (WebDreamer), \href{https://arxiv.org/abs/2411.06559}{arXiv:2411.06559}, Figure 1. Su, ``On Memory, Reasoning, and Planning of Language Agents,'' Berkeley CS294 (Feb 2025).}
-\end{frame}
-
-\begin{frame}{The LLM as Its Own World Model: RAP}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.55\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item \textbf{Idea.} One LLM plays two roles. As \emph{agent} it proposes actions. As \emph{world model} it predicts the next state. Monte Carlo tree search builds a reasoning tree over those predictions.
-            \item \textbf{Selection:}
-            \[
-                a^* = \arg\max_{a\in A(s)} \Big[ Q(s,a) + w\sqrt{\tfrac{\ln N(s)}{N(c(s,a))}} \Big]
-            \]
-            \item \textbf{A state must be defined per task.} Blocksworld: the block configuration. Maths: the values of intermediate variables.
-            \item \textbf{Limitation.} The LLM is frozen.
-        \end{itemize}
-        \column{0.42\textwidth}
-        \centering
-        \small
-        \renewcommand{\arraystretch}{1.15}
-        \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lccc}
-            \toprule
-            \textbf{Blocksworld} & \textbf{2} & \textbf{4} & \textbf{6 steps} \\
-            \midrule
-            CoT, LLaMA-33B & 0.17 & 0.02 & 0.00 \\
-            CoT, GPT-4 & 0.50 & 0.63 & 0.40 \\
-            \rowcolor{KAUSTcyan!12} RAP, LLaMA-33B & 1.00 & 0.88 & 0.42 \\
-            \bottomrule
-        \end{tabular}\end{adjustbox}
-
-        \vspace{0.5em}
-        {\footnotesize Success rate by plan length, RAP with 20 iterations. A 33B model with a world model beat GPT-4 with chain-of-thought.}
-    \end{columns}
-    \vspace{0.3em}
-    \takeaway{This is Day 2's tree search with one change: the tree is expanded by \textbf{imagined} states, not real ones.}
-    \src{Hao et al., ``Reasoning with Language Model is Planning with World Model,'' \href{https://arxiv.org/abs/2305.14992}{arXiv:2305.14992}, Equation 1 and Table 1.}
 \end{frame}
 
 \begin{frame}{One-Step Lookahead on the Web}
@@ -112,7 +78,7 @@
         \end{itemize}
     \end{columns}
     \vspace{0.3em}
-    \takeaway{Today's LLM world models are \emph{local, one-step critics}. Day 5 returns to what models represent internally.}
+    \takeaway{Today's LLM world models are \emph{local, one-step critics}.}
     \src{Wang et al., ``Can Language Models Serve as Text-Based World Simulators?'' \href{https://arxiv.org/abs/2406.06485}{arXiv:2406.06485}. Chae et al., \href{https://arxiv.org/abs/2410.13232}{arXiv:2410.13232}. Vafa et al., ``Evaluating the World Model Implicit in a Generative Model,'' \href{https://arxiv.org/abs/2406.03689}{arXiv:2406.03689}.}
 \end{frame}
 
@@ -156,7 +122,7 @@
         \end{itemize}
     \end{columns}
     \vspace{0.3em}
-    \takeaway{This is the supply side of the agentic RL recipe from Section 1: \textbf{the environment is the dataset}.}
+    \takeaway{This is the supply side of the open-lab agentic RL recipe: \textbf{the environment is the dataset}.}
     \src{Pan et al., ``SWE-Gym,'' \href{https://arxiv.org/abs/2412.21139}{arXiv:2412.21139}. Jain et al., ``R2E-Gym,'' \href{https://arxiv.org/abs/2504.07164}{arXiv:2504.07164}. Prime Intellect, Environments Hub posts (2025). Meta FAIR CodeGen, ``CWM,'' \href{https://arxiv.org/abs/2510.02387}{arXiv:2510.02387}, and model card.}
 \end{frame}
 

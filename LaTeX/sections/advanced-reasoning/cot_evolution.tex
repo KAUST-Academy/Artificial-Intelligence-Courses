@@ -17,31 +17,6 @@
     \src{Besta et al., ``Graph of Thoughts: Solving Elaborate Problems with Large Language Models,'' AAAI 2024, \href{https://arxiv.org/abs/2308.09687}{arXiv:2308.09687}, Figure 1.}
 \end{frame}
 
-\begin{frame}{Self-Consistency Is Marginalisation}
-    \begin{columns}[T,onlytextwidth]
-        \column{0.5\textwidth}
-        \begin{itemize}\itemsep0.45em
-            \item Greedy decoding maximises the wrong quantity. It looks for the most likely \emph{pair} of reasoning $r$ and answer $a$.
-            \item We want the most likely \emph{answer}. So sum over reasoning paths, and estimate the sum by sampling:
-        \end{itemize}
-        \[
-            \mathbb{P}(a\mid q)=\sum_{r}\mathbb{P}(r,a\mid q)\approx\frac{\#\{i:\ a_i=a\}}{N}
-        \]
-        \begin{itemize}\itemsep0.45em
-            \item Then take $\arg\max_a$. Pick the most frequent \textbf{answer}, not the most frequent reasoning path.
-            \item It needs diverse samples. Beam search and prompt ensembles do worse.
-        \end{itemize}
-        \column{0.48\textwidth}
-        \centering
-        \includegraphics[width=\linewidth,height=0.5\textheight,keepaspectratio]{images/advanced-reasoning/self_consistency_fig1.png}
-
-        \vspace{0.3em}
-        {\footnotesize Still useful on reasoning models: R1-Zero on AIME 2024 goes from 77.9\% to 86.7\% with a vote over 16.}
-    \end{columns}
-    \vspace{0.1em}
-    \src{Derivation: Zhou, ``LLM Reasoning,'' Stanford CS25 (Apr 2025). Figure: Wang et al. (2022), Self-Consistency, Figure 1. Chen, ``Inference-Time Techniques for LLM Reasoning,'' Berkeley CS294 (Jan 2025). DeepSeek-AI, \href{https://arxiv.org/abs/2501.12948}{arXiv:2501.12948}.}
-\end{frame}
-
 \begin{frame}{A Ladder of Selectors}
     \begin{itemize}\itemsep0.3em
         \item A vote counts answers. What if the output is free text, or the majority is wrong?
@@ -60,9 +35,6 @@
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
-    \begin{itemize}\itemsep0.3em
-        \item Weighted voting in one line: $\hat a=\arg\max_a \sum_{i=1}^{N}\mathbb{1}[a_i=a]\,f_\phi(x,z_i,a_i)$.
-    \end{itemize}
     \src{Chen et al., ``Universal Self-Consistency for LLM Generation,'' \href{https://arxiv.org/abs/2311.17311}{arXiv:2311.17311}, Table 1. Li et al., ``Making LLMs Better Reasoners with Step-Aware Verifier,'' \href{https://arxiv.org/abs/2206.02336}{arXiv:2206.02336}. Brown et al., \href{https://arxiv.org/abs/2407.21787}{arXiv:2407.21787}.}
 \end{frame}
 
@@ -158,7 +130,7 @@
 \begin{frame}{Chain-of-Thought Evolution: What to Remember}
     \begin{itemize}\itemsep0.6em
         \item The family is a sequence of shapes: \textbf{path, bundle, planned sequence, tree, graph}.
-        \item Self-Consistency is \textbf{marginalisation over reasoning paths}. It survives into the reasoning-model era. Prompted and few-shot CoT do not.
+        \item Selectors climb a ladder: \textbf{vote, model pick, trained verifier, exact verifier}. Voting survives into the reasoning-model era. Prompted and few-shot CoT do not.
         \item Least-to-Most buys \textbf{length generalisation}. Graph-of-Thought buys \textbf{aggregation}.
         \item Prompted CoT helps mainly on \textbf{maths and symbolic} tasks, where a tool does better still.
     \end{itemize}

@@ -16,17 +16,16 @@
         \textbf{Family} & \textbf{First wave} & \textbf{Now} & \textbf{Successor} \\
         \midrule
         SWE-bench Verified & SWE-agent 12.5\% on the original (2024) & above 80\% (2026) & SWE-Bench Pro: best 61.5\% $\pm$3.1 \\
-        OSWorld & best model 12.24\% (2024) & Verified: 60.76\% (2025) & OSWorld 2.0: best 20.6\% \\
         GAIA & GPT-4 with plugins 15\%, humans 92\% & 76.4\% (2025). The board looks inactive & \\
         BrowseComp & GPT-4o with browsing 1.9\% & 86.8\% with a multi-agent harness & \\
-        $\tau$-bench & gpt-4o retail 61.2 & classic domains 80 to 92 & banking domain: 48.7 \\
         \bottomrule
     \end{tabular}\end{adjustbox}
     \end{center}
     \begin{itemize}\itemsep0.35em
-        \item A benchmark's useful life is about \textbf{12 to 18 months} (our estimate). Day 2 covered reasoning benchmarks. These measure \emph{acting}.
+        \item OSWorld and $\tau$-bench followed the same path, and were succeeded by OSWorld 2.0 and $\tau^2$-bench.
+        \item A benchmark's useful life is about \textbf{12 to 18 months} (our estimate). These benchmarks measure \emph{acting} in an environment.
     \end{itemize}
-    \src{Deng et al., ``SWE-Bench Pro,'' \href{https://arxiv.org/abs/2509.16941}{arXiv:2509.16941}, and leaderboard (Oct 2026). Yuan et al., \href{https://arxiv.org/abs/2606.29537}{arXiv:2606.29537}. Mialon et al., ``GAIA,'' \href{https://arxiv.org/abs/2311.12983}{arXiv:2311.12983}. Wei et al., ``BrowseComp,'' \href{https://arxiv.org/abs/2504.12516}{arXiv:2504.12516}. Anthropic, Opus 4.6 announcement. $\tau^2$-bench leaderboard.}
+    \src{Deng et al., ``SWE-Bench Pro,'' \href{https://arxiv.org/abs/2509.16941}{arXiv:2509.16941}, and leaderboard (Oct 2026). Mialon et al., ``GAIA,'' \href{https://arxiv.org/abs/2311.12983}{arXiv:2311.12983}. Wei et al., ``BrowseComp,'' \href{https://arxiv.org/abs/2504.12516}{arXiv:2504.12516}. Anthropic, Opus 4.6 announcement.}
 \end{frame}
 
 \begin{frame}{Anatomy of a Modern Agent Task}
@@ -59,7 +58,7 @@
         \column{0.38\textwidth}
         \centering
         \footnotesize
-        \renewcommand{\arraystretch}{1.15}
+        \renewcommand{\arraystretch}{1.0}
         \begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrr}
             \toprule
             \textbf{Horizon (min)} & \textbf{50\%} & \textbf{80\%} \\
@@ -72,13 +71,17 @@
             Mythos Preview & 1,045 & 186 \\
             \bottomrule
         \end{tabular}\end{adjustbox}
+
+        \begin{itemize}\footnotesize
+            \item \textbf{Doubling time:} 7 months fitted since 2019, \alert{128.7 days} since 2023. Above about 16 h the suite is unreliable.
+        \end{itemize}
     \end{columns}
     \vspace{0.2em}
     \begin{itemize}\itemsep0.3em
         \item \textbf{Method.} Time human experts per task, fit model success against log task length, read off the 50\% (or 80\%) crossing.
-        \item \alert{Read the intervals.} Opus 4.6's 50\% horizon has a confidence interval of 317 to 3,634 minutes.
+        \item \alert{Read the intervals.} Opus 4.6's 50\% horizon: confidence interval 317 to 3,634 minutes.
     \end{itemize}
-    \src{Kwa et al., ``Measuring AI Ability to Complete Long Software Tasks,'' \href{https://arxiv.org/abs/2503.14499}{arXiv:2503.14499}. Figure: METR, live chart (its fitted doubling time differs slightly from the table's source). Table: METR time-horizons data, updated 8 May 2026.}
+    \src{Kwa et al., ``Measuring AI Ability to Complete Long Software Tasks,'' \href{https://arxiv.org/abs/2503.14499}{arXiv:2503.14499}. Figure: METR, live chart (its fitted doubling time differs slightly from the table's source). Table, doubling times and reliable range: METR, Time Horizon 1.1 data file (suite updated 8 May 2026).}
 \end{frame}
 
 \begin{frame}{The Harness Is Part of the Score}
@@ -176,20 +179,15 @@
 
         {\scriptsize Claude 3.7 Sonnet on real repository tasks, judged by maintainers (METR, small sample).}
         \column{0.54\textwidth}
-        \begin{itemize}\itemsep0.45em
+        \begin{itemize}\itemsep0.6em
+            \item \textbf{The test.} METR gave an agent real tasks from open-source repositories, then had the maintainers review each pull request.
+            \item \textbf{38\%} passed the repository's tests. \alert{None} was mergeable as it stood.
             \item Every test-passing pull request still lacked adequate tests. Most had documentation and lint gaps.
-            \item \textbf{For your own agent, use three graders:}
-            \begin{itemize}\itemsep0.15em
-                \item \emph{code-based}: fast and reproducible, but brittle
-                \item \emph{model-based}: flexible, but non-deterministic
-                \item \emph{human}: the gold standard, but slow
-            \end{itemize}
-            \item \textbf{Validate the judge.} A trajectory judge reached 90\% agreement with humans on 120 labelled traces. Elsewhere, no single LLM judge was best on every benchmark.
-            \item Start from 20 to 50 real failures. Move saturated evaluations into a regression suite.
+            \item \textbf{Reading.} A test-based success rate is an upper bound on finished work.
         \end{itemize}
     \end{columns}
     \vspace{0.2em}
-    \src{Rein, ``Research update: towards reconciling slowdown with time horizons'' (METR, Aug 2025). Grace et al., ``Demystifying evals for AI agents'' (Anthropic, Jan 2026). Merrill et al., \href{https://arxiv.org/abs/2601.11868}{arXiv:2601.11868}. L\`u et al., ``AgentRewardBench,'' \href{https://arxiv.org/abs/2504.08942}{arXiv:2504.08942}.}
+    \src{Rein, ``Research update: towards reconciling slowdown with time horizons'' (METR, Aug 2025).}
 \end{frame}
 
 \begin{frame}{Evaluation: What to Remember}
