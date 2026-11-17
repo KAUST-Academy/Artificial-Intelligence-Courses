@@ -1,0 +1,66 @@
+\section{AI That Sees}
+\begin{frame}{}
+    \LARGE Part 4: \textbf{AI That Sees}
+\end{frame}
+
+\begin{frame}{Computer Vision is Everywhere}
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth,height=0.76\textheight,keepaspectratio]{images/cv-intro/cv_1.png}
+\caption*{\scriptsize [Source: \url{https://machinelearningmastery.com/stanford-convolutional-neural-networks-for-visual-recognition-course-review/}]}
+\end{figure}
+\end{frame}
+
+\begin{frame}{How a Computer Sees an Image}
+\begin{itemize}
+    \item To a computer, an image is a grid of numbers. Each number says how bright one tiny square (a \textbf{pixel}) is.
+    \item A colour image is three such grids: red, green and blue.
+\end{itemize}
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth,height=0.58\textheight,keepaspectratio]{images/cnn/represent_image.png}
+\caption*{\scriptsize Source: V7 Labs, \textit{Image Recognition: Definition, Algorithms \& Uses}.}
+\end{figure}
+\end{frame}
+
+\begin{frame}{What Can Vision Models Do?}
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth,height=0.62\textheight,keepaspectratio]{images/segmentation/tasks.png}
+\end{figure}
+\vspace{-0.5em}
+\begin{itemize}
+    \item \textbf{Classification}: what is in this picture?
+    \item \textbf{Detection}: where is each object?
+    \item \textbf{Segmentation}: which exact pixels belong to each object?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Vision at Work}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{images/cv-intro/Crack.jpg}
+
+            {\scriptsize [Source: \url{https://www.sciencedirect.com/science/article/pii/S2667143324000738}]}
+
+            \vspace{0.4em}
+            \textbf{Inspecting pipelines and equipment}\\
+            \small Cameras find cracks and corrosion early, before they become failures.
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,height=0.42\textheight,keepaspectratio]{images/cv-intro/oil_spills.jpg}
+
+            {\scriptsize [Source: \url{https://www.tandfonline.com/doi/full/10.1080/01431161.2022.2109445}]}
+
+            \vspace{0.4em}
+            \textbf{Spotting oil spills from satellites}\\
+            \small Faster detection means a faster clean-up response.
+        \end{column}
+    \end{columns}
+
+    \vspace{0.6em}
+    \centering
+    \small \textit{Also: reading medical scans, self-driving cars, checking products on a factory line.}
+\end{frame}

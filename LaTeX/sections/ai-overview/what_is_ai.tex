@@ -1,0 +1,139 @@
+\section{What is AI?}
+\begin{frame}{}
+    \LARGE Part 1: \textbf{What is AI?}
+\end{frame}
+
+% One everyday-use card: icon, title, one-line description
+\newcommand{\aiuse}[3]{%
+    \begin{tcolorbox}[colback=KAUSTblue!5, colframe=KAUSTblue!60, boxrule=0.5pt,
+                      left=4pt, right=4pt, top=3pt, bottom=3pt, equal height group=aiuse]
+        {\large #1}\enspace\textbf{#2}\\[0.2em]
+        \small #3
+    \end{tcolorbox}}
+
+\begin{frame}{You Already Use AI Every Day}
+    \begin{columns}[T]
+        \begin{column}{0.32\textwidth}
+            \aiuse{\faMobile}{Unlocking your phone}{It recognises your face.}
+            \aiuse{\faEnvelopeO}{Email}{It hides spam before you see it.}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \aiuse{\faMapMarker}{Maps}{It predicts traffic and picks your route.}
+            \aiuse{\faLanguage}{Translation}{It turns Arabic into English in a second.}
+        \end{column}
+        \begin{column}{0.32\textwidth}
+            \aiuse{\faFilm}{Videos and shopping}{It suggests what to watch or buy next.}
+            \aiuse{\faCommentsO}{Chat assistants}{They answer questions and draft text.}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.8em}
+    \centering
+    \textit{Most AI is quiet. It sits inside products you already know.}
+\end{frame}
+
+\begin{frame}{Warm-up: Is This AI?}
+    \textit{Raise your hand if you think it counts as AI.}
+
+    \vspace{0.8em}
+    \begin{enumerate}
+        \setlength\itemsep{0.7em}
+        \item A pocket calculator
+        \item A spam filter in your email
+        \item An air conditioner that switches on at 6 pm
+        \item A program that beats the world chess champion
+        \item An app that tells you the name of a plant from a photo
+    \end{enumerate}
+
+    \pause
+    \vspace{0.8em}
+    \takeaway{There is no sharp line. A useful question is: \textbf{does this task normally need
+    human intelligence?} Adding numbers and following a timer do not. Filtering spam, playing
+    chess and recognising plants do.}
+\end{frame}
+
+\begin{frame}{So What is AI?}
+    \begin{block}{Artificial Intelligence}
+        Getting computers to do tasks that normally need human intelligence.
+    \end{block}
+
+    \vspace{0.8em}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Such as:}
+            \begin{itemize}
+                \setlength\itemsep{0.4em}
+                \item \textbf{Seeing} --- recognising faces and objects
+                \item \textbf{Understanding language} --- reading, listening, translating
+                \item \textbf{Deciding} --- choosing a route or a chess move
+                \item \textbf{Creating} --- writing text, drawing images
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{AI is not:}
+            \begin{itemize}
+                \setlength\itemsep{0.4em}
+                \item A robot (most AI is just software)
+                \item Conscious, or able to feel
+                \item Magic --- it is built by people, from data
+                \item One single thing --- it is a family of techniques
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{AI, Machine Learning, Deep Learning}
+    \begin{columns}[c]
+        \begin{column}{0.52\textwidth}
+            \centering
+            \begin{tikzpicture}[scale=0.82, every node/.style={font=\small}]
+                \draw[fill=KAUSTblue!10, draw=KAUSTblue, thick] (0,0) ellipse (4.2 and 2.7);
+                \node at (0,2.2) {\textbf{Artificial Intelligence}};
+                \draw[fill=KAUSTcyan!18, draw=KAUSTcyan!80!black, thick] (0,-0.4) ellipse (3.3 and 2.0);
+                \node at (0,1.1) {\textbf{Machine Learning}};
+                \draw[fill=orange!20, draw=orange!80!black, thick] (0,-0.85) ellipse (2.4 and 1.35);
+                \node at (0,0.0) {\textbf{Deep Learning}};
+                \draw[fill=KAred!15, draw=KAred, thick] (0,-1.3) ellipse (1.5 and 0.6);
+                \node at (0,-1.3) {\textbf{Generative AI}};
+            \end{tikzpicture}
+        \end{column}
+        \begin{column}{0.46\textwidth}
+            \begin{itemize}
+                \setlength\itemsep{0.7em}
+                \item \textbf{AI}: the big goal --- machines doing intelligent tasks.
+                \item \textbf{Machine Learning}: the main way to get there --- learn from examples.
+                \item \textbf{Deep Learning}: machine learning with large neural networks.
+                \item \textbf{Generative AI}: deep learning that creates new text, images or sound.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{A Very Short History}
+    \centering
+    \begin{tikzpicture}[
+        event/.style={text width=2.2cm, align=center, font=\scriptsize,
+                      execute at begin node={\hyphenpenalty=10000\relax}},
+        year/.style={font=\small\bfseries, text=KAUSTblue}]
+        \draw[-{Latex[length=3mm]}, very thick, gray] (-0.3,0) -- (13.6,0);
+        \foreach \x/\y/\t/\pos in {
+            0.8/1950/{Alan Turing asks: ``Can machines think?''}/above,
+            3.1/1956/{The field gets its name: ``Artificial Intelligence''}/below,
+            5.4/1997/{Deep Blue beats the world chess champion}/above,
+            7.7/2012/{Deep learning wins a major image-recognition contest}/below,
+            10.0/2016/{AlphaGo beats a world champion at Go}/above,
+            12.3/2022/{ChatGPT reaches the public}/below} {
+            \filldraw[KAUSTblue] (\x,0) circle (3pt);
+            \ifthenelse{\equal{\pos}{above}}{
+                \node[year, above=3pt] at (\x,0) {\y};
+                \node[event, above=16pt] at (\x,0) {\t};
+            }{
+                \node[year, below=3pt] at (\x,0) {\y};
+                \node[event, below=16pt] at (\x,0) {\t};
+            }
+        }
+    \end{tikzpicture}
+
+    \vspace{1em}
+    \textit{The ideas are 70 years old. The results you see today are mostly from the last 10--15 years.}
+\end{frame}

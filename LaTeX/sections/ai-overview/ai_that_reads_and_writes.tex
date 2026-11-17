@@ -1,0 +1,142 @@
+\section{AI That Reads and Writes}
+\begin{frame}{}
+    \LARGE Part 5: \textbf{AI That Reads and Writes}
+\end{frame}
+
+\begin{frame}{Language is Hard for Computers}
+    \textit{We understand each other so easily that we forget how tricky language is.}
+
+    \vspace{0.8em}
+    \begin{itemize}
+        \setlength\itemsep{0.9em}
+        \item \textbf{One word, many meanings}\\
+        ``I went to the \textbf{bank}.'' --- to get money, or to sit by the river?
+        \item \textbf{One sentence, two readings}\\
+        ``I saw the man with the telescope.'' --- who has the telescope?
+        \item \textbf{Meaning beyond the words}\\
+        ``Great, another Monday.'' --- is the speaker happy?
+    \end{itemize}
+
+    \vspace{0.8em}
+    \takeaway{Teaching computers to work with human language is called
+    \textbf{Natural Language Processing (NLP)}.}
+\end{frame}
+
+\begin{frame}{What Language AI Can Do}
+    \centering
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabular}{@{} >{\raggedright\arraybackslash}p{0.24\textwidth}
+                        >{\raggedright\arraybackslash}p{0.30\textwidth}
+                        >{\raggedright\arraybackslash}p{0.36\textwidth} @{}}
+        \toprule
+        \textbf{Task} & \textbf{What It Does} & \textbf{Example} \\
+        \midrule
+        \textbf{Translation} & Language to language & English $\rightarrow$ Arabic \\
+        \textbf{Sentiment Analysis} & Detect mood & ``This movie was amazing!'' $\rightarrow$ Positive \\
+        \textbf{Summarisation} & Shorten a long text & A 20-page report $\rightarrow$ 5 bullet points \\
+        \textbf{Question Answering} & Find or write an answer & ``When does the library close?'' \\
+        \textbf{Speech Recognition} & Turn voice into text & Voice messages, subtitles \\
+        \bottomrule
+    \end{tabular}
+\end{frame}
+
+\begin{frame}{Large Language Models: Guess the Next Word}
+    \centering
+    {\Large ``The capital of France is \underline{\hspace{2cm}}''}
+
+    \vspace{0.8em}
+    \begin{tikzpicture}[font=\small]
+        \foreach \w/\len/\pct [count=\i] in {Paris/7.0/very likely, a/0.9/unlikely, located/0.6/unlikely, beautiful/0.4/unlikely} {
+            \node[anchor=east] at (0,-\i*0.62) {\w};
+            \fill[KAUSTblue!70] (0.15,-\i*0.62-0.18) rectangle (0.15+\len,-\i*0.62+0.18);
+            \node[anchor=west, font=\scriptsize, gray] at (0.25+\len,-\i*0.62) {\pct};
+        }
+    \end{tikzpicture}
+
+    \vspace{0.6em}
+    \raggedright
+    \begin{itemize}
+        \setlength\itemsep{0.4em}
+        \item A \textbf{Large Language Model (LLM)} is a huge neural network trained on one simple game: \textbf{predict the next word}.
+        \item It plays this game on an enormous amount of text --- books, websites, articles.
+        \item To get good at it, the model has to pick up grammar, facts and even some reasoning.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{From Guessing Words to Having a Conversation}
+    \begin{columns}[c]
+        \begin{column}{0.5\textwidth}
+            \centering
+            \includegraphics[width=\linewidth,height=0.75\textheight,keepaspectratio]{images/foundation-models/chatgpt_example_conversation.png}
+        \end{column}
+        \begin{column}{0.47\textwidth}
+            \begin{itemize}
+                \setlength\itemsep{0.8em}
+                \item You type a message.
+                \item The model predicts a good next word, then the next, then the next\ldots
+                \item One word at a time, a full answer appears.
+                \item ChatGPT, Gemini, Claude and others all work this way.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{What Chat Assistants Are Good At}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Works well}
+                \begin{itemize}
+                    \setlength\itemsep{0.35em}
+                    \item Drafting emails, letters and reports
+                    \item Summarising long documents
+                    \item Explaining a topic at your level
+                    \item Translating and fixing grammar
+                    \item Brainstorming ideas
+                    \item Helping to write computer code
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \begin{alertblock}{Be careful}
+                \begin{itemize}
+                    \setlength\itemsep{0.35em}
+                    \item Exact facts, numbers and quotes
+                    \item Very recent events
+                    \item Medical, legal or financial decisions
+                    \item Anything involving private information
+                \end{itemize}
+            \end{alertblock}
+        \end{column}
+    \end{columns}
+
+    \vspace{0.8em}
+    \centering
+    \textit{Think of it as a fast, well-read assistant --- whose work you still need to check.}
+\end{frame}
+
+\begin{frame}{Asking Well: Prompting}
+    \textit{The text you give the model is called a \textbf{prompt}. Better prompts give better answers.}
+
+    \vspace{0.6em}
+    \begin{columns}[T]
+        \begin{column}{0.4\textwidth}
+            \begin{enumerate}
+                \setlength\itemsep{0.5em}
+                \item Say \textbf{who it is for}
+                \item Be \textbf{specific} about the task
+                \item Give \textbf{context}
+                \item Ask for a \textbf{format}
+                \item \textbf{Improve} it step by step
+            \end{enumerate}
+        \end{column}
+        \begin{column}{0.57\textwidth}
+            \begin{tcolorbox}[colback=red!5, colframe=red!50, title=\textbf{Vague}]
+                \small ``Write about exercise.''
+            \end{tcolorbox}
+            \begin{tcolorbox}[colback=blue!5, colframe=blue!50, title=\textbf{Clear}]
+                \small ``Write a friendly 5-point list explaining to office workers why a
+                20-minute daily walk is good for them. Keep each point to one sentence.''
+            \end{tcolorbox}
+        \end{column}
+    \end{columns}
+\end{frame}
