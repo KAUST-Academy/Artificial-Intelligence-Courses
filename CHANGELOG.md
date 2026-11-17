@@ -1,4 +1,4 @@
-##  (2026-10-11)
+##  (2026-11-17)
 
 
 ### Features
@@ -56,6 +56,7 @@
 * **Labs:** Time series labs (Uni/Multivariate) ([ca2d270](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/ca2d270202166f1d9f27361bbdb79a5ef039cf94))
 * **Labs:** Transformers_with_BERT_English ([b5a44ab](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/b5a44ab05c8fa87fa5913a0a199b60bcefef88e8))
 * **Labs:** yolo_fire_and_smoke_seg.ipynb ([1f1002a](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/1f1002af4237b5aecf8f8286bca4e48641f92cba))
+* **Lectures:** add the Introduction to Artificial Intelligence deck ([f269392](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/f269392d0942a00dc40f9c8ae410180601b1bb94))
 * **Lectures:** Bulk Upload Lectures ([d8db6b3](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/d8db6b355a25a3de66a1c367ce6ede506571957c))
 * **Lecture:** Time series lecture ([55a52b8](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/55a52b891c41f55076b1c51686b0fb2d4ff514ee))
 * **Linear Regression:** Feature Engineering and Vectorization ([51fac41](https://github.com/KAUST-Academy/Artificial-Intelligence-Courses/commit/51fac41c3fdde08540bfcedbd897c9a137e83ee0))
